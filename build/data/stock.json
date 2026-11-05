@@ -1,0 +1,2734 @@
+{
+"stock": [
+{
+"h": 236951054,
+"raw": "equipment_ammo_12ga_bird_01",
+"name": "12ga Birdshot Ammo",
+"g": "ammo",
+"sub": "12ga",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_12ga_bird_alpha.png"
+},
+{
+"h": 3204920558,
+"raw": "equipment_ammo_12ga_buck_01",
+"name": "12ga Buckshot Ammo",
+"g": "ammo",
+"sub": "12ga",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_12ga_buck_alpha.png"
+},
+{
+"h": 1060532558,
+"raw": "equipment_ammo_12ga_slug_01",
+"name": "12ga Slug Ammo",
+"g": "ammo",
+"sub": "12ga",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_12ga_slug_alpha.png"
+},
+{
+"h": 877797819,
+"raw": "equipment_ammo_12ga_slug_alpha_01_q6",
+"name": "12ga Slug Corrosive Ammo",
+"g": "ammo",
+"sub": "12ga",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_12ga_slug_corrosion_alpha.png"
+},
+{
+"h": 2419319546,
+"raw": "equipment_ammo_12ga_slug_beta_01_q6",
+"name": "12ga Slug Medical Ammo",
+"g": "ammo",
+"sub": "12ga",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_12ga_slug_nanotech_alpha.png"
+},
+{
+"h": 51517981,
+"raw": "equipment_ammo_243_beta_01_q6",
+"name": ".243 Explosive Ammo",
+"g": "ammo",
+"sub": ".243",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_243_fmj_explosive_alpha.png"
+},
+{
+"h": 3379685862,
+"raw": "equipment_ammo_243_fmj_01",
+"name": ".243 Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": ".243",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_243_fmj_alpha.png"
+},
+{
+"h": 3732144546,
+"raw": "equipment_ammo_243_alpha_01_q6",
+"name": ".243 HEAT Ammo",
+"g": "ammo",
+"sub": ".243",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_243_fmj_piercing_alpha.png"
+},
+{
+"h": 2081045029,
+"raw": "equipment_ammo_243_sp_01",
+"name": ".243 Soft-Point Ammo",
+"g": "ammo",
+"sub": ".243",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_243_sp_alpha.png"
+},
+{
+"h": 4205294154,
+"raw": "equipment_ammo_270_fmj_01",
+"name": ".270 Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": ".270",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_270_fmj_alpha.png"
+},
+{
+"h": 2032835295,
+"raw": "equipment_ammo_270_beta_01_q6",
+"name": ".270 Medical Ammo",
+"g": "ammo",
+"sub": ".270",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_270_fmj_nanotech_alpha.png"
+},
+{
+"h": 3864128650,
+"raw": "equipment_ammo_270_alpha_01_q6",
+"name": ".270 Shock Ammo",
+"g": "ammo",
+"sub": ".270",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_270_fmj_charged_alpha.png"
+},
+{
+"h": 3233196944,
+"raw": "equipment_ammo_270_sp_01",
+"name": ".270 Soft-Point Ammo",
+"g": "ammo",
+"sub": ".270",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_270_sp_alpha.png"
+},
+{
+"h": 1755717911,
+"raw": "equipment_ammo_32acp_fmj_01",
+"name": ".32 ACP Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": ".32 ACP",
+"add": 1,
+"stack": 200,
+"icon": "assets/stock/ammo_32acp_fmj_alpha.png"
+},
+{
+"h": 3192142587,
+"raw": "equipment_ammo_32acp_hp_01",
+"name": ".32 ACP Hollow-Point Ammo",
+"g": "ammo",
+"sub": ".32 ACP",
+"add": 1,
+"stack": 200,
+"icon": "assets/stock/ammo_32acp_hp_alpha.png"
+},
+{
+"h": 3805952047,
+"raw": "equipment_ammo_32acp_alpha_01_q6",
+"name": ".32 ACP Medical Ammo",
+"g": "ammo",
+"sub": ".32 ACP",
+"add": 1,
+"stack": 200,
+"icon": "assets/stock/ammo_32acp_fmj_nanotech_alpha.png"
+},
+{
+"h": 3144849727,
+"raw": "equipment_ammo_32acp_beta_01_q6",
+"name": ".32 ACP Radioactive Ammo",
+"g": "ammo",
+"sub": ".32 ACP",
+"add": 1,
+"stack": 200,
+"icon": "assets/stock/ammo_32acp_fmj_radioactive_alpha.png"
+},
+{
+"h": 3941975225,
+"raw": "equipment_ammo_44m_alpha_01_q6",
+"name": ".44 Explosive Ammo",
+"g": "ammo",
+"sub": ".44",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_44m_fmj_explosive_alpha.png"
+},
+{
+"h": 3806949296,
+"raw": "equipment_ammo_44m_fmj_01",
+"name": ".44 Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": ".44",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_44m_fmj_alpha.png"
+},
+{
+"h": 3723181227,
+"raw": "equipment_ammo_44m_hp_01",
+"name": ".44 Hollow-Point Ammo",
+"g": "ammo",
+"sub": ".44",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_44m_hp_alpha.png"
+},
+{
+"h": 1792919161,
+"raw": "equipment_ammo_44m_beta_01_q6",
+"name": ".44 Tar Ammo",
+"g": "ammo",
+"sub": ".44",
+"add": 1,
+"stack": 60,
+"icon": "assets/stock/ammo_44m_fmj_tar_alpha.png"
+},
+{
+"h": 1054005230,
+"raw": "equipment_ammo_50_ap_01",
+"name": ".50 BMG Armor-Piercing Ammo",
+"g": "ammo",
+"sub": ".50 BMG",
+"add": 1,
+"stack": 40,
+"icon": "assets/stock/ammo_50_ap_alpha.png"
+},
+{
+"h": 2144129912,
+"raw": "equipment_ammo_50_alpha_01_q6",
+"name": ".50 BMG Explosive Ammo",
+"g": "ammo",
+"sub": ".50 BMG",
+"add": 1,
+"stack": 40,
+"icon": "assets/stock/ammo_50_fmj_explosive_alpha.png"
+},
+{
+"h": 3698280621,
+"raw": "equipment_ammo_50_fmj_01",
+"name": ".50 BMG Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": ".50 BMG",
+"add": 1,
+"stack": 40,
+"icon": "assets/stock/ammo_50_fmj_alpha.png"
+},
+{
+"h": 3794872971,
+"raw": "equipment_ammo_50_beta_01_q6",
+"name": ".50 BMG Medical Ammo",
+"g": "ammo",
+"sub": ".50 BMG",
+"add": 1,
+"stack": 40,
+"icon": "assets/stock/ammo_50_fmj_nanotech_alpha.png"
+},
+{
+"h": 491135589,
+"raw": "equipment_ammo_556_ap_01",
+"name": "5.56mm Armor-Piercing Ammo",
+"g": "ammo",
+"sub": "5.56mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_556_ap_alpha.png"
+},
+{
+"h": 3025565343,
+"raw": "equipment_ammo_556_alpha_01_q6",
+"name": "5.56mm Corrosive Ammo",
+"g": "ammo",
+"sub": "5.56mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_556_fmj_corrosion_alpha.png"
+},
+{
+"h": 2710140275,
+"raw": "equipment_ammo_556_fmj_01",
+"name": "5.56mm Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": "5.56mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_556_fmj_alpha.png"
+},
+{
+"h": 3225527075,
+"raw": "equipment_ammo_556_beta_01_q6",
+"name": "5.56mm HEAT Ammo",
+"g": "ammo",
+"sub": "5.56mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_556_fmj_piercing_alpha.png"
+},
+{
+"h": 224883577,
+"raw": "equipment_ammo_762_ap_01",
+"name": "7.62mm Armor-Piercing Ammo",
+"g": "ammo",
+"sub": "7.62mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_762_ap_alpha.png"
+},
+{
+"h": 2571545032,
+"raw": "equipment_ammo_762_fmj_01",
+"name": "7.62mm Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": "7.62mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_762_fmj_alpha.png"
+},
+{
+"h": 3135811327,
+"raw": "equipment_ammo_762_beta_01_q6",
+"name": "7.62mm Shock Ammo",
+"g": "ammo",
+"sub": "7.62mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_762_fmj_charged_alpha.png"
+},
+{
+"h": 961527320,
+"raw": "equipment_ammo_762_alpha_01_q6",
+"name": "7.62mm Tar Ammo",
+"g": "ammo",
+"sub": "7.62mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_762_fmj_tar_alpha.png"
+},
+{
+"h": 1617631538,
+"raw": "equipment_ammo_939_ap_01",
+"name": "9x39mm Armor-Piercing Ammo",
+"g": "ammo",
+"sub": "9x39mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_939_ap_01_icon_alpha.png"
+},
+{
+"h": 1911901645,
+"raw": "equipment_ammo_939_fmj_01",
+"name": "9x39mm Full Metal Jacket Ammo",
+"g": "ammo",
+"sub": "9x39mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_939_fmj_01_icon_alpha.png"
+},
+{
+"h": 2101243622,
+"raw": "equipment_ammo_9mm_ap_01",
+"name": "9mm Armor-Piercing Ammo (Handgun)",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_9mm_ap_01_alpha.png"
+},
+{
+"h": 1084846954,
+"raw": "equipment_ammo_9mm_ap_02",
+"name": "9mm Armor-Piercing Ammo (SMG)",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_9mm_ap_02_alpha.png"
+},
+{
+"h": 3692082372,
+"raw": "equipment_ammo_9mm_fmj_01",
+"name": "9mm FMJ Ammo (Handgun)",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_9mm_fmj_01_alpha.png"
+},
+{
+"h": 3070799296,
+"raw": "equipment_ammo_9mm_fmj_02",
+"name": "9mm FMJ Ammo (SMG)",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_9mm_fmj_02_alpha.png"
+},
+{
+"h": 2338235535,
+"raw": "equipment_ammo_9mm_beta_01_q6",
+"name": "9mm Handgun HEAT Ammo",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_9mm_fmj_01_piercing_alpha.png"
+},
+{
+"h": 1947634432,
+"raw": "equipment_ammo_9mm_alpha_01_q6",
+"name": "9mm Handgun Shock Ammo",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/ammo_9mm_fmj_01_charged_alpha.png"
+},
+{
+"h": 907062304,
+"raw": "equipment_ammo_9mm_alpha_02_q6",
+"name": "9mm SMG Corrosive Ammo",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_9mm_fmj_02_corrosion_alpha.png"
+},
+{
+"h": 2927254515,
+"raw": "equipment_ammo_9mm_beta_02_q6",
+"name": "9mm SMG Explosive Ammo",
+"g": "ammo",
+"sub": "9mm",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/ammo_9mm_ap_02_explosive_alpha.png"
+},
+{
+"h": 2673834166,
+"raw": "equipment_ammo_launcher_chaff",
+"name": "Chaff Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/generic_ammo_launcher_alpha.png"
+},
+{
+"h": 1987355777,
+"raw": "equipment_ammo_launcher_emp",
+"name": "Electromagnetic Pulse Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/generic_ammo_launcher_alpha.png"
+},
+{
+"h": 1566202094,
+"raw": "equipment_ammo_launcher_flare",
+"name": "Flare Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/generic_ammo_launcher_alpha.png"
+},
+{
+"h": 1565819850,
+"raw": "equipment_ammo_grenade_launcher_us_emp",
+"name": "Grenade Launcher EMP Cartridge",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/equipment_ammo_emp_grenade_ui_icon_alpha.png"
+},
+{
+"h": 3915248076,
+"raw": "equipment_ammo_grenade_launcher_us_explosive",
+"name": "Grenade Launcher HE Cartridge",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/equipment_ammo_explosive_grenade_ui_icon_alpha.png"
+},
+{
+"h": 967616799,
+"raw": "equipment_ammo_grenade_launcher_us_smoke",
+"name": "Grenade Launcher Smoke Cartridge",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/equipment_ammo_smoke_grenade_ui_icon_alpha.png.png"
+},
+{
+"h": 3376225280,
+"raw": "equipment_ammo_launcher_explosive",
+"name": "High-Explosive Dual-Purpose Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/generic_ammo_launcher_alpha.png"
+},
+{
+"h": 1406479561,
+"raw": "equipment_ammo_launcher_beta_q6",
+"name": "Highly Corrosive Dual-Purpose Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/ammo_launcher_corrosion_alpha.png"
+},
+{
+"h": 3327563976,
+"raw": "equipment_ammo_launcher_alpha_q6",
+"name": "Highly-Radioactive Dual-Purpose Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/ammo_launcher_radioactive_alpha.png"
+},
+{
+"h": 1104953982,
+"raw": "equipment_ammo_launcher_soviet_explosive",
+"name": "LG-7V High-Explosive Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/equipment_ammo_launcher_soviet_explosive_ui_icon_alpha.png"
+},
+{
+"h": 3904084887,
+"raw": "equipment_ammo_launcher_smoke",
+"name": "Smoke Round",
+"g": "ammo",
+"sub": "Launcher rounds",
+"add": 1,
+"stack": 4,
+"icon": "assets/stock/generic_ammo_launcher_alpha.png"
+},
+{
+"h": 3558841762,
+"raw": "equipment_ammo_arrow_explosive_01",
+"name": "Resistance Explosive Arrows",
+"g": "ammo",
+"sub": "Arrows",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/equipment_ammo_arrow_explosive_01_alpha.png"
+},
+{
+"h": 3323108915,
+"raw": "equipment_ammo_arrow_flare_01",
+"name": "Resistance Flare Arrows",
+"g": "ammo",
+"sub": "Arrows",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/equipment_ammo_arrow_flare_01_alpha.png"
+},
+{
+"h": 110843858,
+"raw": "equipment_ammo_arrow_plain_01",
+"name": "Standard Resistance Arrows",
+"g": "ammo",
+"sub": "Arrows",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/equipment_ammo_arrow_plain_01_alpha.png"
+},
+{
+"h": 3547236800,
+"raw": "equipment_ammo_fuel_01",
+"name": "Flamethrower Napalm",
+"g": "ammo",
+"sub": "Other ammo",
+"add": 1,
+"stack": 240,
+"icon": "assets/stock/equipment_ammo_fuel_tank_alpha.png"
+},
+{
+"h": 2277270272,
+"raw": "equipment_ammo_batterymag",
+"name": "High Voltage Battery Mag",
+"g": "ammo",
+"sub": "Other ammo",
+"add": 1,
+"stack": 40,
+"icon": "assets/stock/ammo_batterymag_alpha.png"
+},
+{
+"h": 1295142968,
+"raw": "equipment_comp_repairgun_ammo",
+"name": "Repair Juice",
+"g": "ammo",
+"sub": "Other ammo",
+"add": 1,
+"stack": 120,
+"icon": "assets/stock/equipment_comp_repairgun_ammo_alpha.png"
+},
+{
+"h": 3938124543,
+"raw": "equipment_consumable_adrenaline_01",
+"name": "Adrenaline Shot",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/equipment_consumable_adrenaline_01_alpha.png"
+},
+{
+"h": 4135535880,
+"raw": "equipment_consumable_firstaid_advanced_01",
+"name": "Advanced First Aid Kit",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_consumable_firstaid_advanced_01_alpha.png"
+},
+{
+"h": 3635824929,
+"raw": "equipment_consumable_firstaid_beta_01",
+"name": "Medical First Aid Kit",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_consumable_firstaid_advanced_01_nanotech_alpha.png"
+},
+{
+"h": 1248661129,
+"raw": "equipment_apple",
+"name": "Mysterious Apple",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_fettisdagen_consumable_alpha.png"
+},
+{
+"h": 4101347877,
+"raw": "health_station_01",
+"name": "Paramedic Response Pack",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_health_station_01_alpha.png"
+},
+{
+"h": 735263659,
+"raw": "equipment_consumable_firstaid_alpha_01",
+"name": "Radioactive First Aid Kit",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_consumable_firstaid_advanced_01_radioactive_alpha.png"
+},
+{
+"h": 983770313,
+"raw": "equipment_consumable_food_semla_01",
+"name": "Semla",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/equipment_fettisdagen_consumable_alpha.png"
+},
+{
+"h": 2050144797,
+"raw": "equipment_consumable_firstaid_simple_01",
+"name": "Simple First Aid Kit",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/equipment_consumable_firstaid_simple_01_alpha.png"
+},
+{
+"h": 154430305,
+"raw": "equipment_consumable_firstaid_standard_01",
+"name": "Standard First Aid Kit",
+"g": "items",
+"sub": "Medical",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_consumable_firstaid_standard_01_alpha.png"
+},
+{
+"h": 1055092846,
+"raw": "equipment_propane_tank_04_air",
+"name": "Compressed Air Tank",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_propane_tank_04_air_alpha.png"
+},
+{
+"h": 2925986755,
+"raw": "equipment_propane_tank_04_explosive",
+"name": "Explosive Gas Tank",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_propane_tank_04_explosive_alpha.png"
+},
+{
+"h": 763537339,
+"raw": "equipment_grenade_01",
+"name": "Grenade",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_grenade_01_alpha.png"
+},
+{
+"h": 3189117671,
+"raw": "equipment_grenade_holy_01",
+"name": "Holy Grenade",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 1,
+"icon": "assets/stock/equipment_grenade_holy_01_alpha.png"
+},
+{
+"h": 1118976650,
+"raw": "equipment_mine_01",
+"name": "Land Mine",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 2,
+"icon": "assets/stock/equipment_mine_01_alpha.png"
+},
+{
+"h": 1075157570,
+"raw": "equipment_molotov_cocktail_01",
+"name": "Molotov Cocktail",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_molotov_cocktail_ui_icon_alpha.png"
+},
+{
+"h": 2937909347,
+"raw": "equipment_propane_tank_04_poison",
+"name": "Poison Gas Tank",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_propane_tank_04_poison_alpha.png"
+},
+{
+"h": 2498753451,
+"raw": "equipment_remote_explosive_01",
+"name": "Remote-Controlled Explosive",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_remote_sticky_bomb_ui_icon_alpha.png"
+},
+{
+"h": 2665528130,
+"raw": "equipment_smoke_grenade_01",
+"name": "Smoke Grenade",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_smoke_grenade_01_alpha.png"
+},
+{
+"h": 4065011419,
+"raw": "snowball_dispenser_01_held",
+"name": "Snow Pile",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 0,
+"stack": 5,
+"icon": "assets/stock/equipment_snowball_station_01_alpha.png"
+},
+{
+"h": 3697498575,
+"raw": "equipment_snowball_03",
+"name": "Snowball",
+"g": "items",
+"sub": "Throwables and explosives",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_snowball_03_alpha.png"
+},
+{
+"h": 2741915458,
+"raw": "lure_boombox",
+"name": "Boombox",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_lure_boombox_alpha.png"
+},
+{
+"h": 1262822351,
+"raw": "equipment_flare_lure_01",
+"name": "Emergency flare",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_flare_lure_01_alpha.png"
+},
+{
+"h": 2884458829,
+"raw": "equipment_flare_lure_02",
+"name": "Emergency flare (Sticky)",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_flare_lure_02_alpha.png"
+},
+{
+"h": 2624088349,
+"raw": "equipment_lure_bomb_01",
+"name": "Explosive Toy Lure",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_toy_lure_ui_icon_alpha.png"
+},
+{
+"h": 2159829079,
+"raw": "field_radio_01",
+"name": "Field Radio",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_field_radio_01_alpha.png"
+},
+{
+"h": 2259069730,
+"raw": "equipment_flare_distraction_01",
+"name": "Firework",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_flare_distraction_01_alpha.png"
+},
+{
+"h": 1698547043,
+"raw": "equipment_distraction_firework_box_01",
+"name": "Firework Box",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_distraction_firework_box_01_alpha.png"
+},
+{
+"h": 3717839859,
+"raw": "equipment_lure_commarray_03",
+"name": "Heavy Comm. Array Lure",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_lure_commarray_03_alpha.png"
+},
+{
+"h": 338795721,
+"raw": "equipment_lure_commarray_01",
+"name": "Light Comm. Array Lure",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_lure_commarray_01_alpha.png"
+},
+{
+"h": 3578271636,
+"raw": "equipment_distraction_firework_box_02",
+"name": "Lunar New Year Fireworks",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_distraction_firework_box_02_alpha.png"
+},
+{
+"h": 1059321529,
+"raw": "equipment_lure_commarray_02",
+"name": "Medium Comm. Array Lure",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_lure_commarray_02_alpha.png"
+},
+{
+"h": 2457910257,
+"raw": "lure_radio_equipment",
+"name": "Radio",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_lure_radio_equipment_alpha.png"
+},
+{
+"h": 3251476746,
+"raw": "equipment_rc_car_lure_01",
+"name": "Toy Car Lure",
+"g": "items",
+"sub": "Lures and distractions",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_lure_rc_car_equipment_alpha.png"
+},
+{
+"h": 346711624,
+"raw": "equipment_emp_batterypack_car_01",
+"name": "Car Battery EMP",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_emp_batterypack_car_01_alpha.png"
+},
+{
+"h": 1190238928,
+"raw": "equipment_consumable_fuelcan_01",
+"name": "Gasoline",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 100,
+"icon": "assets/stock/equipment_consumable_fuelcan_01_alpha.png"
+},
+{
+"h": 1125625472,
+"raw": "equipment_emp_batterypack_large_01",
+"name": "Large EMP Cell",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_emp_batterypack_large_01_alpha.png"
+},
+{
+"h": 2562372320,
+"raw": "equipment_fuelcell_03",
+"name": "Large Fuel Cell",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_fuelcell_03_alpha.png"
+},
+{
+"h": 1637681994,
+"raw": "equipment_fuelcell_02",
+"name": "Medium Fuel Cell",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_fuelcell_02_alpha.png"
+},
+{
+"h": 2787308669,
+"raw": "equipment_emp_batterypack_medium_01",
+"name": "Medium-sized EMP Cell",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 2,
+"icon": "assets/stock/equipment_emp_batterypack_medium_01_alpha.png"
+},
+{
+"h": 2663984373,
+"raw": "equipment_emp_batterypack_small_01",
+"name": "Small EMP Cell",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_emp_batterypack_small_01_alpha.png"
+},
+{
+"h": 1409666988,
+"raw": "equipment_fuelcell_01",
+"name": "Small Fuel Cell",
+"g": "items",
+"sub": "Power and fuel",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_fuelcell_01_alpha.png"
+},
+{
+"h": 3026458433,
+"raw": "ammo_station_01",
+"name": "Ammo Pack",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_ammo_station_01_alpha.png"
+},
+{
+"h": 1031809081,
+"raw": "equipment_optics_rangefinder_binoculars_01",
+"name": "ApexView 7x42 Binoculars",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 1,
+"icon": "assets/stock/equipment_optics_rangefinder_binoculars_01_alpha.png"
+},
+{
+"h": 791848732,
+"raw": "equipment_comp_armor_repairpack",
+"name": "Companion Repair Pack",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_comp_armor_repairpack_alpha.png"
+},
+{
+"h": 3601795321,
+"raw": "equipment_optics_camera_01",
+"name": "Digital Camera",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_optics_camera_01_alpha.png"
+},
+{
+"h": 4134301914,
+"raw": "equipment_flashlight_01",
+"name": "Flashlight",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 1,
+"icon": "assets/stock/equipment_flashlight_01_alpha.png"
+},
+{
+"h": 3039539537,
+"raw": "equipment_gnome_pest_01",
+"name": "Gnome Pod",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_friendly_gnome_pest_01_alpha.png"
+},
+{
+"h": 2063134473,
+"raw": "equipment_hacking_dart_01",
+"name": "Hacking Dart",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_hacking_dart_01_alpha.png"
+},
+{
+"h": 2639874841,
+"raw": "equipment_lockpick_01",
+"name": "Lockpick Hairpin",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/equipment_lockpick_01_alpha.png"
+},
+{
+"h": 883405658,
+"raw": "equipment_portable_cover_01",
+"name": "Portable Cover",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_cover_ui_icon_alpha.png"
+},
+{
+"h": 987795287,
+"raw": "equipment_autonomous_turret_02",
+"name": "Portable Homing Turret",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_turret_02_ui_icon_alpha.png"
+},
+{
+"h": 1919173343,
+"raw": "equipment_autonomous_turret_01",
+"name": "Portable Machine Gun Turret",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_turret_ui_icon_alpha.png"
+},
+{
+"h": 3706814771,
+"raw": "equipment_rc_tick_01",
+"name": "Remote-Controlled Tick",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_rc_tick_01_alpha.png"
+},
+{
+"h": 3961421981,
+"raw": "equipment_consumable_repairkit_01",
+"name": "Repair Kit",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 10,
+"icon": "assets/stock/equipment_consumable_repairkit_01_alpha.png"
+},
+{
+"h": 1447161674,
+"raw": "equipment_sensory_jammer_01",
+"name": "Sensory Jammer",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_sensory_jammer_ui_icon_alpha.png"
+},
+{
+"h": 2716516313,
+"raw": "equipment_pest_01",
+"name": "Tick Pod",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 5,
+"icon": "assets/stock/equipment_friendly_pest_01_alpha.png"
+},
+{
+"h": 2479877886,
+"raw": "equipment_optics_binoculars_01",
+"name": "Vantage 8x42 Binoculars",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 1,
+"icon": "assets/stock/equipment_optics_binoculars_01_alpha.png"
+},
+{
+"h": 3656899843,
+"raw": "equipment_optics_rangefinder_01",
+"name": "Venture 5x30 Rangefinder",
+"g": "items",
+"sub": "Tools and gadgets",
+"add": 1,
+"stack": 1,
+"icon": "assets/stock/equipment_optics_rangefinder_01_alpha.png"
+},
+{
+"h": 3829063788,
+"raw": "equipment_comp_voice_modem",
+"name": "56k Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_modem_alpha.png"
+},
+{
+"h": 1282021179,
+"raw": "equipment_comp_armor_aggro_q3",
+"name": "Aggressive Threat Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_aggro_alpha.png"
+},
+{
+"h": 2011670433,
+"raw": "equipment_comp_armor_aggro_q1",
+"name": "Aggressive Threat Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_aggro_alpha.png"
+},
+{
+"h": 2344139135,
+"raw": "equipment_comp_armor_aggro_q2",
+"name": "Aggressive Threat Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_aggro_alpha.png"
+},
+{
+"h": 201777099,
+"raw": "equipment_comp_armor_aggro_q4",
+"name": "Aggressive Threat Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_aggro_alpha.png"
+},
+{
+"h": 4211272016,
+"raw": "equipment_comp_lightkit_07",
+"name": "Apocalypse Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_07_alpha.png"
+},
+{
+"h": 2215306648,
+"raw": "equipment_comp_paintjob_09",
+"name": "Apocalypse Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_09_alpha.png"
+},
+{
+"h": 847500025,
+"raw": "equipment_comp_voice_apocalypse",
+"name": "Apocalypse Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_apocalypse_alpha.png"
+},
+{
+"h": 3163611476,
+"raw": "equipment_comp_voice_svensk",
+"name": "Astrid Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_svensk_alpha.png"
+},
+{
+"h": 2743707123,
+"raw": "equipment_comp_paintjob_17",
+"name": "Azure Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_17_alpha.png"
+},
+{
+"h": 3415113358,
+"raw": "equipment_comp_armor_ballistic_q1",
+"name": "Ballistic Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_ballistic_alpha.png"
+},
+{
+"h": 4106523090,
+"raw": "equipment_comp_armor_ballistic_q4",
+"name": "Ballistic Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_ballistic_alpha.png"
+},
+{
+"h": 258634521,
+"raw": "equipment_comp_armor_ballistic_q2",
+"name": "Ballistic Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_ballistic_alpha.png"
+},
+{
+"h": 778876423,
+"raw": "equipment_comp_armor_ballistic_q3",
+"name": "Ballistic Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_ballistic_alpha.png"
+},
+{
+"h": 4128929828,
+"raw": "equipment_comp_paintjob_16",
+"name": "Bare Metal Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_16_alpha.png"
+},
+{
+"h": 1361769476,
+"raw": "equipment_comp_voice_beast",
+"name": "Beast Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_beast_alpha.png"
+},
+{
+"h": 1125722561,
+"raw": "equipment_comp_paintjob_06",
+"name": "Black Fire Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_06_alpha.png"
+},
+{
+"h": 1687278704,
+"raw": "equipment_comp_paintjob_07",
+"name": "Blue Thunder Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_07_alpha.png"
+},
+{
+"h": 1526374661,
+"raw": "equipment_comp_paintjob_05",
+"name": "Bubblegum Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_05_alpha.png"
+},
+{
+"h": 44090399,
+"raw": "equipment_comp_paintjob_20",
+"name": "Byzantine Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_20_alpha.png"
+},
+{
+"h": 78921374,
+"raw": "equipment_comp_paintjob_23",
+"name": "Cinnabar Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_23_alpha.png"
+},
+{
+"h": 2566037717,
+"raw": "equipment_comp_armor_concussive_q4",
+"name": "Concussive Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_concussive_alpha.png"
+},
+{
+"h": 369689302,
+"raw": "equipment_comp_armor_concussive_q2",
+"name": "Concussive Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_concussive_alpha.png"
+},
+{
+"h": 1624995671,
+"raw": "equipment_comp_armor_concussive_q3",
+"name": "Concussive Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_concussive_alpha.png"
+},
+{
+"h": 2816355595,
+"raw": "equipment_comp_armor_concussive_q1",
+"name": "Concussive Plate Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_concussive_alpha.png"
+},
+{
+"h": 4170450674,
+"raw": "equipment_comp_paintjob_15",
+"name": "Dazzle Camo Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_15_alpha.png"
+},
+{
+"h": 397328946,
+"raw": "equipment_comp_paintjob_14",
+"name": "Desert Camo Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_14_alpha.png"
+},
+{
+"h": 303232188,
+"raw": "equipment_comp_voice_doggo",
+"name": "Digi-Dog Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_doggo_alpha.png"
+},
+{
+"h": 2442320614,
+"raw": "equipment_comp_voice_mute",
+"name": "Disconnected Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_silent_alpha.png"
+},
+{
+"h": 1023731433,
+"raw": "equipment_comp_armor_retardant_q2",
+"name": "Firebreak Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_retardant_alpha.png"
+},
+{
+"h": 594610446,
+"raw": "equipment_comp_armor_retardant_q1",
+"name": "Firebreak Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_retardant_alpha.png"
+},
+{
+"h": 2320360320,
+"raw": "equipment_comp_armor_retardant_q3",
+"name": "Firebreak Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_retardant_alpha.png"
+},
+{
+"h": 2277761944,
+"raw": "equipment_comp_armor_retardant_q4",
+"name": "Firebreak Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_retardant_alpha.png"
+},
+{
+"h": 3033261084,
+"raw": "equipment_comp_paintjob_03",
+"name": "FNIX Runner Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_03_alpha.png"
+},
+{
+"h": 3955684301,
+"raw": "equipment_comp_voice_fnix",
+"name": "FNIX Runner Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_fnix_alpha.png"
+},
+{
+"h": 4119322416,
+"raw": "equipment_comp_paintjob_18",
+"name": "Goldenrod Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_18_alpha.png"
+},
+{
+"h": 679348511,
+"raw": "equipment_comp_paintjob_04",
+"name": "Grand Prix Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_04_alpha.png"
+},
+{
+"h": 1465175331,
+"raw": "equipment_comp_lightkit_02",
+"name": "Hazard Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_02_alpha.png"
+},
+{
+"h": 3401671387,
+"raw": "equipment_comp_lightkit_05",
+"name": "Hazed Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_05_alpha.png"
+},
+{
+"h": 3935201516,
+"raw": "equipment_comp_voice_katt",
+"name": "House Pet Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_katt_alpha.png"
+},
+{
+"h": 2124970346,
+"raw": "equipment_comp_paintjob_10",
+"name": "Lunar New Year Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_10_alpha.png"
+},
+{
+"h": 1127856576,
+"raw": "equipment_comp_paintjob_08",
+"name": "Mecha Monster Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_08_alpha.png"
+},
+{
+"h": 281710493,
+"raw": "equipment_comp_voice_goblin",
+"name": "Mechanical Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_goblin_alpha.png"
+},
+{
+"h": 3386895137,
+"raw": "equipment_comp_module_medic",
+"name": "Medic Module",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_module_medic_alpha.png"
+},
+{
+"h": 1388844972,
+"raw": "equipment_comp_paintjob_13",
+"name": "Miami Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_13_alpha.png"
+},
+{
+"h": 976446937,
+"raw": "equipment_comp_paintjob_01",
+"name": "Military Runner Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_01_alpha.png"
+},
+{
+"h": 1834578358,
+"raw": "equipment_comp_voice_default",
+"name": "Modulator Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_default_alpha.png"
+},
+{
+"h": 600357468,
+"raw": "equipment_comp_lightkit_06",
+"name": "Neon Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_06_alpha.png"
+},
+{
+"h": 2068710215,
+"raw": "equipment_comp_paintjob_22",
+"name": "Ochre Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_22_alpha.png"
+},
+{
+"h": 2462228098,
+"raw": "equipment_comp_paintjob_00",
+"name": "Resistance Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_00_alpha.png"
+},
+{
+"h": 1118530236,
+"raw": "equipment_comp_armor_runner_q3",
+"name": "Runner Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_runner_alpha.png"
+},
+{
+"h": 3325923278,
+"raw": "equipment_comp_armor_runner_q2",
+"name": "Runner Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_runner_alpha.png"
+},
+{
+"h": 2992568241,
+"raw": "equipment_comp_armor_runner_q4",
+"name": "Runner Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_runner_alpha.png"
+},
+{
+"h": 105896,
+"raw": "equipment_comp_armor_runner_q1",
+"name": "Runner Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_runner_alpha.png"
+},
+{
+"h": 2162844074,
+"raw": "equipment_comp_lightkit_01",
+"name": "Runner Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_01_alpha.png"
+},
+{
+"h": 1777915509,
+"raw": "equipment_comp_module_standard",
+"name": "Runner Module",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_module_standard_alpha.png"
+},
+{
+"h": 391447418,
+"raw": "equipment_comp_paintjob_02",
+"name": "Runner Prototype Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_02_alpha.png"
+},
+{
+"h": 346304677,
+"raw": "equipment_comp_weapon_launcher_01",
+"name": "Runner Rocket Launcher",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/machine_weapon_comp_launcher_01_alpha.png"
+},
+{
+"h": 3575152254,
+"raw": "equipment_comp_weapon_shotgun_01",
+"name": "Runner Shotgun",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/machine_weapon_comp_shotgun_01_alpha.png"
+},
+{
+"h": 755058959,
+"raw": "equipment_comp_weapon_smg_01",
+"name": "Runner SMG",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/machine_weapon_comp_smg_01_alpha.png"
+},
+{
+"h": 2908086660,
+"raw": "equipment_comp_paintjob_11",
+"name": "Rust Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_11_alpha.png"
+},
+{
+"h": 3234860833,
+"raw": "equipment_comp_paintjob_19",
+"name": "Sage Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_19_alpha.png"
+},
+{
+"h": 2421787128,
+"raw": "equipment_comp_module_scavenger",
+"name": "Scavenger Module",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_module_scavenger_alpha.png"
+},
+{
+"h": 964091740,
+"raw": "equipment_comp_lightkit_03",
+"name": "Search Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_03_alpha.png"
+},
+{
+"h": 1172309693,
+"raw": "equipment_comp_paintjob_21",
+"name": "Shale Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_21_alpha.png"
+},
+{
+"h": 2518069935,
+"raw": "equipment_comp_voice_speakspell",
+"name": "Speak & Learn Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_speakspell_alpha.png"
+},
+{
+"h": 696839018,
+"raw": "equipment_comp_module_spotter",
+"name": "Spotter Module",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_module_spotter_alpha.png"
+},
+{
+"h": 3053692644,
+"raw": "equipment_comp_paintjob_24",
+"name": "Stealth Camo Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_24_alpha.png"
+},
+{
+"h": 2984548521,
+"raw": "equipment_comp_armor_stealth_q4",
+"name": "Stealth Cladding Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_stealth_alpha.png"
+},
+{
+"h": 3321324375,
+"raw": "equipment_comp_armor_stealth_q1",
+"name": "Stealth Cladding Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_stealth_alpha.png"
+},
+{
+"h": 3584384991,
+"raw": "equipment_comp_armor_stealth_q2",
+"name": "Stealth Cladding Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_stealth_alpha.png"
+},
+{
+"h": 3537063533,
+"raw": "equipment_comp_armor_stealth_q3",
+"name": "Stealth Cladding Armor",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 2,
+"icon": "assets/stock/equipment_comp_armor_stealth_alpha.png"
+},
+{
+"h": 3932416481,
+"raw": "equipment_comp_paintjob_12",
+"name": "Tiger Paint Job",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_paintjob_12_alpha.png"
+},
+{
+"h": 2979545861,
+"raw": "equipment_comp_lightkit_04",
+"name": "Toxic Glow Light Kit",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_lightkit_04_alpha.png"
+},
+{
+"h": 3623169937,
+"raw": "equipment_comp_voice_spacerobot",
+"name": "Vocoder Voice Box",
+"g": "items",
+"sub": "Companion",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_comp_voice_spacerobot_alpha.png"
+},
+{
+"h": 3164552154,
+"raw": "key_doorkey_snusskey",
+"name": "\"Redovisningskansli Öst\" keycard",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 1541610115,
+"raw": "fnix_tracking_device",
+"name": "A tracking device",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/fnix_tracking_device_alpha.png"
+},
+{
+"h": 3202139670,
+"raw": "exp02_sm090_ammo",
+"name": "Ammo crates",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_sm090_item_02_icon_alpha.png"
+},
+{
+"h": 2579728919,
+"raw": "key_doorkey_klinte_basement",
+"name": "Basement storage key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 537036644,
+"raw": "key_bunkerkey_evilfoa",
+"name": "Bergfinken access keycard",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 2088870199,
+"raw": "key_doorkey_wm39",
+"name": "Björn's barn key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 4192062974,
+"raw": "key_doorkey_crafting07",
+"name": "Crafting Container key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 1425185004,
+"raw": "key_doorkey_protokey",
+"name": "Floppy disk",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 3860211700,
+"raw": "key_rivkey_key01",
+"name": "FNIX armor plate 1",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_mm040_item_02_icon_alpha.png"
+},
+{
+"h": 1106438159,
+"raw": "key_rivkey_key02",
+"name": "FNIX armor plate 2",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_mm040_item_02_icon_alpha.png"
+},
+{
+"h": 1455530903,
+"raw": "key_rivkey_key03",
+"name": "FNIX armor plate 3",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_mm040_item_02_icon_alpha.png"
+},
+{
+"h": 3046490435,
+"raw": "tyrant_key_fnix_01",
+"name": "FNIX Coordinate Data",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/tyrant_key_fnix_01_alpha.png"
+},
+{
+"h": 947494052,
+"raw": "key_bunkerkey_foav2",
+"name": "FOA 5 bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 2254790367,
+"raw": "key_bunkerkey_foa",
+"name": "FOA 53 lab barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 29280497,
+"raw": "key_doorkey_crafting04",
+"name": "Garage Key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 39247827,
+"raw": "key_doorkey_crafting03",
+"name": "Hangar Key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 3094187011,
+"raw": "key_bunkerkey_hermelinen",
+"name": "Hermelinen Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 3603109944,
+"raw": "key_doorkey_wm27a",
+"name": "Hjortqvarns Sågverk key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 728173567,
+"raw": "key_doorkey_wm16b",
+"name": "House key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 3772494107,
+"raw": "key_testkey_01",
+"name": "Key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 1976000322,
+"raw": "key_doorkey_ingrid",
+"name": "Key to Ingrid Granqvist's house",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 236413068,
+"raw": "key_doorkey_wm22b",
+"name": "Key to Stora Dyrbo barn",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 1105156184,
+"raw": "key_doorkey_wm17",
+"name": "Key to the stables at Glättra.",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 1388236909,
+"raw": "key_doorkey_veronika",
+"name": "Key to Veronika's study",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 3597663855,
+"raw": "key_doorkey_vonulmer2",
+"name": "Keycard to Von Ulmer's study",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 3725871820,
+"raw": "key_doorkey_weaponstore_01",
+"name": "Loadout storage key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 3764893738,
+"raw": "key_bunkerkey_kaseberg",
+"name": "Minken Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 2914558183,
+"raw": "key_doorkey_norrmyra",
+"name": "Mysterious key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 1734537092,
+"raw": "exp02_sm080_document",
+"name": "Mysterious transcription",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_sm080_item_03_icon_alpha.png"
+},
+{
+"h": 2149861602,
+"raw": "key_bunkerkey_marden",
+"name": "Mården Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 1229965349,
+"raw": "key_doorkey_lumbercamp",
+"name": "Office key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 66927541,
+"raw": "exp02_sm080_rope",
+"name": "Pile of ropes",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_mm020_item_03_icon_alpha.png"
+},
+{
+"h": 2643190935,
+"raw": "key_bunkerkey_skvadern",
+"name": "Skvadern Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 534395491,
+"raw": "key_doorkey_skvadern_storage",
+"name": "Skvadern storage key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 2996689832,
+"raw": "key_bunkerkey_sorken",
+"name": "Sorken Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 3717129816,
+"raw": "tyrant_key_soviet_01",
+"name": "Soviet Coordinate Data",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/tyrant_key_soviet_01_alpha.png"
+},
+{
+"h": 2945053051,
+"raw": "key_doorkey_am05",
+"name": "Storage key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 1130903417,
+"raw": "key_doorkey_crafting02",
+"name": "Storage Key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 2651993707,
+"raw": "key_doorkey_sm_04",
+"name": "Supply room key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 2914259160,
+"raw": "exp02_mm100_key",
+"name": "Tank vision module",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_mm100_item_01_icon_alpha.png"
+},
+{
+"h": 904936723,
+"raw": "key_bunkerkey_uttern",
+"name": "Uttern Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 917321890,
+"raw": "key_bunkerkey_vesslan",
+"name": "Vesslan Bunker entry barcode",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 3,
+"icon": "assets/stock/generic_key_bunker_iff_alpha.png"
+},
+{
+"h": 480939991,
+"raw": "key_doorkey_vonulmer",
+"name": "Von Ulmer's residence key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 3112290540,
+"raw": "key_doorkey_vonulmersafe",
+"name": "Von Ulmer's safe key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 2097422380,
+"raw": "exp02_sm080_log",
+"name": "Wood logs",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/exp02_mm020_item_04_icon_alpha.png"
+},
+{
+"h": 942398533,
+"raw": "key_doorkey_wm19",
+"name": "Östra Mark barn storage key",
+"g": "items",
+"sub": "Keys and quest items",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/generic_key_alpha.png"
+},
+{
+"h": 342766485,
+"raw": "equipment_vision_module_hv_xr",
+"name": "Dual Mode IR / OPV Module",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_hv_xr_alpha.png"
+},
+{
+"h": 3912629024,
+"raw": "equipment_vision_module_hv_nv",
+"name": "Dual Mode Low Light / IR Module",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_hv_nv_alpha.png"
+},
+{
+"h": 1399608134,
+"raw": "equipment_vision_module_nv_xr",
+"name": "Dual Mode Low Light / OPV Module",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_nv_xr_alpha.png"
+},
+{
+"h": 1524218344,
+"raw": "equipment_vision_module_hv_nv_xr",
+"name": "Full Vision Module",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_hv_nv_xr_alpha.png"
+},
+{
+"h": 3219589971,
+"raw": "equipment_vision_module_hv",
+"name": "IR Vision Processor",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_hv_alpha.png"
+},
+{
+"h": 3311094823,
+"raw": "equipment_vision_module_nv",
+"name": "Low Light Vision Amplifier",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_nv_alpha.png"
+},
+{
+"h": 541519494,
+"raw": "equipment_vision_module_xr",
+"name": "Object Penetrating Vision Modulator",
+"g": "items",
+"sub": "Vision modules",
+"add": 0,
+"stack": 1,
+"icon": "assets/stock/equipment_vision_module_xr_alpha.png"
+},
+{
+"h": 2763470178,
+"raw": "comp_spawner",
+"name": "Machine Companion",
+"g": "items",
+"sub": "Other",
+"add": 0,
+"stack": 0,
+"icon": "assets/stock/equipment_comp_base_alpha.png"
+},
+{
+"h": 2745069990,
+"raw": "slag",
+"name": "Slag",
+"g": "items",
+"sub": "Other",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_slag_alpha.png"
+},
+{
+"h": 1829315609,
+"raw": "aluminium",
+"name": "Aluminum",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_aluminium_alpha.png"
+},
+{
+"h": 3872751448,
+"raw": "copper",
+"name": "Copper",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_copper_alpha.png"
+},
+{
+"h": 3318379628,
+"raw": "gold",
+"name": "Gold",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_uranium_alpha.png"
+},
+{
+"h": 2274639921,
+"raw": "lead",
+"name": "Lead",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_lead_alpha.png"
+},
+{
+"h": 3614741105,
+"raw": "phosphorus",
+"name": "Phosphorus",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_phosphorus_alpha.png"
+},
+{
+"h": 1109172895,
+"raw": "titanium",
+"name": "Titanium",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_titanium_alpha.png"
+},
+{
+"h": 337809462,
+"raw": "tungsten",
+"name": "Tungsten",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_tungsten_alpha.png"
+},
+{
+"h": 2448539180,
+"raw": "uranium",
+"name": "Uranium",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_uranium_alpha.png"
+},
+{
+"h": 1860449287,
+"raw": "wood",
+"name": "Wood",
+"g": "materials",
+"sub": "Raw materials",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_wood_alpha.png"
+},
+{
+"h": 3880045629,
+"raw": "refined_aluminium_alloy",
+"name": "Refined Aluminum Alloy",
+"g": "materials",
+"sub": "Alloys",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_refined_aluminium_alloy_alpha.png"
+},
+{
+"h": 2448182319,
+"raw": "refined_tungsten_alloy",
+"name": "Refined Tungsten Alloy",
+"g": "materials",
+"sub": "Alloys",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_refined_tungsten_alloy_alpha.png"
+},
+{
+"h": 2611176358,
+"raw": "refined_uranium_alloy",
+"name": "Refined Uranium Alloy",
+"g": "materials",
+"sub": "Alloys",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_refined_uranium_alloy_alpha.png"
+},
+{
+"h": 645449321,
+"raw": "steel",
+"name": "Steel",
+"g": "materials",
+"sub": "Alloys",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_steel_alpha.png"
+},
+{
+"h": 4164821587,
+"raw": "accelerant",
+"name": "Accelerant",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_accelerant_alpha.png"
+},
+{
+"h": 1177317592,
+"raw": "adhesive",
+"name": "Adhesive",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 25,
+"icon": "assets/stock/crafting_matieral_adhesive_alpha.png"
+},
+{
+"h": 1685088323,
+"raw": "concrete",
+"name": "Cement",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_concrete_alpha.png"
+},
+{
+"h": 3891833739,
+"raw": "electrolyte",
+"name": "Electrolyte",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_electrolyte_alpha.png"
+},
+{
+"h": 1802529588,
+"raw": "ethanol",
+"name": "Ethanol",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_ethanol_alpha.png"
+},
+{
+"h": 1487466185,
+"raw": "explosive",
+"name": "Explosive",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_explosive_alpha.png"
+},
+{
+"h": 3912833085,
+"raw": "plastic",
+"name": "Plastic",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_plastic_alpha.png"
+},
+{
+"h": 3911189399,
+"raw": "rubber",
+"name": "Rubber",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_rubber_alpha.png"
+},
+{
+"h": 4189902513,
+"raw": "cloth",
+"name": "Textile",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_cloth_alpha.png"
+},
+{
+"h": 1065120515,
+"raw": "thread",
+"name": "Thread",
+"g": "materials",
+"sub": "Fabricated",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_matieral_thread_alpha.png"
+},
+{
+"h": 3591195965,
+"raw": "capacitors",
+"name": "Ultracapacitors",
+"g": "materials",
+"sub": "Components",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_capacitors_alpha.png"
+},
+{
+"h": 2700507435,
+"raw": "weapon_parts",
+"name": "Weapon Parts",
+"g": "materials",
+"sub": "Components",
+"add": 1,
+"stack": 20,
+"icon": "assets/stock/crafting_material_weapon_parts_alpha.png"
+}
+]
+}

@@ -1,0 +1,44 @@
+/* ammo & attachments pages (sections/ammo.py) */
+.acard { background: var(--panel); border-left: 4px solid var(--bar); padding: 12px 16px 6px; margin: 14px 0; scroll-margin-top: 110px; }
+.acard .ahead { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
+.acard .aicon { width: 96px; height: 64px; object-fit: contain; flex: none; background: radial-gradient(ellipse at center, rgba(255,255,255,.08), transparent 70%); }
+.acard h3 { margin: 0 0 4px; scroll-margin-top: 110px; }
+.acard .abody { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 4px 20px; align-items: start; }
+.acard .abody dl.kv { margin-top: 0; background: rgba(0,0,0,.3); }
+.acard h4 { margin-top: 10px; }
+.acard .tablewrap { background: rgba(0,0,0,.25); }
+.gametext { margin: 8px 0 12px; padding: 8px 12px; border-left: 3px solid var(--gold); background: rgba(214,199,118,.07); color: var(--ink2); font-size: 14px; }
+.gametext b { display: block; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); }
+.mult { font-variant-numeric: tabular-nums; font-weight: 600; }
+.mult.mup { color: #7fd38d; } .mult.mdown { color: #ef8a7a; }
+.xq { font-size: 10px; font-weight: 700; color: var(--q6); border: 1px solid var(--q6); padding: 0 4px; margin-left: 3px; vertical-align: 1px; }
+table.matrix td { vertical-align: top; line-height: 1.7; }
+img.cur { height: 18px; width: 18px; vertical-align: -4px; }
+.attgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 0 14px; }
+.attgrid .acard { margin: 10px 0; display: flex; flex-direction: column; }
+.acard.att dl.kv { background: rgba(0,0,0,.3); }
+.acard .ids { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; margin: 0 0 10px; font-size: 13px; }
+.acard .ids > .dim { width: 100%; text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
+.idq { white-space: nowrap; }
+.qb.q0 { color: var(--ink2); }
+@media (max-width: 860px) {
+  .acard .abody { grid-template-columns: minmax(0, 1fr); }
+  .attgrid { grid-template-columns: minmax(0, 1fr); }
+  .acard .aicon { width: 72px; height: 52px; }
+}
+.ammotable td:first-child { white-space: nowrap; }
+.ammotable td:nth-child(8) { min-width: 150px; }
+.agrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 0 14px; }
+.agrid .acard { margin: 10px 0; }
+.acard dl.kv { background: rgba(0,0,0,.3); }
+@media (max-width: 860px) { .agrid { grid-template-columns: minmax(0, 1fr); } }
+.nw { white-space: nowrap; }
+.dmgtable td:first-child { white-space: nowrap; }
+.acard .ahead code { display: block; margin-top: 3px; font-size: 12px; }
+.acard .facts dl.kv { grid-template-columns: max-content 1fr max-content 1fr; gap: 3px 14px; font-size: 13.5px; padding: 8px 12px; margin: 8px 0; }
+.acard .facts dl.kv dt { font-size: 12.5px; }
+.acard .alines { margin: 6px 0 10px; line-height: 1.6; }
+.acard .alines b { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-right: 6px; }
+@media (max-width: 520px) { .acard .facts dl.kv { grid-template-columns: max-content 1fr; } }
+code.tiny { font-size: 11px; color: var(--dim); }
+.ammotable th { white-space: normal; vertical-align: bottom; }

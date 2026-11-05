@@ -1,0 +1,31 @@
+/* Modding section: code blocks, key caps, numbered steps, ID cells and the console feature panels. */
+pre.mcode { background: rgba(0,0,0,.55); border-left: 3px solid var(--bar); padding: 10px 14px; margin: 8px 0 14px;
+            overflow-x: auto; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+pre.mcode code { color: #e9e4c4; word-break: break-word; }
+kbd { display: inline-block; font: 600 12px/18px var(--font); padding: 0 6px; min-width: 20px; text-align: center;
+      color: #000; background: #ececea; border-bottom: 2px solid #9aa3ab; white-space: nowrap; }
+ol.msteps { counter-reset: st; list-style: none; padding-left: 0; margin: 8px 0 14px; }
+ol.msteps > li { counter-increment: st; position: relative; padding: 6px 0 6px 40px; margin: 0; }
+ol.msteps > li::before { content: counter(st); position: absolute; left: 0; top: 6px; width: 26px; height: 26px;
+      display: grid; place-items: center; background: var(--bar); color: #fff; font-weight: 700; font-size: 13px;
+      filter: brightness(1.3); }
+ol.msteps pre.mcode { margin-top: 6px; }
+code.idc { user-select: all; cursor: copy; color: var(--gold); white-space: nowrap; }
+td .mfits { display: inline-block; min-width: 220px; }
+.mfits { font-size: 13px; }
+img.mic { height: 34px; width: 48px; max-width: none; object-fit: contain; vertical-align: middle; }
+table.mkeys td:first-child { white-space: nowrap; width: 1%; }
+.panel.mtab h3 { margin-top: 0; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+.panel.mtab h4 { margin-top: 12px; }
+.panel.mtab ul { margin: 4px 0; font-size: 14px; }
+dl.kv dd code { font-size: .85em; }
+#mkinds code, #mprops code, table.mids code { word-break: normal; white-space: nowrap; }
+details.mdet { margin: 10px 0 16px; }
+details.mdet > summary { cursor: pointer; display: inline-block; border: 1px solid rgba(255,255,255,.5);
+      background: rgba(0,0,0,.35); padding: 6px 14px; font-size: 12.5px; text-transform: uppercase;
+      letter-spacing: .06em; list-style: none; }
+details.mdet > summary::-webkit-details-marker { display: none; }
+details.mdet[open] > summary { background: #fff; color: #000; }
+table.wt td:first-child > code:only-child { white-space: nowrap; word-break: normal; }
+ul.mnotes li { overflow-wrap: anywhere; }
+#mwids td .tag { white-space: normal; max-width: 150px; display: inline-block; line-height: 1.3; }

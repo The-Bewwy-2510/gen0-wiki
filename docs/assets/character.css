@@ -1,0 +1,104 @@
+/* Character section: skill trees, skill cards, apparel cards, vanity tiles, pack lists. */
+
+/* ---------- skill trees at a glance: four trees, each 2 columns x 6 rows like the game's menu ---------- */
+.sktrees { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin: 12px 0 18px; }
+.sktree { background: var(--panel); border-top: 3px solid var(--bar); padding: 0 10px 12px; min-width: 0; }
+.sktree h3 { display: flex; justify-content: space-between; align-items: baseline; margin: 10px 2px 10px; }
+.sktree h3 a { color: #fff; }
+.sktree h3 small { font-size: 11.5px; font-weight: 400; color: var(--dim); letter-spacing: .04em; text-transform: none; }
+.skgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 10px; }
+.sknode { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center;
+          color: var(--ink2); font-size: 11.5px; line-height: 1.25; padding: 4px 2px; }
+.sknode:hover { text-decoration: none; color: #fff; background: rgba(255,255,255,.06); }
+.sknode img.skico { width: 44px; height: 44px; }
+.sknode.spec img.skico { outline: 2px solid var(--q5); outline-offset: 2px; }
+.sknode .skn { min-height: 2.5em; }
+.sknode .skr { position: absolute; top: 2px; left: calc(50% + 26px); font-size: 11px; font-weight: 700; color: var(--gold); }
+.sknode.linked::before { content: ""; position: absolute; top: -14px; left: 50%; width: 2px; height: 16px;
+                         background: rgba(255,255,255,.35); }
+
+/* ---------- skill cards per tree ---------- */
+.skcols { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0 18px; margin-top: 12px; }
+.skcol { display: flex; flex-direction: column; min-width: 0; }
+.skc { background: var(--card); border-left: 4px solid var(--bar); scroll-margin-top: 110px; }
+.skc.spec { border-left-color: var(--q5); }
+.skc:target { outline: 2px solid var(--q5); }
+/* the header sits on the skill's art image, darkened towards the left so the name stays readable */
+.skhd { position: relative; overflow: hidden; display: flex; align-items: flex-end; gap: 10px; padding: 10px 12px; min-height: 96px; background: rgba(255,255,255,.05); }
+.skhd img.skart { position: absolute; inset: 0; width: 100%; height: 100%; max-width: none; object-fit: cover; z-index: 0; }
+.skhd::before { content: ""; position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg, rgba(5,7,10,.92) 0%, rgba(5,7,10,.65) 45%, rgba(5,7,10,.15) 100%); }
+.skhd > *:not(.skart) { position: relative; z-index: 2; }
+.skhd img.skico { width: 44px; height: 44px; flex: none; }
+.skhd > div { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.skhd b { font-size: 15.5px; text-transform: uppercase; letter-spacing: .02em; }
+.skmax { flex: none; font-size: 22px; font-weight: 700; color: var(--gold); line-height: 1; text-align: center; background: rgba(0,0,0,.6); padding: 5px 8px; }
+.skmax small { display: block; font-size: 9.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); font-weight: 600; }
+.skbody { padding: 8px 12px 10px; font-size: 14px; }
+.skbody p { margin: 6px 0; }
+ol.sklv { list-style: none; padding: 0; margin: 6px 0; display: grid; gap: 2px; }
+ol.sklv li { background: rgba(255,255,255,.04); padding: 3px 8px; margin: 0; }
+ol.sklv li b { color: var(--gold); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; margin-right: 8px; }
+dl.skrel { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 8px 0 4px; font-size: 13.5px; }
+dl.skrel dt { color: var(--dim); } dl.skrel dd { margin: 0; }
+.skid { font-size: 12px; color: var(--dim); margin-top: 6px; }
+.skarrow { height: 18px; position: relative; }
+.skarrow::before { content: ""; position: absolute; left: 34px; top: 0; bottom: 5px; width: 2px; background: rgba(255,255,255,.35); }
+.skarrow::after { content: ""; position: absolute; left: 30px; bottom: 0; border: 5px solid transparent; border-top-color: rgba(255,255,255,.5); border-bottom: 0; }
+table.sktab td { font-size: 13px; }
+table.sktab td:nth-child(6) { min-width: 180px; }
+table.spect td:last-child { min-width: 260px; }
+
+/* ---------- filter bar groups ---------- */
+.filterbar .fgrp { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; width: 100%; }
+.filterbar .flbl { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); min-width: 44px; }
+.filterbar .chip .dim { font-size: 11px; margin-left: 2px; }
+.filterbar .chip.on .dim { color: #555; }
+
+/* ---------- apparel cards ---------- */
+.apgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 8px; margin: 12px 0 18px; }
+.apc { background: var(--card); padding: 10px 12px; min-width: 0; border-left: 3px solid #3d4a50; scroll-margin-top: 110px; }
+.apc:target { outline: 2px solid var(--q5); }
+.aphd { display: flex; gap: 10px; align-items: flex-start; }
+.aphd > div { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.aphd b { font-size: 14.5px; }
+img.vi { width: 56px; height: 56px; object-fit: contain; flex: none; }
+.vglyph { width: 56px; height: 56px; flex: none; background: rgba(255,255,255,.05); }
+.aptags { display: flex; flex-wrap: wrap; gap: 2px; margin-top: 2px; }
+a.ptag:hover { text-decoration: none; filter: brightness(1.25); }
+.apvars { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.apv { font-size: 12px; background: rgba(255,255,255,.06); padding: 1px 7px; color: var(--ink2); scroll-margin-top: 110px; }
+.apv:target { background: var(--q5); color: #000; }
+.apraw { margin-top: 6px; font-size: 12px; }
+table.aptab td code { font-size: 11.5px; }
+
+/* ---------- vanity tiles (emotes, vehicles) ---------- */
+.vgrid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.vtile { scroll-margin-top: 110px; }
+.vtile:target { outline: 2px solid var(--q5); }
+.vtile > span { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
+.vtile code { font-size: 10.5px; word-break: break-all; }
+.vtile img.vi { width: 72px; height: 72px; }
+
+/* ---------- pack contents ---------- */
+dl.pklist { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; background: var(--panel); padding: 10px 14px; margin: 6px 0 12px; font-size: 13.5px; }
+dl.pklist dt { color: var(--dim); white-space: nowrap; } dl.pklist dd { margin: 0; color: var(--ink2); }
+
+@media (max-width: 600px) {
+  .sktrees { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sktree { padding: 0 4px 10px; }
+  .skgrid { gap: 10px 2px; }
+  .sknode { font-size: 10.5px; }
+  .sknode img.skico { width: 36px; height: 36px; }
+  .sknode .skr { left: calc(50% + 20px); }
+  .skcols { grid-template-columns: minmax(0, 1fr); }
+  .apgrid { grid-template-columns: minmax(0, 1fr); }
+  .vgrid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  dl.pklist { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  dl.pklist dd { margin-bottom: 6px; }
+  .filterbar input { min-width: 0; width: 100%; }
+}
+table.spect td:first-child, table.sktab td:first-child { white-space: nowrap; }
+table.sktab td code { white-space: nowrap; word-break: normal; }
+table.pktab td code { white-space: nowrap; word-break: normal; }
+table.pktab td:first-child { min-width: 240px; }
+.sep { color: var(--faint); margin: 0 2px; }

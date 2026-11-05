@@ -1,0 +1,3299 @@
+{
+  "_about": {
+    "description": "Generation Zero machines by faction > class > type > layout, with colloquial and internal names for each machine and its weapons.",
+    "source": "Read from the game's own entity files (editor/entities/characters/machines/<type>/<layout>.ee) and the English text table, using the DECA-Dec-26 extractor.",
+    "fields": {
+      "colloquial_name": "Readable name (based on the in-game component label where there is one).",
+      "internal_name": "The game's own identifier: weapon/ammo entity name, attack file name, or layout entity name.",
+      "in_game_component_name": "The label the game shows when you tag that component.",
+      "kind": "ranged, melee, explosive, ability, support, support drop, bombs or defensive.",
+      "slot": "Weapon slot in the layout file."
+    },
+    "left_out": "Companion Runner, control/test entities, friendly/event copies, eggs and corpses."
+  },
+  "Swedish": {
+    "Prototype": {
+      "internal_name": "classa",
+      "types": {
+        "Tank": {
+          "internal_name": "dreadnought",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "drea_classa_load01",
+              "machine": {
+                "colloquial_name": "Tank (Prototype)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Prototype Class",
+                "in_game_name_text_key": "machine_drea_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_dread_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_missiles",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "drea_classa_load02",
+              "machine": {
+                "colloquial_name": "Tank (Prototype)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Prototype Class",
+                "in_game_name_text_key": "machine_drea_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Linear Accelerator Cannon",
+                  "internal_name": "machine_weapon_dread_sniper_01",
+                  "in_game_component_name": "LINEAR ACCELERATOR CANNON",
+                  "component_text_key": "machine_weapon_dreadnought_sniper_name",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_sniper",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "drea_classa_load03",
+              "machine": {
+                "colloquial_name": "Tank (Prototype)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Prototype Class",
+                "in_game_name_text_key": "machine_drea_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_dread_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_missiles",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Linear Accelerator Cannon",
+                  "internal_name": "machine_weapon_dread_sniper_01",
+                  "in_game_component_name": "LINEAR ACCELERATOR CANNON",
+                  "component_text_key": "machine_weapon_dreadnought_sniper_name",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_sniper",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Harvester": {
+          "internal_name": "harvester",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "harv_classa_load01",
+              "machine": {
+                "colloquial_name": "Harvester (Prototype)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - Prototype",
+                "in_game_name_text_key": "machine_harv_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_harv_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "harv_classa_load02",
+              "machine": {
+                "colloquial_name": "Harvester (Prototype)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - Prototype",
+                "in_game_name_text_key": "machine_harv_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Hunter": {
+          "internal_name": "hunter",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "hunt_classa_load01",
+              "machine": {
+                "colloquial_name": "Hunter (Prototype)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Prototype Class",
+                "in_game_name_text_key": "machine_hunt_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "hunt_classa_load02",
+              "machine": {
+                "colloquial_name": "Hunter (Prototype)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Prototype Class",
+                "in_game_name_text_key": "machine_hunt_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Grenade Launcher",
+                  "internal_name": "machine_weapon_hunt_grenadelauncher_01",
+                  "in_game_component_name": "GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_grenade",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_grenadelauncher",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Tick": {
+          "internal_name": "pest",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "pest_classa_load01",
+              "machine": {
+                "colloquial_name": "Tick (Prototype)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Prototype Class",
+                "in_game_name_text_key": "machine_pest_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [],
+              "note": "No attack is defined in this layout file; it uses the shared Tick behaviour."
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "pest_classa_load02",
+              "machine": {
+                "colloquial_name": "Tick (Prototype)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Prototype Class",
+                "in_game_name_text_key": "machine_pest_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Melee Bite",
+                  "internal_name": "pest_melee_hit_classa",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Seeker": {
+          "internal_name": "scout",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "scou_classa_load01",
+              "machine": {
+                "colloquial_name": "Seeker (Prototype)",
+                "internal_name": "scout",
+                "in_game_name": "SEEKER - Prototype Class",
+                "in_game_name_text_key": "machine_scout_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [],
+              "note": "Seekers carry no weapons. The layout file has an empty weapon slot."
+            }
+          }
+        },
+        "Runner": {
+          "internal_name": "skirmisher",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "skir_classa_load01",
+              "machine": {
+                "colloquial_name": "Runner (Prototype)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - Prototype Class",
+                "in_game_name_text_key": "machine_skir_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Submachine Gun",
+                  "internal_name": "machine_weapon_skirm_smg_01",
+                  "in_game_component_name": "SUBMACHINE GUN",
+                  "component_text_key": "organ_weapon_smg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_smg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Military": {
+      "internal_name": "classb",
+      "types": {
+        "Tank": {
+          "internal_name": "dreadnought",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "drea_classb_load01",
+              "machine": {
+                "colloquial_name": "Tank (Military)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Military Class",
+                "in_game_name_text_key": "machine_drea_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Mortar",
+                  "internal_name": "machine_weapon_dread_mortar_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_mortars",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 1 (green variant)": {
+              "colloquial_name": "Layout 1 (green variant)",
+              "internal_name": "drea_classb_load01_green",
+              "machine": {
+                "colloquial_name": "Tank (Military)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Military Class",
+                "in_game_name_text_key": "machine_drea_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Mortar",
+                  "internal_name": "machine_weapon_dread_mortar_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_mortars",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "drea_classb_load02",
+              "machine": {
+                "colloquial_name": "Tank (Military)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Military Class",
+                "in_game_name_text_key": "machine_drea_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Mortar",
+                  "internal_name": "machine_weapon_dread_mortar_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_mortars",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_dread_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2 (green variant)": {
+              "colloquial_name": "Layout 2 (green variant)",
+              "internal_name": "drea_classb_load02_green",
+              "machine": {
+                "colloquial_name": "Tank (Military)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Military Class",
+                "in_game_name_text_key": "machine_drea_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Mortar",
+                  "internal_name": "machine_weapon_dread_mortar_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_mortars",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_dread_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_dread_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "drea_classb_load03",
+              "machine": {
+                "colloquial_name": "Tank (Military)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Military Class",
+                "in_game_name_text_key": "machine_drea_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Linear Accelerator Cannon",
+                  "internal_name": "machine_weapon_dread_sniper_01",
+                  "in_game_component_name": "LINEAR ACCELERATOR CANNON",
+                  "component_text_key": "machine_weapon_dreadnought_sniper_name",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_sniper",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3 (green variant)": {
+              "colloquial_name": "Layout 3 (green variant)",
+              "internal_name": "drea_classb_load03_green",
+              "machine": {
+                "colloquial_name": "Tank (Military)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Military Class",
+                "in_game_name_text_key": "machine_drea_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Linear Accelerator Cannon",
+                  "internal_name": "machine_weapon_dread_sniper_01",
+                  "in_game_component_name": "LINEAR ACCELERATOR CANNON",
+                  "component_text_key": "machine_weapon_dreadnought_sniper_name",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_sniper",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Harvester": {
+          "internal_name": "harvester",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "harv_classb_load01",
+              "machine": {
+                "colloquial_name": "Harvester (Military)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - Military Class",
+                "in_game_name_text_key": "machine_harv_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "harv_classb_load02",
+              "machine": {
+                "colloquial_name": "Harvester (Military)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - Military Class",
+                "in_game_name_text_key": "machine_harv_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_harv_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Hunter": {
+          "internal_name": "hunter",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "hunt_classb_load01",
+              "machine": {
+                "colloquial_name": "Hunter (Military)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Military Class",
+                "in_game_name_text_key": "machine_hunt_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Grenade Launcher",
+                  "internal_name": "machine_weapon_hunt_grenadelauncher_01",
+                  "in_game_component_name": "GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_grenade",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_grenadelauncher",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 1 (green variant)": {
+              "colloquial_name": "Layout 1 (green variant)",
+              "internal_name": "hunt_classb_load01_green",
+              "machine": {
+                "colloquial_name": "Hunter (Military)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Military Class",
+                "in_game_name_text_key": "machine_hunt_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Grenade Launcher",
+                  "internal_name": "machine_weapon_hunt_grenadelauncher_01",
+                  "in_game_component_name": "GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_grenade",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_grenadelauncher",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "hunt_classb_load02",
+              "machine": {
+                "colloquial_name": "Hunter (Military)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Military Class",
+                "in_game_name_text_key": "machine_hunt_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Concussion Rifle",
+                  "internal_name": "machine_weapon_hunt_sniper_01",
+                  "in_game_component_name": "CONCUSSION RIFLE",
+                  "component_text_key": "organ_weapon_sniper",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_sniper",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2 (green variant)": {
+              "colloquial_name": "Layout 2 (green variant)",
+              "internal_name": "hunt_classb_load02_green",
+              "machine": {
+                "colloquial_name": "Hunter (Military)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Military Class",
+                "in_game_name_text_key": "machine_hunt_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Concussion Rifle",
+                  "internal_name": "machine_weapon_hunt_sniper_01",
+                  "in_game_component_name": "CONCUSSION RIFLE",
+                  "component_text_key": "organ_weapon_sniper",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_sniper",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Tick": {
+          "internal_name": "pest",
+          "layouts": {
+            "Layout 1 (green variant)": {
+              "colloquial_name": "Layout 1 (green variant)",
+              "internal_name": "pest_classb_green",
+              "machine": {
+                "colloquial_name": "Tick (Military)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Military Class",
+                "in_game_name_text_key": "machine_pest_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [],
+              "note": "No attack is defined in this layout file; it uses the shared Tick behaviour."
+            },
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "pest_classb_load01",
+              "machine": {
+                "colloquial_name": "Tick (Military)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Military Class",
+                "in_game_name_text_key": "machine_pest_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [],
+              "note": "No attack is defined in this layout file; it uses the shared Tick behaviour."
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "pest_classb_load02",
+              "machine": {
+                "colloquial_name": "Tick (Military)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Military Class",
+                "in_game_name_text_key": "machine_pest_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Melee Bite",
+                  "internal_name": "pest_melee_hit_classb",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Seeker": {
+          "internal_name": "scout",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "scou_classb_load01",
+              "machine": {
+                "colloquial_name": "Seeker (Military)",
+                "internal_name": "scout",
+                "in_game_name": "SEEKER - Military Class",
+                "in_game_name_text_key": "machine_scout_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [],
+              "note": "Seekers carry no weapons. The layout file has an empty weapon slot."
+            },
+            "Layout 1 (green variant)": {
+              "colloquial_name": "Layout 1 (green variant)",
+              "internal_name": "scou_classb_load01_green",
+              "machine": {
+                "colloquial_name": "Seeker (Military)",
+                "internal_name": "scout",
+                "in_game_name": "SEEKER - Military Class",
+                "in_game_name_text_key": "machine_scout_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [],
+              "note": "Seekers carry no weapons. The layout file has an empty weapon slot."
+            }
+          }
+        },
+        "Runner": {
+          "internal_name": "skirmisher",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "skir_classb_load01",
+              "machine": {
+                "colloquial_name": "Runner (Military)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - Military Class",
+                "in_game_name_text_key": "machine_skir_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Submachine Gun",
+                  "internal_name": "machine_weapon_skirm_smg_01",
+                  "in_game_component_name": "SUBMACHINE GUN",
+                  "component_text_key": "organ_weapon_smg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_smg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 1 (green variant)": {
+              "colloquial_name": "Layout 1 (green variant)",
+              "internal_name": "skir_classb_load01_green",
+              "machine": {
+                "colloquial_name": "Runner (Military)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - Military Class",
+                "in_game_name_text_key": "machine_skir_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Submachine Gun",
+                  "internal_name": "machine_weapon_skirm_smg_01",
+                  "in_game_component_name": "SUBMACHINE GUN",
+                  "component_text_key": "organ_weapon_smg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_smg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "skir_classb_load02",
+              "machine": {
+                "colloquial_name": "Runner (Military)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - Military Class",
+                "in_game_name_text_key": "machine_skir_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Auto Shotgun",
+                  "internal_name": "machine_weapon_skirm_shotgun_01",
+                  "in_game_component_name": "AUTO SHOTGUN",
+                  "component_text_key": "organ_weapon_autoshotgun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_shotgun",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2 (green variant)": {
+              "colloquial_name": "Layout 2 (green variant)",
+              "internal_name": "skir_classb_load02_green",
+              "machine": {
+                "colloquial_name": "Runner (Military)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - Military Class",
+                "in_game_name_text_key": "machine_skir_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Auto Shotgun",
+                  "internal_name": "machine_weapon_skirm_shotgun_01",
+                  "in_game_component_name": "AUTO SHOTGUN",
+                  "component_text_key": "organ_weapon_autoshotgun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_shotgun",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FNIX": {
+      "internal_name": "classc",
+      "types": {
+        "Tank": {
+          "internal_name": "dreadnought",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "drea_classc_load01",
+              "machine": {
+                "colloquial_name": "Tank (FNIX)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - FNIX Class",
+                "in_game_name_text_key": "machine_drea_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_dread_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_missiles",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "drea_classc_load02",
+              "machine": {
+                "colloquial_name": "Tank (FNIX)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - FNIX Class",
+                "in_game_name_text_key": "machine_drea_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Mortar",
+                  "internal_name": "machine_weapon_dread_mortar_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_mortars",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "drea_classc_load03",
+              "machine": {
+                "colloquial_name": "Tank (FNIX)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - FNIX Class",
+                "in_game_name_text_key": "machine_drea_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_dread_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_missiles",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Linear Accelerator Cannon",
+                  "internal_name": "machine_weapon_dread_sniper_01",
+                  "in_game_component_name": "LINEAR ACCELERATOR CANNON",
+                  "component_text_key": "machine_weapon_dreadnought_sniper_name",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_sniper",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Harvester": {
+          "internal_name": "harvester",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "harv_classc_load01",
+              "machine": {
+                "colloquial_name": "Harvester (FNIX)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - FNIX Class",
+                "in_game_name_text_key": "machine_harv_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "harv_classc_load02",
+              "machine": {
+                "colloquial_name": "Harvester (FNIX)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - FNIX Class",
+                "in_game_name_text_key": "machine_harv_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_harv_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "harv_classc_load03",
+              "machine": {
+                "colloquial_name": "Harvester (FNIX)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - FNIX Class",
+                "in_game_name_text_key": "machine_harv_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_harv_rockets_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Concussion Actuator",
+                  "internal_name": "machine_weapon_harv_concussion_attack",
+                  "in_game_component_name": "CONCUSSION ACTUATOR",
+                  "component_text_key": "organ_weapon_concussion",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Hunter": {
+          "internal_name": "hunter",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "hunt_classc_load01",
+              "machine": {
+                "colloquial_name": "Hunter (FNIX)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - FNIX Class",
+                "in_game_name_text_key": "machine_hunt_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Flechette Gun",
+                  "internal_name": "machine_weapon_hunt_shotgun_01",
+                  "in_game_component_name": "FLECHETTE GUN",
+                  "component_text_key": "organ_weapon_flechette_shotgun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_shotgun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "hunt_classc_load02",
+              "machine": {
+                "colloquial_name": "Hunter (FNIX)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - FNIX Class",
+                "in_game_name_text_key": "machine_hunt_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Flechette Gun",
+                  "internal_name": "machine_weapon_hunt_shotgun_01",
+                  "in_game_component_name": "FLECHETTE GUN",
+                  "component_text_key": "organ_weapon_flechette_shotgun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_shotgun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Concussion Rifle",
+                  "internal_name": "machine_weapon_hunt_sniper_01",
+                  "in_game_component_name": "CONCUSSION RIFLE",
+                  "component_text_key": "organ_weapon_sniper",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_sniper",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_melee_jump_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Tick": {
+          "internal_name": "pest",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "pest_classc_load01",
+              "machine": {
+                "colloquial_name": "Tick (FNIX)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - FNIX Class",
+                "in_game_name_text_key": "machine_pest_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Self-Destruct Explosion",
+                  "internal_name": "pest_explosion",
+                  "kind": "explosive"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "pest_classc_load02",
+              "machine": {
+                "colloquial_name": "Tick (FNIX)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - FNIX Class",
+                "in_game_name_text_key": "machine_pest_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Self-Destruct Explosion",
+                  "internal_name": "pest_explosion",
+                  "kind": "explosive"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "pest_classc_load03",
+              "machine": {
+                "colloquial_name": "Tick (FNIX)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - FNIX Class",
+                "in_game_name_text_key": "machine_pest_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [],
+              "note": "No attack is defined in this layout file; it uses the shared Tick behaviour."
+            }
+          }
+        },
+        "Seeker": {
+          "internal_name": "scout",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "scou_classc_load01",
+              "machine": {
+                "colloquial_name": "Seeker (FNIX)",
+                "internal_name": "scout",
+                "in_game_name": "SEEKER - FNIX Class",
+                "in_game_name_text_key": "machine_scout_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [],
+              "note": "Seekers carry no weapons. The layout file has an empty weapon slot."
+            }
+          }
+        },
+        "Runner": {
+          "internal_name": "skirmisher",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "skir_classc_load01",
+              "machine": {
+                "colloquial_name": "Runner (FNIX)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - FNIX Class",
+                "in_game_name_text_key": "machine_skir_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Submachine Gun",
+                  "internal_name": "machine_weapon_skirm_smg_01",
+                  "in_game_component_name": "SUBMACHINE GUN",
+                  "component_text_key": "organ_weapon_smg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_smg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "skir_classc_load02",
+              "machine": {
+                "colloquial_name": "Runner (FNIX)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - FNIX Class",
+                "in_game_name_text_key": "machine_skir_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Auto Shotgun",
+                  "internal_name": "machine_weapon_skirm_shotgun_01",
+                  "in_game_component_name": "AUTO SHOTGUN",
+                  "component_text_key": "organ_weapon_autoshotgun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_shotgun",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "skir_classc_load03",
+              "machine": {
+                "colloquial_name": "Runner (FNIX)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - FNIX Class",
+                "in_game_name_text_key": "machine_skir_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "HEDP Launcher",
+                  "internal_name": "machine_weapon_skirm_launcher_01",
+                  "in_game_component_name": "HEDP LAUNCHER",
+                  "component_text_key": "organ_weapon_hedp",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_launcher",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Apocalypse": {
+      "internal_name": "classd",
+      "types": {
+        "Tank": {
+          "internal_name": "dreadnought",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "drea_classd_load01",
+              "machine": {
+                "colloquial_name": "Tank (Apocalypse)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Apocalypse Class",
+                "in_game_name_text_key": "machine_drea_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_dread_cannon_01",
+                  "in_game_component_name": "AUTOCANNON",
+                  "component_text_key": "organ_weapon_autocannon",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cannon",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Wall of Flame",
+                  "internal_name": "machine_weapon_dread_wall_of_flame",
+                  "in_game_component_name": "WALL OF FLAME",
+                  "component_text_key": "organ_weapon_wall_of_flame",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "drea_classd_load02",
+              "machine": {
+                "colloquial_name": "Tank (Apocalypse)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Apocalypse Class",
+                "in_game_name_text_key": "machine_drea_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Cluster Mine Launcher",
+                  "internal_name": "machine_weapon_dread_cluster_mine_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cluster_mine",
+                  "slot": "WeaponSlot0",
+                  "note": "In-game the component is labelled Mortar; the weapon fires cluster mines."
+                },
+                {
+                  "colloquial_name": "Cluster Mine Launcher",
+                  "internal_name": "machine_weapon_dread_cluster_mine_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cluster_mine",
+                  "slot": "WeaponSlot1",
+                  "note": "In-game the component is labelled Mortar; the weapon fires cluster mines."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "drea_classd_load03",
+              "machine": {
+                "colloquial_name": "Tank (Apocalypse)",
+                "internal_name": "dreadnought",
+                "in_game_name": "TANK - Apocalypse Class",
+                "in_game_name_text_key": "machine_drea_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Cluster Mine Launcher",
+                  "internal_name": "machine_weapon_dread_cluster_mine_01",
+                  "in_game_component_name": "MORTAR",
+                  "component_text_key": "organ_weapon_mortar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_cluster_mine",
+                  "slot": "WeaponSlot0",
+                  "note": "In-game the component is labelled Mortar; the weapon fires cluster mines."
+                },
+                {
+                  "colloquial_name": "Incendiary Machine Gun",
+                  "internal_name": "machine_weapon_dread_img_01",
+                  "in_game_component_name": "INCENDIARY MACHINE GUN",
+                  "component_text_key": "organ_weapon_incendiary_machine_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_img",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Wall of Flame",
+                  "internal_name": "machine_weapon_dread_wall_of_flame",
+                  "in_game_component_name": "WALL OF FLAME",
+                  "component_text_key": "organ_weapon_wall_of_flame",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Melee Stomp",
+                  "internal_name": "machine_weapon_dread_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Harvester": {
+          "internal_name": "harvester",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "harv_classd_load01",
+              "machine": {
+                "colloquial_name": "Harvester (Apocalypse)",
+                "internal_name": "harvester",
+                "in_game_name": "HARVESTER - Apocalypse Class",
+                "in_game_name_text_key": "machine_harv_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod (Apocalypse)",
+                  "internal_name": "machine_weapon_harv_rockets_01_classd",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets_classd",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "damage_effect_internal_name": "machine_weapon_harv_biogas_dot",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_harv_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        },
+        "Hunter": {
+          "internal_name": "hunter",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "hunt_classd_load01",
+              "machine": {
+                "colloquial_name": "Hunter (Apocalypse)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Apocalypse Class",
+                "in_game_name_text_key": "machine_hunt_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Radiated Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_radiated_melee_jump_attack",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_hunt_radiated_blade_jump_dot"
+                },
+                {
+                  "colloquial_name": "Radiated Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_radiated_melee_attack",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_hunt_radiated_blade_dot"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "hunt_classd_load02",
+              "machine": {
+                "colloquial_name": "Hunter (Apocalypse)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Apocalypse Class",
+                "in_game_name_text_key": "machine_hunt_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Flamethrower",
+                  "internal_name": "machine_weapon_hunt_flamethrower_01",
+                  "in_game_component_name": "FLAME THROWER",
+                  "component_text_key": "organ_weapon_flame_thrower",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_flamethrower",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Cluster Grenade Launcher",
+                  "internal_name": "machine_weapon_hunt_cluster_grenadelauncher_01",
+                  "in_game_component_name": "GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_grenade",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_cluster_grenadelauncher",
+                  "slot": "WeaponSlot1",
+                  "note": "The component label differs from the weapon it fires; colloquial name follows the weapon."
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Radiated Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_radiated_melee_jump_attack",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_hunt_radiated_blade_jump_dot"
+                },
+                {
+                  "colloquial_name": "Radiated Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_radiated_melee_attack",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_hunt_radiated_blade_dot"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "hunt_classd_load03",
+              "machine": {
+                "colloquial_name": "Hunter (Apocalypse)",
+                "internal_name": "hunter",
+                "in_game_name": "HUNTER - Apocalypse Class",
+                "in_game_name_text_key": "machine_hunt_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Machine Gun",
+                  "internal_name": "machine_weapon_hunt_machinegun_01",
+                  "in_game_component_name": "MACHINE GUN",
+                  "component_text_key": "organ_weapon_mg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_hunt_machinegun",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Radiated Blade Jump Attack",
+                  "internal_name": "machine_weapon_hunt_radiated_melee_jump_attack",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_hunt_radiated_blade_jump_dot"
+                },
+                {
+                  "colloquial_name": "Radiated Blade Melee Attack",
+                  "internal_name": "machine_weapon_hunt_radiated_melee_attack",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_hunt_radiated_blade_dot"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_hunt_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Tick": {
+          "internal_name": "pest",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "pest_classd_load01",
+              "machine": {
+                "colloquial_name": "Tick (Apocalypse)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Apocalypse Class",
+                "in_game_name_text_key": "machine_pest_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [],
+              "note": "No attack is defined in this layout file; it uses the shared Tick behaviour."
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "pest_classd_load02",
+              "machine": {
+                "colloquial_name": "Tick (Apocalypse)",
+                "internal_name": "pest",
+                "in_game_name": "TICK - Apocalypse Class",
+                "in_game_name_text_key": "machine_pest_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Toxic Melee Bite",
+                  "internal_name": "pest_melee_hit_classd",
+                  "kind": "melee",
+                  "damage_effect_internal_name": "machine_weapon_pest_toxic_melee_dot"
+                }
+              ]
+            }
+          }
+        },
+        "Seeker": {
+          "internal_name": "scout",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "scou_classd_load01",
+              "machine": {
+                "colloquial_name": "Seeker (Apocalypse)",
+                "internal_name": "scout",
+                "in_game_name": "SEEKER - Apocalypse Class",
+                "in_game_name_text_key": "machine_scout_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [],
+              "note": "Seekers carry no weapons. The layout file has an empty weapon slot."
+            }
+          }
+        },
+        "Runner": {
+          "internal_name": "skirmisher",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "skir_classd_load01",
+              "machine": {
+                "colloquial_name": "Runner (Apocalypse)",
+                "internal_name": "skirmisher",
+                "in_game_name": "RUNNER - Apocalypse Class",
+                "in_game_name_text_key": "machine_skir_classd_name",
+                "internal_class": "classd"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Contaminated Submachine Gun",
+                  "internal_name": "machine_weapon_skirm_smg_contaminated_01",
+                  "in_game_component_name": "CONTAMINATED SUBMACHINE GUN",
+                  "component_text_key": "organ_weapon_contaminated_smg",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_skirm_smg_contaminated",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Melee Kick",
+                  "internal_name": "skirmisher_melee_attack",
+                  "kind": "melee"
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_skirm_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Rival": {
+      "internal_name": "classr1",
+      "types": {
+        "Tank": {
+          "internal_name": "dreadnought",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "drea_classr1_load01",
+              "machine": {
+                "colloquial_name": "Reaper",
+                "internal_name": "dreadnought",
+                "in_game_name": "REAPER",
+                "in_game_name_text_key": "machine_drea_classr1_name",
+                "internal_class": "classr1"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Radiated Missile Pod",
+                  "internal_name": "machine_weapon_dread_reaper_radiated_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_harv_rockets_classd",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Incendiary Machine Gun (Reaper)",
+                  "internal_name": "machine_weapon_dread_reaper_img_01",
+                  "in_game_component_name": "INCENDIARY MACHINE GUN",
+                  "component_text_key": "organ_weapon_incendiary_machine_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_dread_img",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Tick Storage",
+                  "internal_name": "support_weapon_pest",
+                  "in_game_component_name": "TICK STORAGE",
+                  "component_text_key": "organ_weapon_pest",
+                  "kind": "support",
+                  "note": "Releases Ticks."
+                },
+                {
+                  "colloquial_name": "Anti-Weapons Shield Emitter",
+                  "internal_name": "ReaperShield",
+                  "in_game_component_name": "ANTI-WEAPONS SHIELD EMITTER",
+                  "component_text_key": "organ_weapon_shield_emitter",
+                  "kind": "defensive"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "damage_effect_internal_name": "machine_weapon_harv_biogas_dot",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Stomp (Reaper)",
+                  "internal_name": "machine_weapon_reaper_melee_attack",
+                  "kind": "melee"
+                },
+                {
+                  "colloquial_name": "Thermobaric Explosion",
+                  "internal_name": "machine_weapon_dread_thermobaric_explosion",
+                  "kind": "ability"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Gnome": {
+      "internal_name": "classe1",
+      "types": {
+        "Tick": {
+          "internal_name": "pest",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "pest_classe1_load01",
+              "machine": {
+                "colloquial_name": "Gnome Tick",
+                "internal_name": "pest",
+                "internal_class": "classe1"
+              },
+              "weapons": [],
+              "note": "No attack is defined in this layout file; it uses the shared Tick behaviour."
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "pest_classe1_load02",
+              "machine": {
+                "colloquial_name": "Gnome Tick",
+                "internal_name": "pest",
+                "internal_class": "classe1"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Gnome Melee Hit",
+                  "internal_name": "pest_melee_hit_classe1_gnome",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Class X (unidentified)": {
+      "internal_name": "classx",
+      "types": {
+        "Tick": {
+          "internal_name": "pest",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "pest_classx_load01",
+              "machine": {
+                "colloquial_name": "Tick (class x)",
+                "internal_name": "pest",
+                "internal_class": "classx"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Self-Destruct Explosion",
+                  "internal_name": "pest_explosion",
+                  "kind": "explosive"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "Soviet": {
+    "Scout": {
+      "internal_name": "classa",
+      "types": {
+        "Firebird": {
+          "internal_name": "firebird",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "firebird_classa_load01",
+              "machine": {
+                "colloquial_name": "Firebird (Scout)",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD - Scout Class",
+                "in_game_name_text_key": "machine_firebird_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_firebird_ac",
+                  "in_game_component_name": "AUTOCANNON / EXPLOSIVE",
+                  "component_text_key": "organ_weapon_autocannon_explosive",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_ac_incendiary",
+                  "slot": "WeaponSlot0",
+                  "note": "The component label says explosive, but the ammo this layout loads is 'machine_ammo_firebird_ac_incendiary'."
+                },
+                {
+                  "colloquial_name": "Cluster Mine Bombs",
+                  "internal_name": "machine_ammo_firebird_bomb_cluster",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "bombs",
+                  "note": "Dropped from both bomb bays."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "firebird_classa_load02",
+              "machine": {
+                "colloquial_name": "Firebird (Scout)",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD - Scout Class",
+                "in_game_name_text_key": "machine_firebird_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_firebird_ac",
+                  "in_game_component_name": "AUTOCANNON / EXPLOSIVE",
+                  "component_text_key": "organ_weapon_autocannon_explosive",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_ac_incendiary",
+                  "slot": "WeaponSlot0",
+                  "note": "The component label says explosive, but the ammo this layout loads is 'machine_ammo_firebird_ac_incendiary'."
+                },
+                {
+                  "colloquial_name": "Incendiary Bombs",
+                  "internal_name": "machine_ammo_firebird_bomb_incendiary",
+                  "in_game_component_name": "BOMB BAY / INCENDIARY",
+                  "component_text_key": "organ_weapon_bombs_incendiary",
+                  "kind": "bombs",
+                  "note": "Dropped from both bomb bays."
+                }
+              ]
+            }
+          }
+        },
+        "Lynx": {
+          "internal_name": "lynx",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "lynx_classa_load01",
+              "machine": {
+                "colloquial_name": "Lynx (Scout)",
+                "internal_name": "lynx",
+                "in_game_name": "LYNX - Scout Class",
+                "in_game_name_text_key": "machine_lynx_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Burst Assault Rifle",
+                  "internal_name": "machine_weapon_lynx_mg",
+                  "in_game_component_name": "BURST ASSAULT RIFLE",
+                  "component_text_key": "organ_weapon_bar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_lynx_mg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Sawblade",
+                  "internal_name": "Sawblade",
+                  "kind": "melee",
+                  "note": "Internal name is the part in the layout file that carries the saw's AreaDamage (model lynx_saw_blade); there is no separate weapon entity."
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_lynx_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Wolf": {
+          "internal_name": "wolf",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "wolf_classa_load01",
+              "machine": {
+                "colloquial_name": "Wolf (Scout)",
+                "internal_name": "wolf",
+                "in_game_name": "WOLF - Scout Class",
+                "in_game_name_text_key": "machine_wolf_classa_name",
+                "internal_class": "classa"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_wolf_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Gatling Gun",
+                  "internal_name": "machine_weapon_wolf_gatling",
+                  "in_game_component_name": "GATLING GUN",
+                  "component_text_key": "organ_weapon_gatling_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_gatling",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_wolf_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Soldier": {
+      "internal_name": "classb",
+      "types": {
+        "Firebird": {
+          "internal_name": "firebird",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "firebird_classb_load01",
+              "machine": {
+                "colloquial_name": "Firebird (Soldier)",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD - Soldier Class",
+                "in_game_name_text_key": "machine_firebird_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_firebird_ac",
+                  "in_game_component_name": "AUTOCANNON / INCENDIARY",
+                  "component_text_key": "organ_weapon_autocannon_incendiary",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_ac",
+                  "slot": "WeaponSlot0",
+                  "note": "The component label says incendiary, but the ammo this layout loads is 'machine_ammo_firebird_ac'."
+                },
+                {
+                  "colloquial_name": "Poison Gas Bombs",
+                  "internal_name": "machine_ammo_firebird_bomb_gas",
+                  "in_game_component_name": "BOMB BAY / POISON GAS",
+                  "component_text_key": "organ_weapon_bombs_poisongas",
+                  "kind": "bombs",
+                  "note": "Dropped from both bomb bays."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "firebird_classb_load02",
+              "machine": {
+                "colloquial_name": "Firebird (Soldier)",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD - Soldier Class",
+                "in_game_name_text_key": "machine_firebird_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Autocannon",
+                  "internal_name": "machine_weapon_firebird_ac",
+                  "in_game_component_name": "AUTOCANNON / INCENDIARY",
+                  "component_text_key": "organ_weapon_autocannon_incendiary",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_ac",
+                  "slot": "WeaponSlot0",
+                  "note": "The component label says incendiary, but the ammo this layout loads is 'machine_ammo_firebird_ac'."
+                },
+                {
+                  "colloquial_name": "Tesla Spike Bombs",
+                  "internal_name": "machine_ammo_firebird_bomb_tesla",
+                  "in_game_component_name": "BOMB BAY / TESLA SPIKE",
+                  "component_text_key": "organ_weapon_bombs_teslaspike",
+                  "kind": "bombs",
+                  "note": "Dropped from both bomb bays."
+                }
+              ]
+            }
+          }
+        },
+        "Lynx": {
+          "internal_name": "lynx",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "lynx_classb_load01",
+              "machine": {
+                "colloquial_name": "Lynx (Soldier)",
+                "internal_name": "lynx",
+                "in_game_name": "LYNX - Soldier Class",
+                "in_game_name_text_key": "machine_lynx_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Burst Assault Rifle",
+                  "internal_name": "machine_weapon_lynx_mg",
+                  "in_game_component_name": "BURST ASSAULT RIFLE",
+                  "component_text_key": "organ_weapon_bar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_lynx_mg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Sawblade",
+                  "internal_name": "Sawblade",
+                  "kind": "melee",
+                  "note": "Internal name is the part in the layout file that carries the saw's AreaDamage (model lynx_saw_blade); there is no separate weapon entity."
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_lynx_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "lynx_classb_load02",
+              "machine": {
+                "colloquial_name": "Lynx (Soldier)",
+                "internal_name": "lynx",
+                "in_game_name": "LYNX - Soldier Class",
+                "in_game_name_text_key": "machine_lynx_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Grenade Launcher",
+                  "internal_name": "machine_weapon_lynx_gl",
+                  "in_game_component_name": "GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_grenade",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_lynx_gl",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Sawblade",
+                  "internal_name": "Sawblade",
+                  "kind": "melee",
+                  "note": "Internal name is the part in the layout file that carries the saw's AreaDamage (model lynx_saw_blade); there is no separate weapon entity."
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_lynx_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Wolf": {
+          "internal_name": "wolf",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "wolf_classb_load01",
+              "machine": {
+                "colloquial_name": "Wolf (Soldier)",
+                "internal_name": "wolf",
+                "in_game_name": "WOLF - Soldier Class",
+                "in_game_name_text_key": "machine_wolf_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_wolf_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Gatling Gun",
+                  "internal_name": "machine_weapon_wolf_gatling",
+                  "in_game_component_name": "GATLING GUN",
+                  "component_text_key": "organ_weapon_gatling_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_gatling",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_wolf_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "wolf_classb_load02",
+              "machine": {
+                "colloquial_name": "Wolf (Soldier)",
+                "internal_name": "wolf",
+                "in_game_name": "WOLF - Soldier Class",
+                "in_game_name_text_key": "machine_wolf_classb_name",
+                "internal_class": "classb"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_wolf_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Gatling Gun",
+                  "internal_name": "machine_weapon_wolf_gatling",
+                  "in_game_component_name": "GATLING GUN",
+                  "component_text_key": "organ_weapon_gatling_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_gatling",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Recovery Field Emitter",
+                  "internal_name": "wolf_healing_pulse",
+                  "in_game_component_name": "RECOVERY FIELD EMITTER",
+                  "component_text_key": "organ_weapon_recovery_field",
+                  "kind": "support",
+                  "note": "Heals nearby machines."
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_wolf_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Spetsnaz": {
+      "internal_name": "classc",
+      "types": {
+        "Firebird": {
+          "internal_name": "firebird",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "firebird_classc_load01",
+              "machine": {
+                "colloquial_name": "Firebird (Spetsnaz)",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD - Spetsnaz Class",
+                "in_game_name_text_key": "machine_firebird_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Howitzer",
+                  "internal_name": "machine_weapon_firebird_hw",
+                  "in_game_component_name": "HOWITZER",
+                  "component_text_key": "organ_weapon_howitzer",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_hw",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Laser Trip Balloon Bombs",
+                  "internal_name": "machine_ammo_firebird_bomb_trip_balloon",
+                  "in_game_component_name": "BOMB BAY / LASER TRIP BALLOON",
+                  "component_text_key": "organ_weapon_bombs_tripballoon",
+                  "kind": "bombs",
+                  "note": "Dropped from both bomb bays."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "firebird_classc_load02",
+              "machine": {
+                "colloquial_name": "Firebird (Spetsnaz)",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD - Spetsnaz Class",
+                "in_game_name_text_key": "machine_firebird_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Howitzer",
+                  "internal_name": "machine_weapon_firebird_hw",
+                  "in_game_component_name": "HOWITZER",
+                  "component_text_key": "organ_weapon_howitzer",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_hw",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Thermobaric Bombs",
+                  "internal_name": "machine_ammo_firebird_bomb_thermobaric",
+                  "in_game_component_name": "BOMB BAY / THERMOBARIC",
+                  "component_text_key": "organ_weapon_bombs_thermobaric",
+                  "kind": "bombs",
+                  "note": "Dropped from both bomb bays."
+                }
+              ]
+            }
+          }
+        },
+        "Lynx": {
+          "internal_name": "lynx",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "lynx_classc_load01",
+              "machine": {
+                "colloquial_name": "Lynx (Spetsnaz)",
+                "internal_name": "lynx",
+                "in_game_name": "LYNX - Spetsnaz Class",
+                "in_game_name_text_key": "machine_lynx_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Burst Assault Rifle",
+                  "internal_name": "machine_weapon_lynx_mg",
+                  "in_game_component_name": "BURST ASSAULT RIFLE",
+                  "component_text_key": "organ_weapon_bar",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_lynx_mg",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Sawblade",
+                  "internal_name": "Sawblade",
+                  "kind": "melee",
+                  "note": "Internal name is the part in the layout file that carries the saw's AreaDamage (model lynx_saw_blade); there is no separate weapon entity."
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_lynx_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "lynx_classc_load02",
+              "machine": {
+                "colloquial_name": "Lynx (Spetsnaz)",
+                "internal_name": "lynx",
+                "in_game_name": "LYNX - Spetsnaz Class",
+                "in_game_name_text_key": "machine_lynx_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Grenade Launcher",
+                  "internal_name": "machine_weapon_lynx_gl",
+                  "in_game_component_name": "GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_grenade",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_lynx_gl",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Sawblade",
+                  "internal_name": "Sawblade",
+                  "kind": "melee",
+                  "note": "Internal name is the part in the layout file that carries the saw's AreaDamage (model lynx_saw_blade); there is no separate weapon entity."
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_lynx_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "lynx_classc_load03",
+              "machine": {
+                "colloquial_name": "Lynx (Spetsnaz)",
+                "internal_name": "lynx",
+                "in_game_name": "LYNX - Spetsnaz Class",
+                "in_game_name_text_key": "machine_lynx_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Flamethrower",
+                  "internal_name": "machine_weapon_lynx_flame",
+                  "in_game_component_name": "FLAME THROWER",
+                  "component_text_key": "organ_weapon_flame_thrower",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_lynx_flame",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Sawblade",
+                  "internal_name": "Sawblade",
+                  "kind": "melee",
+                  "note": "Internal name is the part in the layout file that carries the saw's AreaDamage (model lynx_saw_blade); there is no separate weapon entity."
+                }
+              ],
+              "deployment": [
+                {
+                  "colloquial_name": "Reinforcement Pod",
+                  "internal_name": "machine_weapon_pod_launcher",
+                  "ammo_internal_name": "machine_ammo_lynx_pod_launcher",
+                  "slot": "PodLauncher",
+                  "note": "Inventory slot for the rocket pod this machine is delivered in when called in as reinforcements; not a weapon it fires at the player."
+                }
+              ]
+            }
+          }
+        },
+        "Wolf": {
+          "internal_name": "wolf",
+          "layouts": {
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "wolf_classc_load01",
+              "machine": {
+                "colloquial_name": "Wolf (Spetsnaz)",
+                "internal_name": "wolf",
+                "in_game_name": "WOLF - Spetsnaz Class",
+                "in_game_name_text_key": "machine_wolf_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_wolf_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Gatling Gun",
+                  "internal_name": "machine_weapon_wolf_gatling",
+                  "in_game_component_name": "GATLING GUN",
+                  "component_text_key": "organ_weapon_gatling_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_gatling",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_wolf_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 2": {
+              "colloquial_name": "Layout 2",
+              "internal_name": "wolf_classc_load02",
+              "machine": {
+                "colloquial_name": "Wolf (Spetsnaz)",
+                "internal_name": "wolf",
+                "in_game_name": "WOLF - Spetsnaz Class",
+                "in_game_name_text_key": "machine_wolf_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Missile Pod",
+                  "internal_name": "machine_weapon_wolf_missiles_01",
+                  "in_game_component_name": "MISSILE POD",
+                  "component_text_key": "organ_weapon_rockets",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_missiles",
+                  "slot": "WeaponSlot1"
+                },
+                {
+                  "colloquial_name": "Gatling Gun",
+                  "internal_name": "machine_weapon_wolf_gatling",
+                  "in_game_component_name": "GATLING GUN",
+                  "component_text_key": "organ_weapon_gatling_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_gatling",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Recovery Field Emitter",
+                  "internal_name": "wolf_healing_pulse",
+                  "in_game_component_name": "RECOVERY FIELD EMITTER",
+                  "component_text_key": "organ_weapon_recovery_field",
+                  "kind": "support",
+                  "note": "Heals nearby machines."
+                },
+                {
+                  "colloquial_name": "Neurotoxin Disperser",
+                  "internal_name": "gas_attack",
+                  "in_game_component_name": "NEUROTOXIN DISPERSER",
+                  "component_text_key": "organ_weapon_gas",
+                  "kind": "ability",
+                  "note": "Internal name is the attack event in the layout file (component type: gas_weapon)."
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_wolf_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            },
+            "Layout 3": {
+              "colloquial_name": "Layout 3",
+              "internal_name": "wolf_classc_load03",
+              "machine": {
+                "colloquial_name": "Wolf (Spetsnaz)",
+                "internal_name": "wolf",
+                "in_game_name": "WOLF - Spetsnaz Class",
+                "in_game_name_text_key": "machine_wolf_classc_name",
+                "internal_class": "classc"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Cluster Mine Launcher",
+                  "internal_name": "machine_weapon_wolf_cluster_mine_01",
+                  "in_game_component_name": "CLUSTER GRENADE LAUNCHER",
+                  "component_text_key": "organ_weapon_cluster_grenade_launcher",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_cluster_mine",
+                  "slot": "WeaponSlot1",
+                  "note": "The component label differs from the weapon it fires; colloquial name follows the weapon."
+                },
+                {
+                  "colloquial_name": "Gatling Gun",
+                  "internal_name": "machine_weapon_wolf_gatling",
+                  "in_game_component_name": "GATLING GUN",
+                  "component_text_key": "organ_weapon_gatling_gun",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_wolf_gatling",
+                  "slot": "WeaponSlot0"
+                },
+                {
+                  "colloquial_name": "Shock Actuator",
+                  "internal_name": "machine_weapon_wolf_ep",
+                  "in_game_component_name": "SHOCK ACTUATOR",
+                  "component_text_key": "organ_weapon_electric_pulse",
+                  "kind": "ability"
+                },
+                {
+                  "colloquial_name": "Melee Strike",
+                  "internal_name": "machine_weapon_wolf_melee_attack",
+                  "kind": "melee"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Rival": {
+      "internal_name": "classr1",
+      "types": {
+        "Firebird": {
+          "internal_name": "firebird",
+          "layouts": {
+            "Base": {
+              "colloquial_name": "Base",
+              "internal_name": "firebird_classr1_base",
+              "machine": {
+                "colloquial_name": "Vulture",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD (\"Vulture\")",
+                "in_game_name_text_key": "machine_firebird_classr1_name",
+                "internal_class": "classr1"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_firebird_rocketpod",
+                  "in_game_component_name": "ROCKET POD / FLAMETHROWER",
+                  "component_text_key": "organ_weapon_rocketpod",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_rocketpod",
+                  "slot": "WeaponSlot1",
+                  "note": "Rocket pod and flamethrower share one component on the Vulture."
+                },
+                {
+                  "colloquial_name": "Flamethrower",
+                  "internal_name": "machine_weapon_firebird_flame",
+                  "in_game_component_name": "ROCKET POD / FLAMETHROWER",
+                  "component_text_key": "organ_weapon_rocketpod",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_flame",
+                  "slot": "WeaponSlot0",
+                  "note": "Rocket pod and flamethrower share one component on the Vulture."
+                },
+                {
+                  "colloquial_name": "Beacon Drop",
+                  "internal_name": "machine_support_firebird_beacon_drop",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "support drop",
+                  "note": "Dropped from the bomb bays; the in-game component label still reads Cluster Mines."
+                },
+                {
+                  "colloquial_name": "Gas Canister Drop",
+                  "internal_name": "machine_support_firebird_gas_canister_drop",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "support drop",
+                  "note": "Dropped from the bomb bays; the in-game component label still reads Cluster Mines."
+                },
+                {
+                  "colloquial_name": "Turret Drop",
+                  "internal_name": "machine_support_firebird_turret_drop",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "support drop",
+                  "note": "Dropped from the bomb bays; the in-game component label still reads Cluster Mines."
+                }
+              ]
+            },
+            "Layout 1": {
+              "colloquial_name": "Layout 1",
+              "internal_name": "firebird_classr1_load01",
+              "machine": {
+                "colloquial_name": "Vulture",
+                "internal_name": "firebird",
+                "in_game_name": "FIREBIRD (\"Vulture\")",
+                "in_game_name_text_key": "machine_firebird_classr1_name",
+                "internal_class": "classr1"
+              },
+              "weapons": [
+                {
+                  "colloquial_name": "Rocket Pod",
+                  "internal_name": "machine_weapon_firebird_rocketpod",
+                  "in_game_component_name": "ROCKET POD / FLAMETHROWER",
+                  "component_text_key": "organ_weapon_rocketpod",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_rocketpod",
+                  "slot": "WeaponSlot1",
+                  "note": "Rocket pod and flamethrower share one component on the Vulture."
+                },
+                {
+                  "colloquial_name": "Flamethrower",
+                  "internal_name": "machine_weapon_firebird_flame",
+                  "in_game_component_name": "ROCKET POD / FLAMETHROWER",
+                  "component_text_key": "organ_weapon_rocketpod",
+                  "kind": "ranged",
+                  "ammo_internal_name": "machine_ammo_firebird_flame",
+                  "slot": "WeaponSlot0",
+                  "note": "Rocket pod and flamethrower share one component on the Vulture."
+                },
+                {
+                  "colloquial_name": "Beacon Drop",
+                  "internal_name": "machine_support_firebird_beacon_drop",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "support drop",
+                  "note": "Dropped from the bomb bays; the in-game component label still reads Cluster Mines."
+                },
+                {
+                  "colloquial_name": "Gas Canister Drop",
+                  "internal_name": "machine_support_firebird_gas_canister_drop",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "support drop",
+                  "note": "Dropped from the bomb bays; the in-game component label still reads Cluster Mines."
+                },
+                {
+                  "colloquial_name": "Turret Drop",
+                  "internal_name": "machine_support_firebird_turret_drop",
+                  "in_game_component_name": "BOMB BAY / CLUSTER MINES",
+                  "component_text_key": "organ_weapon_bombs_clustermine",
+                  "kind": "support drop",
+                  "note": "Dropped from the bomb bays; the in-game component label still reads Cluster Mines."
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,251 @@
+/* ---------- Gen0 Map: the MAP tab of the Gen0 Editor as a standalone page ---------- */
+/* WOFF2: the same fonts at less than half the file size; the .ttf files are the fallback for very old browsers */
+@font-face { font-family: "GZ"; src: url(assets/OpenSans-Regular.woff2) format("woff2"), url(assets/OpenSans-Regular.ttf) format("truetype"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "GZ"; src: url(assets/OpenSans-SemiBold.woff2) format("woff2"), url(assets/OpenSans-SemiBold.ttf) format("truetype"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "GZ"; src: url(assets/OpenSans-Bold.woff2) format("woff2"), url(assets/OpenSans-Bold.ttf) format("truetype"); font-weight: 700; font-display: swap; }
+:root {
+  --ink: #f2f2f0;
+  --ink-dim: #9aa3ab;
+  --ink-faint: #5f6870;
+  --gold: #d6c776;
+  --font: "GZ", "Segoe UI", sans-serif;
+  --ease: cubic-bezier(.2, .7, .2, 1);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: #05070a; color: var(--ink); font: 15px/1.35 var(--font);
+  display: grid; grid-template-rows: auto 1fr auto; overflow: hidden;
+}
+button, select, input { font: inherit; color: inherit; }
+img { display: block; }
+
+/* ---------- top bar (the game's MAP tab colour) ---------- */
+.topbar { height: 56px; background: #5f4258; display: flex; align-items: center; justify-content: space-between; min-width: 0; }
+.brand { flex: none; height: 100%; padding: 0 18px; display: flex; align-items: center; gap: 10px; opacity: .95; }
+.brand img { height: 19px; width: auto; }
+.brand span { font-size: 10px; letter-spacing: .32em; font-weight: 600; opacity: .85; margin-top: 2px; }
+.mapcoords { padding: 0 20px; font-size: 15px; color: rgba(255, 255, 255, .8); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.btn {
+  background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.55);
+  padding: 7px 18px; letter-spacing: .06em; font-size: 14px; cursor: pointer;
+}
+.btn:hover { background: rgba(255,255,255,.12); border-color: #fff; }
+.btn:active { transform: translateY(1px); }
+.btn.small { padding: 3px 10px; font-size: 12px; }
+.ptitle { margin: 0 0 12px; font-size: 20px; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,.5); }
+
+/* ---------- bottom hint bar ---------- */
+.hintbar { height: 48px; background: #000; display: flex; align-items: center; justify-content: center; padding: 0 20px; overflow: hidden; }
+.maphints { display: flex; gap: 22px; font-size: 15px; letter-spacing: .03em; white-space: nowrap; }
+.maphints b { font-weight: 700; }
+
+/* ---------- map (styled after the in-game map screen) ---------- */
+:root {
+  --bar-map: #5f4258;            /* MAP tab colour in the game menu */
+  --mk: 243, 233, 201;           /* single marker colour (warm white), as r,g,b */
+}
+
+.mapview { display: grid; min-height: 0; grid-template-columns: 1fr 330px; transition: grid-template-columns .18s ease; }
+.mapview.pclosed { grid-template-columns: 1fr 0px; }
+.mapview.pclosed .mappanel { padding: 0; overflow: hidden; visibility: hidden; }
+
+/* collapse / expand tab for the filters panel, on the right edge of the map */
+.mappanelbtn {
+  position: absolute; right: 0; top: 40px; z-index: 5; width: 26px; height: 48px; border: 0; padding: 0;
+  background: #000; cursor: pointer; display: grid; place-items: center;
+}
+.mappanelbtn svg { width: 16px; height: 16px; fill: #fff; transition: transform .18s; }
+.mapview.pclosed .mappanelbtn svg { transform: rotate(180deg); }
+.mappanelbtn:hover { background: #fff; }
+.mappanelbtn:hover svg { fill: #000; }
+
+/* ---------- stage ---------- */
+.mapstage {
+  position: relative; overflow: hidden; background: #0d1419; min-height: 0;
+  cursor: grab; touch-action: none; outline: none; user-select: none;
+}
+.mapstage.dragging { cursor: grabbing; }
+.maptiles, .mapmarkers { position: absolute; inset: 0; }
+.maptiles { z-index: 0; }
+.mapmarkers { z-index: 2; }
+/* the markers' layer: a zero-size box at the map's corner that panning moves as one piece */
+.maplayer { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.maptiles img { position: absolute; left: 0; top: 0; transform-origin: 0 0; pointer-events: none; user-select: none; }
+.maplegs { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.maplegs line { stroke: rgba(var(--mk), .55); stroke-width: 1.2; }
+.maploading[hidden] { display: none; }
+/* region borders overlay (toggled from the toolbar / B) */
+.mapborders { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.mapborders[hidden] { display: none; }
+.mapborders path { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: round; }
+.mapborders .bs { stroke: rgba(0, 0, 0, .35); stroke-width: 4; }
+.mapborders .bl { stroke: rgba(255, 244, 222, .92); stroke-width: 2; }
+.maploading { position: absolute; z-index: 4; left: 50%; top: 50%; transform: translate(-50%, -50%); letter-spacing: .12em; color: #fff8; }
+
+/* vertical toolbar, like the game's left map bar */
+.maptools { position: absolute; left: 40px; top: 40px; display: flex; flex-direction: column; background: #000; z-index: 5; }
+.maptools button { width: 34px; height: 34px; border: 0; background: transparent; cursor: pointer; display: grid; place-items: center; }
+.maptools button svg { width: 18px; height: 18px; fill: #fff; }
+.maptools button:hover { background: #fff; }
+.maptools button:hover svg { fill: #000; }
+.maptools button.on { background: #fff; }
+.maptools button.on svg { fill: #000; }
+.maptools button { position: relative; }
+.maptools button:disabled { cursor: not-allowed; }
+.maptools button:disabled svg { fill: #fff; opacity: .3; }
+.maptools button:disabled:hover { background: transparent; }
+/* icon size label in the corner of the magnifier button */
+.maptools .szl { position: absolute; right: 2px; bottom: 1px; font-size: 9px; font-weight: 700; line-height: 1; color: #fff; pointer-events: none; }
+.maptools button:hover .szl { color: #000; }
+
+/* ---------- markers: one colour, translucent diamond, glyph per type ---------- */
+/* --mks: icon size from the toolbar (1x / 2x / 3x) */
+.mapmarkers { --mks: 1; }
+.mk {
+  --sz: calc(28px * var(--mks));
+  position: absolute; left: 0; top: 0; width: var(--sz); height: var(--sz); margin: calc(var(--sz) / -2) 0 0 calc(var(--sz) / -2);
+  cursor: pointer; opacity: .82; transition: opacity .12s;
+}
+.mk::before {
+  content: ""; position: absolute; inset: calc(4px * var(--mks)); transform: rotate(45deg);
+  background: rgba(14, 14, 16, .55); border: calc(1.5px * var(--mks)) solid rgba(var(--mk), .9);
+}
+.mk i {
+  position: absolute; inset: calc(7px * var(--mks)); background: rgb(var(--mk));
+  -webkit-mask: var(--g) center / contain no-repeat; mask: var(--g) center / contain no-repeat;
+}
+.mk:hover, .mk.sel { opacity: 1; z-index: 3; }
+.mk:hover::before, .mk.sel::before { background: rgba(14, 14, 16, .85); border-color: rgb(var(--mk)); }
+.mk.sel::after { content: ""; position: absolute; inset: -3px; border: 1px solid rgba(var(--mk), .9); border-radius: 50%; }
+.mk.spread { z-index: 6; opacity: 1; }
+
+/* cluster: same colour, round, with the count */
+.cl {
+  position: absolute; left: 0; top: 0; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer; z-index: 2;
+  background: rgba(14, 14, 16, .6); border: 1.5px solid rgba(var(--mk), .9); box-shadow: 0 0 0 3px rgba(var(--mk), .18);
+  color: rgb(var(--mk)); font-weight: 700; font-size: 13px; opacity: .9;
+}
+.cl.big { width: 36px; height: 36px; margin: -18px 0 0 -18px; }
+.mapmarkers .cl { width: calc(30px * var(--mks)); height: calc(30px * var(--mks)); margin: calc(-15px * var(--mks)) 0 0 calc(-15px * var(--mks)); font-size: calc(13px * var(--mks)); }
+.mapmarkers .cl.big { width: calc(36px * var(--mks)); height: calc(36px * var(--mks)); margin: calc(-18px * var(--mks)) 0 0 calc(-18px * var(--mks)); }
+.cl:hover { opacity: 1; background: rgba(14, 14, 16, .85); }
+.cl.open { z-index: 5; background: rgba(var(--mk), .9); color: #111; opacity: 1; }
+
+/* ---------- popup ---------- */
+.mappopup {
+  position: absolute; left: 0; top: 0; z-index: 10; min-width: 200px; max-width: 320px;
+  background: rgba(0, 0, 0, .9); border: 1px solid rgba(255, 255, 255, .35); padding: 9px 12px 9px;
+  transform: translate(-50%, calc(-100% - 18px)); pointer-events: auto; cursor: text;
+  user-select: text; -webkit-user-select: text;   /* the stage is unselectable (dragging); its popup text can be copied */
+}
+.mappopup .px { cursor: pointer; user-select: none; }
+.mappopup[hidden] { display: none; }
+.mappopup::after {
+  content: ""; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px; margin-left: -6px;
+  background: #000; border-right: 1px solid rgba(255,255,255,.35); border-bottom: 1px solid rgba(255,255,255,.35); transform: rotate(45deg);
+}
+.mappopup .pn { font-weight: 700; font-size: 15px; padding-right: 18px; }
+.mappopup .pc { font-size: 14px; margin-top: 4px; font-variant-numeric: tabular-nums; cursor: copy; }
+.mappopup ::selection { background: rgba(255, 255, 255, .85); color: #000; }
+.mappopup .pc b { color: var(--ink-dim); font-weight: 600; margin-right: 4px; }
+.mappopup .pc span + b { margin-left: 14px; }
+.mappopup .pm { font-size: 12px; color: var(--ink-faint); margin-top: 4px; }
+.mappopup .pm .dlc { color: var(--gold); }
+.mappopup .px { position: absolute; right: 6px; top: 4px; border: 0; background: none; color: var(--ink-dim); cursor: pointer; font-size: 14px; }
+.mappopup .px:hover { color: #fff; }
+
+/* ---------- side panel ---------- */
+.mappanel { background: rgba(4, 6, 9, .92); padding: 16px 16px 20px; overflow-y: auto; min-height: 0; scrollbar-width: thin; scrollbar-color: #fff3 transparent; }
+.mappanel .ptitle { margin-bottom: 8px; }
+.mptitle { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+/* advanced mode switch: a small text toggle with a dot that lights up */
+.madv { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid transparent; color: var(--ink-dim);
+  font: inherit; font-size: 11px; font-weight: 600; letter-spacing: .04em; padding: 2px 6px; cursor: pointer; }
+.madv::before { content: ""; width: 7px; height: 7px; border-radius: 50%; border: 1px solid currentColor; }
+.madv:hover { color: #fff; border-color: rgba(255, 255, 255, .3); }
+.madv.on { color: #fff; }
+.madv.on::before { background: #f5c542; border-color: #f5c542; box-shadow: 0 0 6px #f5c54299; }
+.madv.busy::before { animation: madv-busy .8s linear infinite; border-style: dashed; }
+@keyframes madv-busy { to { transform: rotate(360deg); } }
+.mpsum { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--ink-dim); margin-bottom: 12px; }
+.mpbtns { display: flex; gap: 6px; }
+.mpbtns .btn { padding: 2px 7px; font-size: 11px; }
+
+.mcat { margin-bottom: 10px; }
+.mcat-h {
+  display: grid; grid-template-columns: 16px 18px 1fr auto; align-items: center; gap: 8px;
+  padding: 7px 6px; background: rgba(255, 255, 255, .07); cursor: pointer; user-select: none;
+}
+.mcat-h:hover { background: rgba(255, 255, 255, .12); }
+.mcat-h .chev { width: 10px; height: 10px; border-right: 2px solid #ccc; border-bottom: 2px solid #ccc; transform: rotate(45deg); margin: -3px 0 0 3px; transition: transform .12s; }
+.mcat.closed .chev { transform: rotate(-45deg); margin: 0 0 0 0; }
+.mcat-h .t { font-weight: 700; letter-spacing: .05em; font-size: 14px; }
+.mcat-h .n { font-size: 12px; color: var(--ink-dim); }
+.mcat.closed .mcat-b { display: none; }
+.mcat-b { padding: 2px 0 0; }
+
+.msub {
+  display: grid; grid-template-columns: 16px 26px 1fr auto 20px; align-items: center; gap: 8px;
+  padding: 2px 6px 2px 30px; min-height: 30px; cursor: pointer; user-select: none;
+}
+.msub:hover { background: rgba(255, 255, 255, .06); }
+.msub img { width: 26px; height: 26px; object-fit: contain; }
+.msub .t { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msub .n { font-size: 12px; color: var(--ink-dim); font-variant-numeric: tabular-nums; }
+.msub.off .t, .msub.off img, .msub.off .n { opacity: .4; }
+.msub .gl { width: 16px; height: 16px; background: rgb(var(--mk)); opacity: .8;
+  -webkit-mask: var(--g) center / contain no-repeat; mask: var(--g) center / contain no-repeat; }
+
+/* game-style tick box */
+.tick { width: 15px; height: 15px; border: 1.5px solid #ddd; display: grid; place-items: center; }
+.tick.on::after { content: ""; width: 4px; height: 8px; border-right: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(45deg) translate(-1px, -1px); }
+.tick.part::after { content: ""; width: 7px; height: 2px; background: #fff; }
+
+/* regions: a filter across every category */
+.msep { height: 1px; background: rgba(255, 255, 255, .14); margin: 4px 0 14px; }
+.mrow .rb {
+  width: 22px; height: 22px; justify-self: center; display: grid; place-items: center; border-radius: 2px;
+  border: 1.5px solid rgba(var(--mk), .85); color: rgb(var(--mk)); font-size: 12px; font-weight: 700;
+}
+.mrow .rb.dlc { font-size: 9px; letter-spacing: .02em; color: var(--gold); border-color: var(--gold); }
+.mrow.off .rb { opacity: .4; }
+
+/* a category with only one entry: the header itself is the toggle (no list to open) */
+.mcat.single .mcat-h { grid-template-columns: 16px 18px 1fr auto; padding: 7px 6px; min-height: 0; }
+.mcat.single .mcat-h .ic { width: 18px; height: 18px; object-fit: contain; }
+.mcat.single .mcat-h.off .t, .mcat.single .mcat-h.off .ic, .mcat.single .mcat-h.off .n { opacity: .4; }
+/* advanced mode: a heavier rule sets the placed loot apart from the regular filters */
+.madvcats { border-top: 3px solid rgba(255, 255, 255, .38); margin-top: 6px; padding-top: 14px; }
+.madvcats > .msep:first-child { display: none; }
+
+/* ---------- motion: short, quiet transitions; none for people who ask for reduced motion ---------- */
+.btn, .mappanelbtn, .maptools button, .mcat-h, .msub {
+  transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, opacity .15s, filter .15s, transform .12s;
+}
+.maptools button svg { transition: fill .15s; }
+@keyframes mt-popup { from { opacity: 0; margin-top: 6px; } to { opacity: 1; margin-top: 0; } }
+.mappopup:not([hidden]) { animation: mt-popup .18s var(--ease); }
+.mk, .cl { transition: opacity .15s, filter .15s; }
+
+/* ---------- small screens (phones): the filters panel slides over the map instead of beside it ---------- */
+@media (max-width: 760px) {
+  .topbar { height: 48px; }
+  .mapcoords { display: none; }
+  .hintbar { display: none; }
+  .mapview, .mapview.pclosed { grid-template-columns: 1fr; position: relative; }
+  .mappanel { position: absolute; top: 0; right: 0; bottom: 0; width: min(330px, 86vw); z-index: 8; background: #05070a; transition: transform .18s ease; }
+  .mapview.pclosed .mappanel { transform: translateX(100%); padding: 16px 16px 20px; visibility: hidden; }
+  .mappanelbtn { z-index: 9; transition: right .18s ease; }
+  .mapview:not(.pclosed) .mappanelbtn { right: min(330px, 86vw); }
+  .maptools { left: 12px; top: 12px; }
+  .maptools button { width: 40px; height: 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

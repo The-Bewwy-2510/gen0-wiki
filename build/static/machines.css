@@ -1,0 +1,32 @@
+/* Machines section: layout headers, weapon tables, weak-point tips, detection tables. */
+.lhead { display: flex; flex-wrap: wrap; gap: 6px 22px; justify-content: space-between; background: var(--card);
+         border-left: 4px solid var(--bar); padding: 9px 14px; margin: 12px 0 4px; font-size: 13.5px; color: var(--ink2); }
+.lhead code { font-size: 12.5px; }
+table.mweap td { font-size: 13.5px; }
+table.mweap td:first-child { min-width: 170px; }
+table.mweap td:nth-child(4) { min-width: 220px; font-size: 13px; }
+table.mweap td:last-child code { white-space: normal; word-break: break-all; font-size: 11.5px; }
+.wnote { font-size: 12px; color: var(--dim); margin-top: 3px; max-width: 360px; }
+ul.tips { background: var(--panel); margin: 8px 0 14px; padding: 10px 16px 10px 34px; }
+ul.tips li { margin: 5px 0; }
+.detsum { background: var(--card); border-left: 4px solid #9aa3ab; padding: 4px 14px 2px; margin: 16px 0 10px; }
+.detsum h4 { margin-top: 8px; }
+.detsum p { font-size: 14px; }
+table.mcmp td:nth-child(8) { min-width: 240px; font-size: 13px; }
+table.mcmp td:nth-child(3) { font-size: 13px; }
+h3.dettype { margin-top: 30px; border-bottom: 1px solid var(--line); padding-bottom: 6px; }
+.dethead { display: flex; gap: 12px; align-items: baseline; margin: 16px 0 0; flex-wrap: wrap; }
+.dethead code { font-size: 12px; }
+table.senses td { white-space: nowrap; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+table.senses tr.grp th { text-align: center; color: #fff; border-bottom: 1px solid rgba(255,255,255,.15); }
+table.senses tr.grp th + th { border-left: 1px solid rgba(255,255,255,.15); }
+table.senses tr.grp + tr th { top: 33px; }
+table.senses td:nth-child(6) { border-left: 1px solid rgba(255,255,255,.15); }
+p.thr { margin: -8px 0 6px; }
+p.quirk { margin: 0 0 6px; color: #e8bd3f; }
+.wint { font-size: 11.5px; margin-top: 2px; color: var(--dim); }
+.wint code { font-size: 11px; white-space: normal; word-break: break-all; }
+table.detcmp td:first-child, table.mcmp td:first-child { white-space: nowrap; }
+table.senses { table-layout: fixed; min-width: 860px; }
+table.senses th:first-child, table.senses td:first-child { width: 96px; }
+.tag.rival { background: #9c4a1a; }  /* released Rival machines (not the purple "unreleased" style) */

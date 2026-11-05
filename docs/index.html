@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Generation Zero Wiki · Gen0 Wiki</title>
+<meta name="description" content="Generation Zero wiki built from the game files: weapons, machines, locations, missions, collectibles, schematics and modding.">
+<link rel="icon" href="assets/app.ico">
+<link rel="preload" href="assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/wiki.css?v=1">
+
+</head>
+<body data-section="home" style="--bar:#1c5777" data-root="">
+<div class="bg"></div>
+<header class="topbar">
+  <a class="brand" href="index.html"><img src="assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
+  <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
+  <nav class="tabs" id="tabs"><a class="tab on" href="index.html">Home</a><a class="tab" href="weapons/index.html">Weapons</a><a class="tab" href="machines/index.html">Machines</a><a class="tab" href="world/index.html">World</a><a class="tab" href="missions/index.html">Missions</a><a class="tab" href="items/index.html">Items &amp; crafting</a><a class="tab" href="character/skills.html">Character</a><a class="tab" href="modding/index.html">Modding</a></nav>
+  <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
+</header>
+<nav class="subbar"><a class="stab on" href="index.html">Main page</a><a class="stab" href="basics.html">Game basics</a><a class="stab" href="dlc.html">DLC &amp; updates</a><a class="stab" href="about.html">About this wiki</a></nav>
+<main class="content">
+  <div class="crumbs"><a href="index.html">Home</a></div>
+  <h1>Generation Zero Wiki</h1>
+  
+  <div class="lead"><p>A fan-made reference for <b>Generation Zero</b>, built from the game's own files. Every number on these pages – damage per ammo type and weapon quality, the hit points of each machine component, how far machines see and hear you, where every collectible lies – was read out of the current game data with the <a href="modding/tools.html">Gen0 tools</a>, not copied from older guides.</p></div>
+  
+  <article class="body">
+<h2 class="wbar" id="browse-the-wiki"><span>Browse the wiki</span></h2>
+<div class="cards "><a class="card" href="weapons/index.html" style="--c:#2f4d5e"><span class="chead"><span class="ctitle">Weapons</span><span class="ctag" style="background:#2f4d5e">WPN</span></span><span class="cbody"><img src="img/items/weapons/weapon_rifle_assault_556_01_alpha.png" alt="" loading="lazy"><span class="csub">41 weapons with damage for every ammo type and quality, 60 ammo types, attachments, 28 augments and every skin.</span></span></a><a class="card" href="machines/index.html" style="--c:#7a2a26"><span class="chead"><span class="ctitle">Machines</span><span class="ctag" style="background:#7a2a26">MCH</span></span><span class="cbody"><span class="csub">Every machine class and its 82 weapon layouts, component hit points, 64 machine weapons, detection ranges and difficulty scaling.</span></span></a><a class="card" href="world/index.html" style="--c:#5f4258"><span class="chead"><span class="ctitle">World</span><span class="ctag" style="background:#5f4258">MAP</span></span><span class="cbody"><img src="img/locations/location_church.png" alt="" loading="lazy"><span class="csub">8 regions, 359 locations with mini maps, 104 safehouses, 213 collectibles in 15 sets.</span></span></a><a class="card" href="missions/index.html" style="--c:#1d4039"><span class="chead"><span class="ctitle">Missions</span><span class="ctag" style="background:#1d4039">MIS</span></span><span class="cbody"><span class="csub">All 145 main and side missions with briefings and every objective, plus the challenge trees and the titles they award.</span></span></a><a class="card" href="items/index.html" style="--c:#4d4a2c"><span class="chead"><span class="ctitle">Items &amp; crafting</span><span class="ctag" style="background:#4d4a2c">ITM</span></span><span class="cbody"><img src="img/stock/equipment_consumable_firstaid_advanced_01_alpha.png" alt="" loading="lazy"><span class="csub">273 inventory items, materials, all 229 schematics with costs and recipes, and the companion.</span></span></a><a class="card" href="character/skills.html" style="--c:#47545a"><span class="chead"><span class="ctitle">Character</span><span class="ctag" style="background:#47545a">CHR</span></span><span class="cbody"><span class="csub">All 48 skills, and 1,483 apparel items, emotes, vehicles and other cosmetics.</span></span></a><a class="card" href="map/index.html" style="--c:#5f4258"><span class="chead"><span class="ctitle">Interactive map</span><span class="ctag" style="background:#5f4258">MAP</span></span><span class="cbody"><span class="csub">Filter collectibles, schematics, safehouses, control points and 44,722 pieces of placed loot on the full world map.</span></span></a><a class="card" href="modding/index.html" style="--c:#33393f"><span class="chead"><span class="ctitle">Modding</span><span class="ctag" style="background:#33393f">MOD</span></span><span class="cbody"><span class="csub">The save editor, mod maker, extractor, console / VR mod and map editor, and the game's item IDs.</span></span></a></div>
+<h2 class="wbar" id="what-you-ll-find-here-that-older-wikis-don-t-have"><span>What you&#x27;ll find here that older wikis don&#x27;t have</span></h2>
+<ul>
+<li><b>Exact damage tables</b> for every weapon: each ammo type's damage, armour and component multipliers, damage
+falloff and range, multiplied out for every quality from Dilapidated to Experimental.</li>
+<li><b>Machine anatomy</b>: the hit points of every component and armour plate on every machine class and weapon
+layout, and the weapons each layout carries.</li>
+<li><b>Stealth numbers</b>: how far each machine can see and hear you crouched, prone, standing or running, by day
+and by night, and how fast it notices you.</li>
+<li><b>Difficulty and co-op scaling</b> as the game applies it, per difficulty and number of players.</li>
+<li><b>Which augment fits which weapon</b> at which quality, and how to research each one.</li>
+<li><b>Every location</b> with its own page and mini map, the collectibles, house photos and loot around it.</li>
+<li><b>Internal names and item IDs</b> for modders and save editing.</li>
+</ul>
+<div class="callout fix"><b>Up to date</b><div>Generation Zero has had many updates since release. Where the current game files disagree with numbers that are still repeated in older guides, the page says so in a green <b>Corrected</b> box.</div></div>
+<h2 class="wbar" id="start-here"><span>Start here</span></h2>
+<div class="cols"><div class="panel"><h3 style="margin-top:0"><a href="basics.html">New to the game?</a></h3><p class="small">Game basics: the setting, regions, machines, gear and progression.</p></div><div class="panel"><h3 style="margin-top:0"><a href="weapons/ammo.html">Choosing ammo</a></h3><p class="small">Armour-piercing, hollow-point, HEAT and the rest compared.</p></div><div class="panel"><h3 style="margin-top:0"><a href="machines/index.html">Fighting machines</a></h3><p class="small">Classes, layouts and where to shoot them.</p></div><div class="panel"><h3 style="margin-top:0"><a href="machines/detection.html">Staying hidden</a></h3><p class="small">Sight and hearing ranges per stance.</p></div><div class="panel"><h3 style="margin-top:0"><a href="missions/index.html">Missions</a></h3><p class="small">The story in order, with every objective.</p></div><div class="panel"><h3 style="margin-top:0"><a href="dlc.html">DLC</a></h3><p class="small">What Alpine Unrest and FNIX Rising add.</p></div></div>
+<h2 class="wbar" id="regions"><span>Regions</span></h2>
+<div class="cols"><div class="panel"><h3 style="margin-top:0"><a href="world/archipelago.html">Archipelago</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/southcoast.html">South Coast</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/farmlands.html">Farmlands</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/forest.html">Forest</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/mountains.html">Mountains</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/marshlands.html">Marshlands</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/northcoast.html">North Coast</a></h3></div><div class="panel"><h3 style="margin-top:0"><a href="world/alpine.html">Himfjäll (Alpine Unrest)</a></h3></div></div>
+  </article>
+</main>
+<footer class="hintbar">
+  <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
+  <span class="fine">Fan-made. Data read from the game files with the <a href="https://github.com/The-Bewwy-2510/gen0-tools">Gen0 tools</a>. Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
+</footer>
+<script src="assets/wiki.js?v=1"></script>
+</body>
+</html>

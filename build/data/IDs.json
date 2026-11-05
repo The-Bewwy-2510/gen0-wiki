@@ -1,0 +1,1996 @@
+{
+    "_QualityLevels": {
+        "0": "Single quality (Vision Modules only)",
+        "1": "Dilapidated",
+        "2": "Worn",
+        "3": "Good",
+        "4": "Exceptional",
+        "5": "Special",
+        "6": "Experimental"
+    },
+    "Weapons": {
+        "Melee": {
+            "Brännboll Bat": {
+                "Nickname": "Bat",
+                "ToolID": "01",
+                "1": "22148715",
+                "2": "1375181798",
+                "3": "4153491239",
+                "4": "1330416502",
+                "5": "53763978",
+                "6": "N/A"
+            },
+            "Sledgehammer": {
+                "Nickname": "Hammer",
+                "ToolID": "02",
+                "1": "3877639899",
+                "2": "1504935780",
+                "3": "4030760909",
+                "4": "3872533354",
+                "5": "4229513228",
+                "6": "793104726"
+            },
+            "Resistance Pitchfork": {
+                "Nickname": "Pitchfork",
+                "ToolID": "03",
+                "1": "2448809597",
+                "2": "2093389358",
+                "3": "1709078918",
+                "4": "818513650",
+                "5": "3401512409",
+                "6": "N/A"
+            }
+        },
+        "Handguns": {
+            "Möller PP": {
+                "Nickname": "PP",
+                "ToolID": "04",
+                "1": "3055879776",
+                "2": "2800125862",
+                "3": "3155991537",
+                "4": "1225959613",
+                "5": "358135215",
+                "6": "N/A"
+            },
+            "Klaucke 17": {
+                "Nickname": "K17",
+                "ToolID": "05",
+                "1": "1920462793",
+                "2": "30913048",
+                "3": "317912168",
+                "4": "1158656473",
+                "5": "1250828800",
+                "6": "2290286314"
+            },
+            ".44 Magnus": {
+                "Nickname": "Revolver",
+                "ToolID": "06",
+                "1": "525713563",
+                "2": "3669591716",
+                "3": "1539616687",
+                "4": "3654146736",
+                "5": "4030765418",
+                "6": "3978029402"
+            },
+            "N9 Handgun": {
+                "Nickname": "N9",
+                "ToolID": "07",
+                "1": "1500852166",
+                "2": "2388923229",
+                "3": "3862150569",
+                "4": "3278515201",
+                "5": "706096413",
+                "6": "N/A"
+            },
+            "Volkov Handgun": {
+                "Nickname": "Volkov",
+                "ToolID": "08",
+                "1": "1134822469",
+                "2": "3454894998",
+                "3": "3000463026",
+                "4": "1377750649",
+                "5": "1020455288",
+                "6": "N/A"
+            },
+            "Iron Condor": {
+                "Nickname": "Condor",
+                "ToolID": "09",
+                "1": "1297223159",
+                "2": "4126156410",
+                "3": "1887933239",
+                "4": "451326224",
+                "5": "2833037442",
+                "6": "N/A"
+            }
+        },
+        "Shotguns": {
+            "12G Pump Action": {
+                "Nickname": "Pump",
+                "ToolID": "10",
+                "1": "3522570570",
+                "2": "2946942083",
+                "3": "400886324",
+                "4": "1211181616",
+                "5": "2270892881",
+                "6": "1883785329"
+            },
+            "Sjöqvist SemiAuto": {
+                "Nickname": "Sjq",
+                "ToolID": "11",
+                "1": "1668043928",
+                "2": "3944939440",
+                "3": "3723204762",
+                "4": "1343436027",
+                "5": "3777482652",
+                "6": "758995716"
+            },
+            "RACS-12": {
+                "Nickname": "RACS-12",
+                "ToolID": "12",
+                "1": "430721256",
+                "2": "1948793722",
+                "3": "3458140409",
+                "4": "4031404247",
+                "5": "3865712735",
+                "6": "N/A"
+            }
+        },
+        "Submachine Guns": {
+            "M/46 Kpist SMG": {
+                "Nickname": "Kpist",
+                "ToolID": "13",
+                "1": "1438049323",
+                "2": "2562218223",
+                "3": "471434641",
+                "4": "3343263738",
+                "5": "1938906168",
+                "6": "1734102884"
+            },
+            "HP5": {
+                "Nickname": "HP5",
+                "ToolID": "14",
+                "1": "3329358393",
+                "2": "1919634899",
+                "3": "894785287",
+                "4": "764274991",
+                "5": "3995651919",
+                "6": "2554061992"
+            },
+            "COM-10": {
+                "Nickname": "COM-10",
+                "ToolID": "15",
+                "1": "4259728312",
+                "2": "4183137603",
+                "3": "760652140",
+                "4": "1791481073",
+                "5": "3584827423",
+                "6": "N/A"
+            },
+            "Vosa vz. 68": {
+                "Nickname": "Vosa",
+                "ToolID": "16",
+                "1": "1830700970",
+                "2": "3945679443",
+                "3": "1614950111",
+                "4": "187942878",
+                "5": "455532500",
+                "6": "N/A"
+            }
+        },
+        "Rifles": {
+            "Meusser Hunting Rifle": {
+                "Nickname": "MHR",
+                "ToolID": "17",
+                "1": "2052912546",
+                "2": "60111070",
+                "3": "2700874240",
+                "4": "2214328775",
+                "5": "345450212",
+                "6": "1643271777"
+            },
+            "Älgstudsare Hunting Rifle": {
+                "Nickname": "ÄHR",
+                "ToolID": "18",
+                "1": "1512823500",
+                "2": "3797852091",
+                "3": "1384764071",
+                "4": "789944801",
+                "5": "2926162563",
+                "6": "2427437609"
+            },
+            "Pansarvärnsgevär 90": {
+                "Nickname": "Pvg 90",
+                "ToolID": "19",
+                "1": "2727348298",
+                "2": "1113029778",
+                "3": "1708071827",
+                "4": "1940676808",
+                "5": "1287668466",
+                "6": "1135722230"
+            },
+            "Kotenok Sniper Rifle": {
+                "Nickname": "Kotenok",
+                "ToolID": "20",
+                "1": "2708074533",
+                "2": "2538158049",
+                "3": "191570238",
+                "4": "3189680436",
+                "5": "1071117583",
+                "6": "N/A"
+            },
+            "S21": {
+                "Nickname": "S21",
+                "ToolID": "21",
+                "1": "389229758",
+                "2": "2994039392",
+                "3": "1143072082",
+                "4": "480254511",
+                "5": "4260051685",
+                "6": "N/A"
+            },
+            "Vintovka 1891": {
+                "Nickname": "V1891",
+                "ToolID": "22",
+                "1": "3035158161",
+                "2": "2941861476",
+                "3": "3986039701",
+                "4": "1377716997",
+                "5": "3891992532",
+                "6": "N/A"
+            }
+        },
+        "Assault Rifles": {
+            "AI76 Assault Rifle": {
+                "Nickname": "AI76",
+                "ToolID": "23",
+                "1": "3528235377",
+                "2": "4170566388",
+                "3": "3252499511",
+                "4": "2593629241",
+                "5": "2623516647",
+                "6": "2104577496"
+            },
+            "Automatgevär 4 Assault Rifle": {
+                "Nickname": "AG4",
+                "ToolID": "24",
+                "1": "2475865089",
+                "2": "1938816247",
+                "3": "1564277953",
+                "4": "1078124586",
+                "5": "821390159",
+                "6": "1986398252"
+            },
+            "Automatgevär 5 Assault Rifle": {
+                "Nickname": "AG5",
+                "ToolID": "25",
+                "1": "1858075135",
+                "2": "4038009463",
+                "3": "1063891050",
+                "4": "1628079621",
+                "5": "3458907921",
+                "6": "N/A"
+            },
+            "N16": {
+                "Nickname": "N16",
+                "ToolID": "26",
+                "1": "3618703955",
+                "2": "535507268",
+                "3": "3875541343",
+                "4": "3245793712",
+                "5": "495081416",
+                "6": "N/A"
+            },
+            "AT-WAD": {
+                "Nickname": "AT-WAD",
+                "ToolID": "27",
+                "1": "570263310",
+                "2": "4083589049",
+                "3": "816162094",
+                "4": "4136517111",
+                "5": "3140506202",
+                "6": "N/A"
+            }
+        },
+        "Light Machine Guns": {
+            "Kvm 59 Machine Gun": {
+                "Nickname": "Kvm 59",
+                "ToolID": "28",
+                "1": "1601066909",
+                "2": "756346513",
+                "3": "1600997944",
+                "4": "470978427",
+                "5": "2318892602",
+                "6": "3823899603"
+            },
+            "Kvm 89 Squad Automatic Weapon": {
+                "Nickname": "Kvm89",
+                "ToolID": "29",
+                "1": "862304831",
+                "2": "3522034483",
+                "3": "2700579659",
+                "4": "269593219",
+                "5": "1115833621",
+                "6": "637455940"
+            },
+            "N60 Machine Gun": {
+                "Nickname": "N60",
+                "ToolID": "30",
+                "1": "1580257367",
+                "2": "1495896993",
+                "3": "1856412831",
+                "4": "645117294",
+                "5": "1542736485",
+                "6": "N/A"
+            },
+            "PM-71 Machine Gun": {
+                "Nickname": "PM-71",
+                "ToolID": "31",
+                "1": "1218680565",
+                "2": "113400730",
+                "3": "2594039389",
+                "4": "3447968041",
+                "5": "1591219034",
+                "6": "N/A"
+            },
+            "N144 Minigun": {
+                "Nickname": "Minigun",
+                "ToolID": "32",
+                "1": "233911306",
+                "2": "771494977",
+                "3": "1131509426",
+                "4": "3699698107",
+                "5": "631973674",
+                "6": "N/A"
+            }
+        },
+        "Grenade Launchers": {
+            "G79": {
+                "Nickname": "G79",
+                "ToolID": "33",
+                "1": "1869675559",
+                "2": "2827025625",
+                "3": "3954452211",
+                "4": "2216677444",
+                "5": "418321706",
+                "6": "N/A"
+            },
+            "MGR-6": {
+                "Nickname": "MGR-6",
+                "ToolID": "34",
+                "1": "3860860211",
+                "2": "3555210961",
+                "3": "3044898319",
+                "4": "2492376852",
+                "5": "3098387095",
+                "6": "N/A"
+            }
+        },
+        "Recoilless Rifles": {
+            "Granatgevär m/49": {
+                "Nickname": "G49",
+                "ToolID": "35",
+                "1": "413303018",
+                "2": "678720182",
+                "3": "1930252139",
+                "4": "3849365488",
+                "5": "1756453791",
+                "6": "2237628567"
+            },
+            "RLG-7": {
+                "Nickname": "RLG-7",
+                "ToolID": "36",
+                "1": "1759133638",
+                "2": "3367017948",
+                "3": "235457689",
+                "4": "1875808444",
+                "5": "1463736876",
+                "6": "N/A"
+            }
+        },
+        "Miscellaneous": {
+            "Flamethrower": {
+                "Nickname": "Flamer",
+                "ToolID": "37",
+                "1": "1856302072",
+                "2": "4057331730",
+                "3": "3238154238",
+                "4": "4159157786",
+                "5": "3003250293",
+                "6": "N/A"
+            },
+            "Heavy Bow": {
+                "Nickname": "Bow",
+                "ToolID": "38",
+                "1": "1983019970",
+                "2": "285309438",
+                "3": "618042734",
+                "4": "2805083750",
+                "5": "4004645667",
+                "6": "N/A"
+            }
+        }
+    },
+    "Attachments": {
+        "Scopes": {
+            "Red Dot x2 Sight": {
+                "Nickname": "x2",
+                "WPNCompat": "10, 13, 14, 23, 24, 25, 28, 29",
+                "1": "2960875245",
+                "2": "1134044938",
+                "3": "3605566548",
+                "4": "2877342718",
+                "5": "4171732014"
+            },
+            "1-4x Rifle Scope": {
+                "Nickname": "1-4x",
+                "WPNCompat": "17, 18, 24, 25",
+                "1": "4167416740",
+                "2": "70191706",
+                "3": "3140826100",
+                "4": "2832623018",
+                "5": "4008787790"
+            },
+            "4-8x Rifle Scope": {
+                "Nickname": "4-8x",
+                "WPNCompat": "17, 18, 24",
+                "1": "1333191060",
+                "2": "3511303468",
+                "3": "290256068",
+                "4": "1233572382",
+                "5": "3315980861"
+            },
+            "6-12x Rifle Scope": {
+                "Nickname": "6-12x",
+                "WPNCompat": "17, 18, 19",
+                "1": "1909829517",
+                "2": "1486698878",
+                "3": "3985141390",
+                "4": "3113754860",
+                "5": "1935175028"
+            },
+            "8-16x Sniper Rifle Scope": {
+                "Nickname": "8-16x",
+                "WPNCompat": "19",
+                "1": "3065093700",
+                "2": "3120199598",
+                "3": "2460526742",
+                "4": "2117485177",
+                "5": "2139215127"
+            },
+            "1-4x Shotgun Scope": {
+                "Nickname": "1-4x SG",
+                "WPNCompat": "10",
+                "1": "1372073399",
+                "2": "324519511",
+                "3": "1620807514",
+                "4": "1982043694",
+                "5": "1710324475"
+            },
+            "2-4x Handgun Scope": {
+                "Nickname": "2-4x HG",
+                "WPNCompat": "06",
+                "1": "462579406",
+                "2": "864419793",
+                "3": "938142268",
+                "4": "836572797",
+                "5": "3822827932"
+            },
+            "2.7x RLG-7 Scope": {
+                "Nickname": "2.7x RLG",
+                "WPNCompat": "36",
+                "1": "3504510297",
+                "2": "3673294634",
+                "3": "2100983389",
+                "4": "2486564535",
+                "5": "4202695497"
+            },
+            "3-Pin Makeshift Bow Sight": {
+                "Nickname": "3-Pin",
+                "WPNCompat": "38",
+                "1": "1795749416",
+                "2": "2278199885",
+                "3": "3822657413",
+                "4": "2405108944",
+                "5": "3936791017"
+            }
+        },
+        "Vision Modules": {
+            "Low Light Vision Amplifier": {
+                "Nickname": "LLV",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "3311094823"
+            },
+            "IR Vision Processor": {
+                "Nickname": "IRV",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "3219589971"
+            },
+            "Object Penetrating Vision Modulator": {
+                "Nickname": "OPV",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "541519494"
+            },
+            "Dual Mode Low Light / IR Module": {
+                "Nickname": "LLV/IRV",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "3912629024"
+            },
+            "Dual Mode Low Light / OPV Module": {
+                "Nickname": "LLV/OPV",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "1399608134"
+            },
+            "Dual Mode IR / OPV Module": {
+                "Nickname": "IRV/OPV",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "342766485"
+            },
+            "Full Vision Module": {
+                "Nickname": "FVM",
+                "WPNCompat": "06, 10, 17, 18, 24, 25",
+                "0": "1524218344"
+            }
+        },
+        "Compensators": {
+            "Handgun Compensator": {
+                "Nickname": "HGC",
+                "WPNCompat": "06",
+                "1": "1773807463",
+                "2": "103343521",
+                "3": "2422114864",
+                "4": "3261449092",
+                "5": "140689257"
+            },
+            "Submachine Gun Compensator": {
+                "Nickname": "SMGC",
+                "WPNCompat": "13, 14",
+                "1": "1032498755",
+                "2": "3712752078",
+                "3": "1726940210",
+                "4": "2431640862",
+                "5": "3344407277"
+            },
+            "Machine Gun Compensator": {
+                "Nickname": "MGC",
+                "WPNCompat": "28, 29",
+                "1": "3738664552",
+                "2": "2355766144",
+                "3": "1703630565",
+                "4": "3588892246",
+                "5": "1186635998"
+            }
+        },
+        "Silencer": {
+            "Handgun Silencer": {
+                "Nickname": "HGS",
+                "WPNCompat": "04, 05, 06",
+                "1": "3056226729",
+                "2": "3802202362",
+                "3": "3306010992",
+                "4": "3575698205",
+                "5": "4181974023"
+            },
+            "Shotgun Silencer": {
+                "Nickname": "SGS",
+                "WPNCompat": "10",
+                "1": "2895205184",
+                "2": "2819613574",
+                "3": "2418538471",
+                "4": "1505768670",
+                "5": "3510530468"
+            },
+            "Submachine Gun Silencer": {
+                "Nickname": "SMGS",
+                "WPNCompat": "13, 14",
+                "1": "120673529",
+                "2": "2633412628",
+                "3": "709419540",
+                "4": "1894606298",
+                "5": "1200175545"
+            },
+            "Assault Rifle Silencer": {
+                "Nickname": "ARS",
+                "WPNCompat": "23, 24, 25",
+                "1": "1174380951",
+                "2": "3339253005",
+                "3": "628819227",
+                "4": "2100784956",
+                "5": "4174319997"
+            },
+            "Rifle Silencer": {
+                "Nickname": "HRS",
+                "WPNCompat": "17, 18",
+                "1": "1911085383",
+                "2": "2928624145",
+                "3": "1962372788",
+                "4": "778908383",
+                "5": "3726716970"
+            },
+            "Machine Gun Silencer": {
+                "Nickname": "MGS",
+                "WPNCompat": "28, 29",
+                "1": "2711568351",
+                "2": "2862110650",
+                "3": "3175650646",
+                "4": "1287419868",
+                "5": "2185179540"
+            },
+            "COM-10 Silencer": {
+                "Nickname": "COM-10S",
+                "WPNCompat": "15",
+                "1": "1437135100",
+                "2": "1321999814",
+                "3": "3832166172",
+                "4": "84495373",
+                "5": "3758221337"
+            }
+        },
+        "Extensions": {
+            "Submachine Gun Barrel Extension": {
+                "Nickname": "SMGE",
+                "WPNCompat": "13, 14",
+                "1": "1539705613",
+                "2": "4132274475",
+                "3": "1601682584",
+                "4": "941533127",
+                "5": "1987014809"
+            },
+            "Assault Rifle Barrel Extension": {
+                "Nickname": "ARE",
+                "WPNCompat": "23, 24, 25",
+                "1": "587104070",
+                "2": "2429644031",
+                "3": "4171889764",
+                "4": "2250093741",
+                "5": "1013433832"
+            },
+            "Shotgun Choke": {
+                "Nickname": "SGC",
+                "WPNCompat": "10, 11",
+                "1": "661478348",
+                "2": "1121036281",
+                "3": "4167861087",
+                "4": "725994668",
+                "5": "3973781034"
+            }
+        },
+        "Magazines": {
+            "Automatgevär 4 Extended Magazine": {
+                "Nickname": "AG4M",
+                "WPNCompat": "24",
+                "1": "2617659386",
+                "2": "3383755317",
+                "3": "1424550175",
+                "4": "3769156863",
+                "5": "3119955502"
+            },
+            "Automatgevär 5 Extended Magazine": {
+                "Nickname": "AG5M",
+                "WPNCompat": "25",
+                "1": "3359963809",
+                "2": "1975971380",
+                "3": "796057221",
+                "4": "2126576151",
+                "5": "3545575662"
+            },
+            "AI-76 Extended Magazine": {
+                "Nickname": "AI-76M",
+                "WPNCompat": "23",
+                "1": "1727569198",
+                "2": "3690786906",
+                "3": "2145410535",
+                "4": "1408373939",
+                "5": "108980312"
+            },
+            "Kpist Extended Magazine": {
+                "Nickname": "KPSTM",
+                "WPNCompat": "13",
+                "1": "2587787037",
+                "2": "845205168",
+                "3": "3051714782",
+                "4": "2511792803",
+                "5": "3877920587"
+            },
+            "HP5 Extended Magazine": {
+                "Nickname": "HP5M",
+                "WPNCompat": "14",
+                "1": "4127861852",
+                "2": "1473708964",
+                "3": "2039690065",
+                "4": "2047704924",
+                "5": "2882330472"
+            },
+            "Möller PP Extended Magazine": {
+                "Nickname": "PPM",
+                "WPNCompat": "04",
+                "1": "3520895500",
+                "2": "588534837",
+                "3": "2059699339",
+                "4": "3842517818",
+                "5": "735055802"
+            },
+            "Klaucke 17 Extended Magazine": {
+                "Nickname": "17M",
+                "WPNCompat": "05",
+                "1": "2790621325",
+                "2": "256441433",
+                "3": "4291300249",
+                "4": "1302591039",
+                "5": "3307898268"
+            },
+            "Pvg 90 Extended Magazine": {
+                "Nickname": "90M",
+                "WPNCompat": "19",
+                "1": "3819765588",
+                "2": "504089909",
+                "3": "1172249816",
+                "4": "1710715268",
+                "5": "3216241599"
+            },
+            "Kvm 59 Extended Mag": {
+                "Nickname": "59M",
+                "WPNCompat": "28",
+                "1": "1723863243",
+                "2": "3535641319",
+                "3": "1328577583",
+                "4": "1558147013",
+                "5": "1315987554"
+            },
+            "Kvm 89 Extended Mag": {
+                "Nickname": "89M",
+                "WPNCompat": "29",
+                "1": "1521622499",
+                "2": "2688710235",
+                "3": "412216527",
+                "4": "2285898363",
+                "5": "2652884748"
+            },
+            "N16 Extended Mag": {
+                "Nickname": "N16M",
+                "WPNCompat": "26",
+                "1": "648874497",
+                "2": "917908978",
+                "3": "4014134721",
+                "4": "1452142253",
+                "5": "1446970813"
+            },
+            "N60 Extended Mag": {
+                "Nickname": "N60M",
+                "WPNCompat": "30",
+                "1": "112138696",
+                "2": "1576373844",
+                "3": "4045043296",
+                "4": "2582422082",
+                "5": "1139535699"
+            },
+            "N9 Extended Mag": {
+                "Nickname": "N9M",
+                "WPNCompat": "07",
+                "1": "4097494526",
+                "2": "2410190964",
+                "3": "2107999405",
+                "4": "1185936380",
+                "5": "4281551700"
+            },
+            "COM-10 Extended Mag": {
+                "Nickname": "COM-10M",
+                "WPNCompat": "15",
+                "1": "4247938391",
+                "2": "1300757502",
+                "3": "3252463992",
+                "4": "370270227",
+                "5": "2471926770"
+            },
+            "S21 Extended Mag": {
+                "Nickname": "S21M",
+                "WPNCompat": "21",
+                "1": "3066941229",
+                "2": "3104319869",
+                "3": "1689849202",
+                "4": "2910544247",
+                "5": "707664520"
+            },
+            "Large Flamethrower Tank": {
+                "Nickname": "FTank",
+                "WPNCompat": "37",
+                "1": "3528333298",
+                "2": "3410324791",
+                "3": "4243928532",
+                "4": "3254391933",
+                "5": "4285107762"
+            },
+            "AT-WAD Extended Mag": {
+                "Nickname": "AT-WADM",
+                "WPNCompat": "27",
+                "1": "516854463",
+                "2": "1189364853",
+                "3": "496387113",
+                "4": "1883852938",
+                "5": "160594239"
+            },
+            "Kotenok Extended Mag": {
+                "Nickname": "KotM",
+                "WPNCompat": "20",
+                "1": "2248483012",
+                "2": "1691669094",
+                "3": "3196645901",
+                "4": "53291036",
+                "5": "462916900"
+            },
+            "Vosa Extended Mag": {
+                "Nickname": "VosaM",
+                "WPNCompat": "16",
+                "1": "4131122018",
+                "2": "2487120463",
+                "3": "2278649059",
+                "4": "1628747866",
+                "5": "3852403671"
+            },
+            "Volkov Extended Mag": {
+                "Nickname": "VolkM",
+                "WPNCompat": "08",
+                "1": "3205339235",
+                "2": "2573298076",
+                "3": "69575598",
+                "4": "1097181454",
+                "5": "2739612969"
+            },
+            "Iron Condor Extended Mag": {
+                "Nickname": "CondorM",
+                "WPNCompat": "09",
+                "1": "1536877403",
+                "2": "869389857",
+                "3": "1248729782",
+                "4": "4160699941",
+                "5": "3538449300"
+            },
+            "PM-71 Extended Mag": {
+                "Nickname": "PM-71M",
+                "WPNCompat": "31",
+                "1": "3610747338",
+                "2": "3984409161",
+                "3": "1423070667",
+                "4": "2935215239",
+                "5": "1132671763"
+            }
+        }
+    },
+    "Ammo": {
+        "Handguns": {
+            "9mm Handgun": {
+                "9mm FMJ": "3692082372",
+                "9mm Armor-Piercing": "2101243622",
+                "9mm Shock": "1947634432",
+                "9mm HEAT": "2338235535"
+            },
+            ".32 ACP": {
+                ".32 ACP FMJ": "1755717911",
+                ".32 ACP Hollow-Point": "3192142587",
+                ".32 ACP Medical": "3805952047",
+                ".32 ACP Radioactive": "3144849727"
+            },
+            ".44": {
+                ".44 FMJ": "3806949296",
+                ".44 Hollow-Point": "3723181227",
+                ".44 Explosive": "3941975225",
+                ".44 Tar": "1792919161"
+            }
+        },
+        "Submachine Guns": {
+            "9mm SMG": {
+                "9mm FMJ": "3070799296",
+                "9mm Armor-Piercing": "1084846954",
+                "9mm Corrosive": "907062304",
+                "9mm Explosive": "2927254515"
+            }
+        },
+        "Assault Rifles": {
+            "5.56mm": {
+                "5.56mm FMJ": "2710140275",
+                "5.56mm Armor-Piercing": "491135589",
+                "5.56mm Corrosive": "3025565343",
+                "5.56mm HEAT": "3225527075"
+            },
+            "7.62mm": {
+                "7.62mm FMJ": "2571545032",
+                "7.62mm Armor-Piercing": "224883577",
+                "7.62mm Tar": "961527320",
+                "7.62mm Shock": "3135811327"
+            },
+            "9x39mm": {
+                "9x39mm FMJ": "1911901645",
+                "9x39mm Armor-Piercing": "1617631538"
+            }
+        },
+        "Hunting Rifles":{
+            ".243": {
+            ".243 FMJ": "3379685862",
+            ".243 Soft-Point": "2081045029",
+            ".243 HEAT": "3732144546",
+            ".243 Explosive": "51517981"
+            },
+            ".270": {
+                ".270 FMJ": "4205294154",
+                ".270 Soft-Point": "3233196944",
+                ".270 Shock": "3864128650",
+                ".270 Medical": "2032835295"
+            },
+            ".50 BMG": {
+                ".50 BMG FMJ": "3698280621",
+                ".50 BMG Armor-Piercing": "1054005230",
+                ".50 BMG Explosive": "2144129912",
+                ".50 BMG Medical": "3794872971"
+            }
+        },
+        "Shotguns": {
+            "12ga": {
+                "12ga Birdshot": "236951054",
+                "12ga Buckshot": "3204920558",
+                "12ga Slug": "1060532558",
+                "12ga Slug Corrosive": "877797819",
+                "12ga Slug Medical": "2419319546"
+            }
+        },
+        "Launchers": {
+            "Granat": {
+                "High-Explosive Dual-Purpose Round": "3376225280",
+                "Highly-Radioactive Dual-Purpose Round": "3327563976",
+                "Highly Corrosive Dual-Purpose Round": "1406479561",
+                "Electromagnetic Pulse Round": "1987355777",
+                "Smoke Round": "3904084887",
+                "Flare Round": "1566202094",
+                "Chaff Round": "2673834166"
+            },
+            "GLHE": {
+                "Grenade Launcher HE Cartridge": "3915248076",
+                "Grenade Launcher EMP Cartridge": "1565819850",
+                "Grenade Launcher Smoke Cartridge": "967616799"
+            },
+            "Recoilless": {
+                "LG-7V High-Explosive Round": "1104953982",
+                "Flamethrower Napalm": "3547236800"
+            }
+        },
+        "Other": {
+            "Bow": {
+                "Standard Resistance Arrows": "110843858",
+                "Resistance Explosive Arrows": "3558841762",
+                "Resistance Flare Arrows": "3323108915"
+            },
+            "Misc": {
+                "High Voltage Battery Mag": "2277270272",
+                "Repair Juice": "1295142968"
+            }
+        }
+    },
+    "Skins": {
+        "Melee": {
+            "Brännboll Bat": {
+                "Graffiti Resistance": {
+                    "Nickname": "Bat Graffiti Resistance",
+                    "EquipmentName": "wpn_melee_baseball_bat_01_skin_01",
+                    "SkinPNG": "weapon_skin_resistance_graffiti_baseball_bat_alpha.png",
+                    "0": "102104075"
+                }
+            },
+            "Sledgehammer": {
+                "Street Art - Sledgehammer": {
+                    "Nickname": "Hammer Street Art",
+                    "EquipmentName": "wpn_melee_sledge_hammer_01_skin_01",
+                    "SkinPNG": "weapon_skin_punk_graffiti_alpha.png",
+                    "0": "3246019526"
+                }
+            }
+        },
+        "Handguns": {
+            "Möller PP": {
+                "Neon Grid Custom": {
+                    "Nickname": "PP Neon Grid",
+                    "EquipmentName": "wpn_handgun_semiauto_32acp_01_skin_01",
+                    "SkinPNG": "weapon_skin_neon_grid_alpha.png",
+                    "0": "2888988561"
+                },
+                "Graffiti Resistance": {
+                    "Nickname": "PP Graffiti Resistance",
+                    "EquipmentName": "wpn_handgun_semiauto_32acp_01_skin_02",
+                    "SkinPNG": "weapon_skin_resistance_graffiti_alpha.png",
+                    "0": "2089467964"
+                },
+                "Prototype": {
+                    "Nickname": "PP Prototype",
+                    "EquipmentName": "wpn_handgun_semiauto_32acp_01_skin_03",
+                    "SkinPNG": "weapon_skin_fnix_prototype_alpha.png",
+                    "0": "1485523854"
+                }
+            },
+            "Klaucke 17": {
+                "Flecktarn Resistance": {
+                    "Nickname": "K17 Flecktarn Resistance",
+                    "EquipmentName": "wpn_handgun_semiauto_9mm_01_skin_01",
+                    "SkinPNG": "weapon_skin_flecktarn_resistance_alpha.png",
+                    "0": "3092970274"
+                },
+                "Copper Top Custom": {
+                    "Nickname": "K17 Copper Top",
+                    "EquipmentName": "wpn_handgun_semiauto_9mm_01_skin_02",
+                    "SkinPNG": "weapon_skin_copper_top_alpha.png",
+                    "0": "1017427130"
+                },
+                "Apocalypse": {
+                    "Nickname": "K17 Apocalypse",
+                    "EquipmentName": "wpn_handgun_semiauto_9mm_01_skin_03",
+                    "SkinPNG": "weapon_skin_fnix_apocalypse_alpha.png",
+                    "0": "4107754327"
+                }
+            },
+            ".44 Magnus": {
+                "Gold": {
+                    "Nickname": "Revolver Gold",
+                    "EquipmentName": "wpn_handgun_revolver_44m_01_skin_01",
+                    "SkinPNG": "weapon_skin_gold_alpha.png",
+                    "0": "1922037696"
+                },
+                "Artificial Intelligence": {
+                    "Nickname": "Revolver AI",
+                    "EquipmentName": "wpn_handgun_revolver_44m_01_skin_02",
+                    "SkinPNG": "weapon_skin_fnix_ai_alpha.png",
+                    "0": "1249108520"
+                }
+            }
+        },
+        "Shotguns": {
+            "12G Pump Action": {
+                "Graffiti Resistance": {
+                    "Nickname": "Pump Graffiti Resistance",
+                    "EquipmentName": "wpn_shotgun_pump_12ga_01_skin_01",
+                    "SkinPNG": "weapon_skin_resistance_graffiti_alpha.png",
+                    "0": "3699675258"
+                },
+                "Disruptive Forest": {
+                    "Nickname": "Pump Disruptive Forest",
+                    "EquipmentName": "wpn_shotgun_pump_12ga_01_skin_02",
+                    "SkinPNG": "weapon_skin_disruptive_pattern_material_forest_alpha.png",
+                    "0": "912894725"
+                },
+                "Orange Venom Custom": {
+                    "Nickname": "Pump Orange Venom",
+                    "EquipmentName": "wpn_shotgun_pump_12ga_01_skin_03",
+                    "SkinPNG": "weapon_skin_orange_venom_alpha.png",
+                    "0": "1207159849"
+                },
+                "Engraved Showpiece": {
+                    "Nickname": "Pump Engraved",
+                    "EquipmentName": "wpn_shotgun_pump_12ga_01_skin_04",
+                    "SkinPNG": "weapon_skin_engraved_showpiece_shotgun_pump_action_alpha.png",
+                    "0": "3510397045"
+                },
+                "Apocalypse": {
+                    "Nickname": "Pump Apocalypse",
+                    "EquipmentName": "wpn_shotgun_pump_12ga_01_skin_05",
+                    "SkinPNG": "weapon_skin_fnix_apocalypse_alpha.png",
+                    "0": "4183664276"
+                }
+            },
+            "Sjöqvist SemiAuto": {
+                "Disruptive Resistance": {
+                    "Nickname": "Sjq Disruptive Resistance",
+                    "EquipmentName": "wpn_shotgun_semi_12ga_01_skin_01",
+                    "SkinPNG": "weapon_skin_disruptive_pattern_material_resistance_alpha.png",
+                    "0": "2649908183"
+                }
+            }
+        },
+        "Submachine Guns": {
+            "M/46 Kpist SMG": {
+                "Swedish Resistance": {
+                    "Nickname": "Kpist Swedish Resistance",
+                    "EquipmentName": "wpn_submach_9mm_02_skin_01",
+                    "SkinPNG": "weapon_skin_m90_forest_alpha.png",
+                    "0": "3813810143"
+                },
+                "Heavy Flash Custom": {
+                    "Nickname": "Kpist Heavy Flash",
+                    "EquipmentName": "wpn_submach_9mm_02_skin_02",
+                    "SkinPNG": "weapon_skin_heavy_flash_alpha.png",
+                    "0": "1335626752"
+                },
+                "Party Pop Dark": {
+                    "Nickname": "Kpist Party Pop Dark",
+                    "EquipmentName": "wpn_submach_9mm_02_skin_03",
+                    "SkinPNG": "weapon_skin_party_pop_dark_alpha.png",
+                    "0": "2564617433"
+                },
+                "Prototype": {
+                    "Nickname": "Kpist Prototype",
+                    "EquipmentName": "wpn_submach_9mm_02_skin_04",
+                    "SkinPNG": "weapon_skin_fnix_prototype_alpha.png",
+                    "0": "3703552020"
+                }
+            },
+            "HP5": {
+                "Flecktarn Snow": {
+                    "Nickname": "HP5 Flecktarn Snow",
+                    "EquipmentName": "wpn_submach_9mm_01_skin_01",
+                    "SkinPNG": "weapon_skin_flecktarn_snow_alpha.png",
+                    "0": "2474699660"
+                },
+                "Graffiti Resistance": {
+                    "Nickname": "HP5 Graffiti Resistance",
+                    "EquipmentName": "wpn_submach_9mm_01_skin_02",
+                    "SkinPNG": "weapon_skin_resistance_graffiti_alpha.png",
+                    "0": "4223014133"
+                }
+            }
+        },
+        "Rifles": {
+            "Meusser Hunting Rifle": {
+                "Disruptive Resistance": {
+                    "Nickname": "MHR Disruptive Resistance",
+                    "EquipmentName": "wpn_rifle_hunting_243_01_skin_01",
+                    "SkinPNG": "weapon_skin_disruptive_pattern_material_resistance_alpha.png",
+                    "0": "810055146"
+                },
+                "Engraved Showpiece": {
+                    "Nickname": "MHR Engraved",
+                    "EquipmentName": "wpn_rifle_hunting_243_01_skin_02",
+                    "SkinPNG": "weapon_skin_engraved_showpiece_rifle_243_alpha.png",
+                    "0": "4099589189"
+                },
+                "Apocalypse": {
+                    "Nickname": "MHR Apocalypse",
+                    "EquipmentName": "wpn_rifle_hunting_243_01_skin_03",
+                    "SkinPNG": "weapon_skin_fnix_apocalypse_alpha.png",
+                    "0": "3075505723"
+                }
+            },
+            "Älgstudsare Hunting Rifle": {
+                "Flecktarn Forest": {
+                    "Nickname": "ÄHR Flecktarn Forest",
+                    "EquipmentName": "wpn_rifle_hunting_270_01_skin_01",
+                    "SkinPNG": "weapon_skin_flecktarn_forest_alpha.png",
+                    "0": "1735975972"
+                },
+                "Street Art - \"Älgstudsare\" Hunting Rifle": {
+                    "Nickname": "ÄHR Street Art",
+                    "EquipmentName": "wpn_rifle_hunting_270_01_skin_03",
+                    "SkinPNG": "weapon_skin_punk_graffiti_alpha.png",
+                    "0": "1042623998"
+                }
+            },
+            "Pansarvärnsgevär 90": {
+                "Woodland Resistance": {
+                    "Nickname": "Pvg 90 Woodland Resistance",
+                    "EquipmentName": "wpn_rifle_sniper_50_01_skin_01",
+                    "SkinPNG": "weapon_skin_us_woodland_resistance_alpha.png",
+                    "0": "2321983663"
+                },
+                "Splash Freak Custom": {
+                    "Nickname": "Pvg 90 Splash Freak",
+                    "EquipmentName": "wpn_rifle_sniper_50_01_skin_02",
+                    "SkinPNG": "weapon_skin_splash_freak_alpha.png",
+                    "0": "1728288052"
+                },
+                "Naval Marine": {
+                    "Nickname": "Pvg 90 Naval Marine",
+                    "EquipmentName": "wpn_rifle_sniper_50_01_skin_03",
+                    "SkinPNG": "weapon_skin_naval_marine_alpha.png",
+                    "0": "236613306"
+                },
+                "Artificial Intelligence": {
+                    "Nickname": "Pvg 90 AI",
+                    "EquipmentName": "wpn_rifle_sniper_50_01_skin_04",
+                    "SkinPNG": "weapon_skin_fnix_ai_alpha.png",
+                    "0": "3496705703"
+                }
+            }
+        },
+        "Assault Rifles": {
+            "AI76 Assault Rifle": {
+                "Disruptive Snow": {
+                    "Nickname": "AI76 Disruptive Snow",
+                    "EquipmentName": "wpn_rifle_assault_762_02_skin_01",
+                    "SkinPNG": "weapon_skin_disruptive_pattern_material_snow_alpha.png",
+                    "0": "294711941"
+                },
+                "Digital Forest": {
+                    "Nickname": "AI76 Digital Forest",
+                    "EquipmentName": "wpn_rifle_assault_762_02_skin_02",
+                    "SkinPNG": "weapon_skin_digital_forest_alpha.png",
+                    "0": "1151958852"
+                },
+                "Prototype": {
+                    "Nickname": "AI76 Prototype",
+                    "EquipmentName": "wpn_rifle_assault_762_02_skin_03",
+                    "SkinPNG": "weapon_skin_fnix_prototype_alpha.png",
+                    "0": "134455287"
+                },
+                "Street Art - AI-76 Assault Rifle": {
+                    "Nickname": "AI76 Street Art",
+                    "EquipmentName": "wpn_rifle_assault_762_02_skin_04",
+                    "SkinPNG": "weapon_skin_punk_graffiti_alpha.png",
+                    "0": "473312442"
+                }
+            },
+            "Automatgevär 4 Assault Rifle": {
+                "Swedish Forest": {
+                    "Nickname": "AG4 Swedish Forest",
+                    "EquipmentName": "wpn_rifle_assault_762_01_skin_01",
+                    "SkinPNG": "weapon_skin_m90_forest_alpha.png",
+                    "0": "1135485525"
+                },
+                "Bepp Cola Custom": {
+                    "Nickname": "AG4 Bepp Cola",
+                    "EquipmentName": "wpn_rifle_assault_762_01_skin_02",
+                    "SkinPNG": "weapon_skin_bepp_cola_alpha.png",
+                    "0": "3460118796"
+                },
+                "Funky Floral": {
+                    "Nickname": "AG4 Funky Floral",
+                    "EquipmentName": "wpn_rifle_assault_762_01_skin_03",
+                    "SkinPNG": "weapon_skin_funky_floral_alpha.png",
+                    "0": "3939817143"
+                },
+                "Street Art - Automatgevär 4 (AG 4)": {
+                    "Nickname": "AG4 Street Art",
+                    "EquipmentName": "wpn_rifle_assault_762_01_skin_04",
+                    "SkinPNG": "weapon_skin_punk_graffiti_alpha.png",
+                    "0": "2861923792"
+                }
+            },
+            "Automatgevär 5 Assault Rifle": {
+                "Swedish Snow": {
+                    "Nickname": "AG5 Swedish Snow",
+                    "EquipmentName": "wpn_rifle_assault_556_01_skin_01",
+                    "SkinPNG": "weapon_skin_m90_snow_alpha.png",
+                    "0": "3773067046"
+                },
+                "A.O.T.F. Custom": {
+                    "Nickname": "AG5 AOTF",
+                    "EquipmentName": "wpn_rifle_assault_556_01_skin_02",
+                    "SkinPNG": "weapon_skin_ash_of_the_flesh_alpha.png",
+                    "0": "750095143"
+                },
+                "Desert Sand": {
+                    "Nickname": "AG5 Desert Sand",
+                    "EquipmentName": "wpn_rifle_assault_556_01_skin_03",
+                    "SkinPNG": "weapon_skin_desert_sand_alpha.png",
+                    "0": "362182691"
+                },
+                "Artificial Intelligence": {
+                    "Nickname": "AG5 AI",
+                    "EquipmentName": "wpn_rifle_assault_556_01_skin_04",
+                    "SkinPNG": "weapon_skin_fnix_ai_alpha.png",
+                    "0": "568706072"
+                }
+            }
+        },
+        "Light Machine Guns": {
+            "Kvm 59 Machine Gun": {
+                "Woodland Snow": {
+                    "Nickname": "Kvm 59 Woodland Snow",
+                    "EquipmentName": "wpn_machine_gun_762_01_skin_01",
+                    "SkinPNG": "weapon_skin_us_woodland_snow_alpha.png",
+                    "0": "2754874689"
+                },
+                "Flecktarn Urban": {
+                    "Nickname": "Kvm 59 Flecktarn Urban",
+                    "EquipmentName": "wpn_machine_gun_762_01_skin_02",
+                    "SkinPNG": "weapon_skin_flecktarn_urban_alpha.png",
+                    "0": "1749510754"
+                },
+                "Street Art - Kvm 59": {
+                    "Nickname": "Kvm 59 Street Art",
+                    "EquipmentName": "wpn_machine_gun_762_01_skin_03",
+                    "SkinPNG": "weapon_skin_punk_graffiti_alpha.png",
+                    "0": "3818228342"
+                }
+            },
+            "Kvm 89 Squad Automatic Weapon": {
+                "Woodland Forest": {
+                    "Nickname": "Kvm89 Woodland Forest",
+                    "EquipmentName": "wpn_machine_gun_556_01_skin_01",
+                    "SkinPNG": "weapon_skin_us_woodland_forest_alpha.png",
+                    "0": "3245268203"
+                },
+                "Party Pop Bright": {
+                    "Nickname": "Kvm89 Party Pop Bright",
+                    "EquipmentName": "wpn_machine_gun_556_01_skin_02",
+                    "SkinPNG": "weapon_skin_party_pop_bright_alpha.png",
+                    "0": "4276556642"
+                },
+                "Street Art - Kvm 89": {
+                    "Nickname": "Kvm89 Street Art",
+                    "EquipmentName": "wpn_machine_gun_556_01_skin_03",
+                    "SkinPNG": "weapon_skin_punk_graffiti_alpha.png",
+                    "0": "38413952"
+                }
+            }
+        },
+        "Recoilless Rifles": {
+            "Granatgevär m/49": {
+                "Puma Resistance": {
+                    "Nickname": "G49 Puma Resistance",
+                    "EquipmentName": "wpn_special_launcher_01_skin_01",
+                    "SkinPNG": "weapon_skin_wz_89_puma_resistance_alpha.png",
+                    "0": "2790183489"
+                },
+                "Whiplash Custom": {
+                    "Nickname": "G49 Whiplash",
+                    "EquipmentName": "wpn_special_launcher_01_skin_02",
+                    "SkinPNG": "weapon_skin_whiplash_alpha.png",
+                    "0": "810639722"
+                },
+                "Artificial Intelligence": {
+                    "Nickname": "G49 AI",
+                    "EquipmentName": "wpn_special_launcher_01_skin_03",
+                    "SkinPNG": "weapon_skin_fnix_ai_alpha.png",
+                    "0": "561815731"
+                }
+            }
+        }
+    },
+    "Augments": {
+        "Primary": {
+            "Acidic": {
+                "Bronze": {
+                    "Nickname": "Bronze Acidic",
+                    "EquipmentName": "equipment_augment_acidic_q1",
+                    "Augment": "acidic.png",
+                    "Quality": "q1.png",
+                    "0": "701542251"
+                },
+                "Silver": {
+                    "Nickname": "Silver Acidic",
+                    "EquipmentName": "equipment_augment_acidic_q2",
+                    "Augment": "acidic.png",
+                    "Quality": "q2.png",
+                    "0": "1268494352"
+                },
+                "Gold": {
+                    "Nickname": "Gold Acidic",
+                    "EquipmentName": "equipment_augment_acidic_q3",
+                    "Augment": "acidic.png",
+                    "Quality": "q3.png",
+                    "0": "1144724136"
+                }
+            },
+            "Adhesive Rounds": {
+                "Bronze": {
+                    "Nickname": "Bronze Adhesive Rounds",
+                    "EquipmentName": "equipment_augment_adhesive_rounds_q1",
+                    "Augment": "adhesive_rounds.png",
+                    "Quality": "q1.png",
+                    "0": "3284024131"
+                },
+                "Silver": {
+                    "Nickname": "Silver Adhesive Rounds",
+                    "EquipmentName": "equipment_augment_adhesive_rounds_q2",
+                    "Augment": "adhesive_rounds.png",
+                    "Quality": "q2.png",
+                    "0": "2191992536"
+                },
+                "Gold": {
+                    "Nickname": "Gold Adhesive Rounds",
+                    "EquipmentName": "equipment_augment_adhesive_rounds_q3",
+                    "Augment": "adhesive_rounds.png",
+                    "Quality": "q3.png",
+                    "0": "1131186385"
+                }
+            },
+            "EMP Detonation": {
+                "Bronze": {
+                    "Nickname": "Bronze EMP Detonation",
+                    "EquipmentName": "equipment_augment_emp_detonation_q1",
+                    "Augment": "emp_detonation.png",
+                    "Quality": "q1.png",
+                    "0": "3757517669"
+                },
+                "Silver": {
+                    "Nickname": "Silver EMP Detonation",
+                    "EquipmentName": "equipment_augment_emp_detonation_q2",
+                    "Augment": "emp_detonation.png",
+                    "Quality": "q2.png",
+                    "0": "1128029943"
+                },
+                "Gold": {
+                    "Nickname": "Gold EMP Detonation",
+                    "EquipmentName": "equipment_augment_emp_detonation_q3",
+                    "Augment": "emp_detonation.png",
+                    "Quality": "q3.png",
+                    "0": "3752163303"
+                }
+            },
+            "Final Round": {
+                "Bronze": {
+                    "Nickname": "Bronze Final Round",
+                    "EquipmentName": "equipment_augment_final_round_q1",
+                    "Augment": "final_round.png",
+                    "Quality": "q1.png",
+                    "0": "4076157463"
+                },
+                "Silver": {
+                    "Nickname": "Silver Final Round",
+                    "EquipmentName": "equipment_augment_final_round_q2",
+                    "Augment": "final_round.png",
+                    "Quality": "q2.png",
+                    "0": "3104256228"
+                },
+                "Gold": {
+                    "Nickname": "Gold Final Round",
+                    "EquipmentName": "equipment_augment_final_round_q3",
+                    "Augment": "final_round.png",
+                    "Quality": "q3.png",
+                    "0": "933782510"
+                }
+            },
+            "Health Stealing": {
+                "Bronze": {
+                    "Nickname": "Bronze Health Stealing",
+                    "EquipmentName": "equipment_augment_health_stealing_q1",
+                    "Augment": "health_stealing.png",
+                    "Quality": "q1.png",
+                    "0": "1406757005"
+                },
+                "Silver": {
+                    "Nickname": "Silver Health Stealing",
+                    "EquipmentName": "equipment_augment_health_stealing_q2",
+                    "Augment": "health_stealing.png",
+                    "Quality": "q2.png",
+                    "0": "586517452"
+                },
+                "Gold": {
+                    "Nickname": "Gold Health Stealing",
+                    "EquipmentName": "equipment_augment_health_stealing_q3",
+                    "Augment": "health_stealing.png",
+                    "Quality": "q3.png",
+                    "0": "1972296724"
+                }
+            },
+            "Machine Disarmer": {
+                "Bronze": {
+                    "Nickname": "Bronze Machine Disarmer",
+                    "EquipmentName": "equipment_augment_machine_disarmer_q1",
+                    "Augment": "machine_disarmer.png",
+                    "Quality": "q1.png",
+                    "0": "574873375"
+                },
+                "Silver": {
+                    "Nickname": "Silver Machine Disarmer",
+                    "EquipmentName": "equipment_augment_machine_disarmer_q2",
+                    "Augment": "machine_disarmer.png",
+                    "Quality": "q2.png",
+                    "0": "3245897150"
+                },
+                "Gold": {
+                    "Nickname": "Gold Machine Disarmer",
+                    "EquipmentName": "equipment_augment_machine_disarmer_q3",
+                    "Augment": "machine_disarmer.png",
+                    "Quality": "q3.png",
+                    "0": "196559570"
+                }
+            },
+            "Prone Specialization": {
+                "Bronze": {
+                    "Nickname": "Bronze Prone Specialization",
+                    "EquipmentName": "equipment_augment_prone_specialization_q1",
+                    "Augment": "prone_specialization.png",
+                    "Quality": "q1.png",
+                    "0": "2745785345"
+                },
+                "Silver": {
+                    "Nickname": "Silver Prone Specialization",
+                    "EquipmentName": "equipment_augment_prone_specialization_q2",
+                    "Augment": "prone_specialization.png",
+                    "Quality": "q2.png",
+                    "0": "3925165995"
+                },
+                "Gold": {
+                    "Nickname": "Gold Prone Specialization",
+                    "EquipmentName": "equipment_augment_prone_specialization_q3",
+                    "Augment": "prone_specialization.png",
+                    "Quality": "q3.png",
+                    "0": "3599109288"
+                }
+            },
+            "Rapid Reload": {
+                "Bronze": {
+                    "Nickname": "Bronze Rapid Reload",
+                    "EquipmentName": "equipment_augment_rapid_reload_q1",
+                    "Augment": "rapid_reload.png",
+                    "Quality": "q1.png",
+                    "0": "1843188710"
+                },
+                "Silver": {
+                    "Nickname": "Silver Rapid Reload",
+                    "EquipmentName": "equipment_augment_rapid_reload_q2",
+                    "Augment": "rapid_reload.png",
+                    "Quality": "q2.png",
+                    "0": "4057282791"
+                },
+                "Gold": {
+                    "Nickname": "Gold Rapid Reload",
+                    "EquipmentName": "equipment_augment_rapid_reload_q3",
+                    "Augment": "rapid_reload.png",
+                    "Quality": "q3.png",
+                    "0": "2934050760"
+                }
+            },
+            "Scorching": {
+                "Bronze": {
+                    "Nickname": "Bronze Scorching",
+                    "EquipmentName": "equipment_augment_scorching_q1",
+                    "Augment": "scorching.png",
+                    "Quality": "q1.png",
+                    "0": "1768906677"
+                },
+                "Silver": {
+                    "Nickname": "Silver Scorching",
+                    "EquipmentName": "equipment_augment_scorching_q2",
+                    "Augment": "scorching.png",
+                    "Quality": "q2.png",
+                    "0": "2504962204"
+                },
+                "Gold": {
+                    "Nickname": "Gold Scorching",
+                    "EquipmentName": "equipment_augment_scorching_q3",
+                    "Augment": "scorching.png",
+                    "Quality": "q3.png",
+                    "0": "1747655141"
+                }
+            },
+            "Sharpshooter": {
+                "Bronze": {
+                    "Nickname": "Bronze Sharpshooter",
+                    "EquipmentName": "equipment_augment_sharpshooter_q1",
+                    "Augment": "sharpshooter.png",
+                    "Quality": "q1.png",
+                    "0": "3496246835"
+                },
+                "Silver": {
+                    "Nickname": "Silver Sharpshooter",
+                    "EquipmentName": "equipment_augment_sharpshooter_q2",
+                    "Augment": "sharpshooter.png",
+                    "Quality": "q2.png",
+                    "0": "2938944812"
+                },
+                "Gold": {
+                    "Nickname": "Gold Sharpshooter",
+                    "EquipmentName": "equipment_augment_sharpshooter_q3",
+                    "Augment": "sharpshooter.png",
+                    "Quality": "q3.png",
+                    "0": "3533194844"
+                }
+            },
+            "Small Fryer": {
+                "Bronze": {
+                    "Nickname": "Bronze Small Fryer",
+                    "EquipmentName": "equipment_augment_small_fryer_q1",
+                    "Augment": "small_fryer.png",
+                    "Quality": "q1.png",
+                    "0": "3172374405"
+                },
+                "Silver": {
+                    "Nickname": "Silver Small Fryer",
+                    "EquipmentName": "equipment_augment_small_fryer_q2",
+                    "Augment": "small_fryer.png",
+                    "Quality": "q2.png",
+                    "0": "849613079"
+                },
+                "Gold": {
+                    "Nickname": "Gold Small Fryer",
+                    "EquipmentName": "equipment_augment_small_fryer_q3",
+                    "Augment": "small_fryer.png",
+                    "Quality": "q3.png",
+                    "0": "4149650766"
+                }
+            },
+            "Structure Destructor": {
+                "Bronze": {
+                    "Nickname": "Bronze Structure Destructor",
+                    "EquipmentName": "equipment_augment_structure_destructor_q1",
+                    "Augment": "structure_destructor.png",
+                    "Quality": "q1.png",
+                    "0": "3817576193"
+                },
+                "Silver": {
+                    "Nickname": "Silver Structure Destructor",
+                    "EquipmentName": "equipment_augment_structure_destructor_q2",
+                    "Augment": "structure_destructor.png",
+                    "Quality": "q2.png",
+                    "0": "42490705"
+                },
+                "Gold": {
+                    "Nickname": "Gold Structure Destructor",
+                    "EquipmentName": "equipment_augment_structure_destructor_q3",
+                    "Augment": "structure_destructor.png",
+                    "Quality": "q3.png",
+                    "0": "2814322516"
+                }
+            },
+            "Titan Toppler": {
+                "Bronze": {
+                    "Nickname": "Bronze Titan Toppler",
+                    "EquipmentName": "equipment_augment_titan_toppler_q1",
+                    "Augment": "titan_toppler.png",
+                    "Quality": "q1.png",
+                    "0": "1577375164"
+                },
+                "Silver": {
+                    "Nickname": "Silver Titan Toppler",
+                    "EquipmentName": "equipment_augment_titan_toppler_q2",
+                    "Augment": "titan_toppler.png",
+                    "Quality": "q2.png",
+                    "0": "2524454824"
+                },
+                "Gold": {
+                    "Nickname": "Gold Titan Toppler",
+                    "EquipmentName": "equipment_augment_titan_toppler_q3",
+                    "Augment": "titan_toppler.png",
+                    "Quality": "q3.png",
+                    "0": "3997630408"
+                }
+            },
+            "Trick Shot Master": {
+                "Bronze": {
+                    "Nickname": "Bronze Trick Shot Master",
+                    "EquipmentName": "equipment_augment_trick_shot_master_q1",
+                    "Augment": "trick_shot_master.png",
+                    "Quality": "q1.png",
+                    "0": "2625378043"
+                },
+                "Silver": {
+                    "Nickname": "Silver Trick Shot Master",
+                    "EquipmentName": "equipment_augment_trick_shot_master_q2",
+                    "Augment": "trick_shot_master.png",
+                    "Quality": "q2.png",
+                    "0": "4247541518"
+                },
+                "Gold": {
+                    "Nickname": "Gold Trick Shot Master",
+                    "EquipmentName": "equipment_augment_trick_shot_master_q3",
+                    "Augment": "trick_shot_master.png",
+                    "Quality": "q3.png",
+                    "0": "1513100716"
+                }
+            },
+            "Unstoppable Shells": {
+                "Bronze": {
+                    "Nickname": "Bronze Unstoppable Shells",
+                    "EquipmentName": "equipment_augment_unstoppable_shells_q1",
+                    "Augment": "unstoppable_shells.png",
+                    "Quality": "q1.png",
+                    "0": "887638347"
+                },
+                "Silver": {
+                    "Nickname": "Silver Unstoppable Shells",
+                    "EquipmentName": "equipment_augment_unstoppable_shells_q2",
+                    "Augment": "unstoppable_shells.png",
+                    "Quality": "q2.png",
+                    "0": "149648827"
+                },
+                "Gold": {
+                    "Nickname": "Gold Unstoppable Shells",
+                    "EquipmentName": "equipment_augment_unstoppable_shells_q3",
+                    "Augment": "unstoppable_shells.png",
+                    "Quality": "q3.png",
+                    "0": "1473836690"
+                }
+            },
+            "Uranium Infused": {
+                "Bronze": {
+                    "Nickname": "Bronze Uranium Infused",
+                    "EquipmentName": "equipment_augment_uranium_infused_q1",
+                    "Augment": "uranium_infused.png",
+                    "Quality": "q1.png",
+                    "0": "1890703300"
+                },
+                "Silver": {
+                    "Nickname": "Silver Uranium Infused",
+                    "EquipmentName": "equipment_augment_uranium_infused_q2",
+                    "Augment": "uranium_infused.png",
+                    "Quality": "q2.png",
+                    "0": "1743850065"
+                },
+                "Gold": {
+                    "Nickname": "Gold Uranium Infused",
+                    "EquipmentName": "equipment_augment_uranium_infused_q3",
+                    "Augment": "uranium_infused.png",
+                    "Quality": "q3.png",
+                    "0": "1626831910"
+                }
+            }
+        },
+        "Support": {
+            "Crouching Tiger": {
+                "Bronze": {
+                    "Nickname": "Bronze Crouching Tiger",
+                    "EquipmentName": "equipment_augment_crouching_tiger_q1",
+                    "Augment": "crouching_tiger.png",
+                    "Quality": "q1.png",
+                    "0": "2933823294"
+                },
+                "Silver": {
+                    "Nickname": "Silver Crouching Tiger",
+                    "EquipmentName": "equipment_augment_crouching_tiger_q2",
+                    "Augment": "crouching_tiger.png",
+                    "Quality": "q2.png",
+                    "0": "4225641545"
+                },
+                "Gold": {
+                    "Nickname": "Gold Crouching Tiger",
+                    "EquipmentName": "equipment_augment_crouching_tiger_q3",
+                    "Augment": "crouching_tiger.png",
+                    "Quality": "q3.png",
+                    "0": "40101848"
+                }
+            },
+            "Flurry of Blows": {
+                "Bronze": {
+                    "Nickname": "Bronze Flurry of Blows",
+                    "EquipmentName": "equipment_augment_flurry_of_blows_q1",
+                    "Augment": "flurry_of_blows.png",
+                    "Quality": "q1.png",
+                    "0": "3155455849"
+                },
+                "Silver": {
+                    "Nickname": "Silver Flurry of Blows",
+                    "EquipmentName": "equipment_augment_flurry_of_blows_q2",
+                    "Augment": "flurry_of_blows.png",
+                    "Quality": "q2.png",
+                    "0": "4273056511"
+                },
+                "Gold": {
+                    "Nickname": "Gold Flurry of Blows",
+                    "EquipmentName": "equipment_augment_flurry_of_blows_q3",
+                    "Augment": "flurry_of_blows.png",
+                    "Quality": "q3.png",
+                    "0": "309995219"
+                }
+            },
+            "Hip Shooter": {
+                "Bronze": {
+                    "Nickname": "Bronze Hip Shooter",
+                    "EquipmentName": "equipment_augment_hip_shooter_q1",
+                    "Augment": "hip_shooter.png",
+                    "Quality": "q1.png",
+                    "0": "2282780423"
+                },
+                "Silver": {
+                    "Nickname": "Silver Hip Shooter",
+                    "EquipmentName": "equipment_augment_hip_shooter_q2",
+                    "Augment": "hip_shooter.png",
+                    "Quality": "q2.png",
+                    "0": "1223657020"
+                },
+                "Gold": {
+                    "Nickname": "Gold Hip Shooter",
+                    "EquipmentName": "equipment_augment_hip_shooter_q3",
+                    "Augment": "hip_shooter.png",
+                    "Quality": "q3.png",
+                    "0": "1750296536"
+                }
+            },
+            "Hit and Run": {
+                "Bronze": {
+                    "Nickname": "Bronze Hit and Run",
+                    "EquipmentName": "equipment_augment_hit_and_run_q1",
+                    "Augment": "hit_and_run.png",
+                    "Quality": "q1.png",
+                    "0": "3506408665"
+                },
+                "Silver": {
+                    "Nickname": "Silver Hit and Run",
+                    "EquipmentName": "equipment_augment_hit_and_run_q2",
+                    "Augment": "hit_and_run.png",
+                    "Quality": "q2.png",
+                    "0": "1322992620"
+                },
+                "Gold": {
+                    "Nickname": "Gold Hit and Run",
+                    "EquipmentName": "equipment_augment_hit_and_run_q3",
+                    "Augment": "hit_and_run.png",
+                    "Quality": "q3.png",
+                    "0": "4199800993"
+                }
+            },
+            "Oversized Magazine": {
+                "Bronze": {
+                    "Nickname": "Bronze Oversized Magazine",
+                    "EquipmentName": "equipment_augment_oversized_clip_q1",
+                    "Augment": "oversized_clip.png",
+                    "Quality": "q1.png",
+                    "0": "1257450603"
+                },
+                "Silver": {
+                    "Nickname": "Silver Oversized Magazine",
+                    "EquipmentName": "equipment_augment_oversized_clip_q2",
+                    "Augment": "oversized_clip.png",
+                    "Quality": "q2.png",
+                    "0": "3985117270"
+                },
+                "Gold": {
+                    "Nickname": "Gold Oversized Magazine",
+                    "EquipmentName": "equipment_augment_oversized_clip_q3",
+                    "Augment": "oversized_clip.png",
+                    "Quality": "q3.png",
+                    "0": "709988518"
+                }
+            },
+            "Power Attacker": {
+                "Bronze": {
+                    "Nickname": "Bronze Power Attacker",
+                    "EquipmentName": "equipment_augment_power_attacker_q1",
+                    "Augment": "power_attacker.png",
+                    "Quality": "q1.png",
+                    "0": "3686325640"
+                },
+                "Silver": {
+                    "Nickname": "Silver Power Attacker",
+                    "EquipmentName": "equipment_augment_power_attacker_q2",
+                    "Augment": "power_attacker.png",
+                    "Quality": "q2.png",
+                    "0": "4177976569"
+                },
+                "Gold": {
+                    "Nickname": "Gold Power Attacker",
+                    "EquipmentName": "equipment_augment_power_attacker_q3",
+                    "Augment": "power_attacker.png",
+                    "Quality": "q3.png",
+                    "0": "1067115592"
+                },
+                "Tier 4": {
+                    "Nickname": "Tier 4 Power Attacker",
+                    "EquipmentName": "equipment_augment_power_attacker_q4",
+                    "Augment": "power_attacker.png",
+                    "Quality": "q4.png",
+                    "0": "3826308683"
+                },
+                "Tier 5": {
+                    "Nickname": "Tier 5 Power Attacker",
+                    "EquipmentName": "equipment_augment_power_attacker_q5",
+                    "Augment": "power_attacker.png",
+                    "Quality": "",
+                    "0": "2993061916"
+                }
+            },
+            "Quick Learner": {
+                "Bronze": {
+                    "Nickname": "Bronze Quick Learner",
+                    "EquipmentName": "equipment_augment_quick_learner_q1",
+                    "Augment": "quick_learner.png",
+                    "Quality": "q1.png",
+                    "0": "190491060"
+                },
+                "Silver": {
+                    "Nickname": "Silver Quick Learner",
+                    "EquipmentName": "equipment_augment_quick_learner_q2",
+                    "Augment": "quick_learner.png",
+                    "Quality": "q2.png",
+                    "0": "1964811674"
+                },
+                "Gold": {
+                    "Nickname": "Gold Quick Learner",
+                    "EquipmentName": "equipment_augment_quick_learner_q3",
+                    "Augment": "quick_learner.png",
+                    "Quality": "q3.png",
+                    "0": "4191249920"
+                }
+            },
+            "Scope Scout": {
+                "Bronze": {
+                    "Nickname": "Bronze Scope Scout",
+                    "EquipmentName": "equipment_augment_scope_scout_q1",
+                    "Augment": "scope_scout.png",
+                    "Quality": "q1.png",
+                    "0": "1611071787"
+                },
+                "Silver": {
+                    "Nickname": "Silver Scope Scout",
+                    "EquipmentName": "equipment_augment_scope_scout_q2",
+                    "Augment": "scope_scout.png",
+                    "Quality": "q2.png",
+                    "0": "3948998998"
+                },
+                "Gold": {
+                    "Nickname": "Gold Scope Scout",
+                    "EquipmentName": "equipment_augment_scope_scout_q3",
+                    "Augment": "scope_scout.png",
+                    "Quality": "q3.png",
+                    "0": "1358486128"
+                }
+            },
+            "Skilled Spotter": {
+                "Bronze": {
+                    "Nickname": "Bronze Skilled Spotter",
+                    "EquipmentName": "equipment_augment_marksman_q1",
+                    "Augment": "marksman.png",
+                    "Quality": "q1.png",
+                    "0": "1817907914"
+                },
+                "Silver": {
+                    "Nickname": "Silver Skilled Spotter",
+                    "EquipmentName": "equipment_augment_marksman_q2",
+                    "Augment": "marksman.png",
+                    "Quality": "q2.png",
+                    "0": "374743554"
+                },
+                "Gold": {
+                    "Nickname": "Gold Skilled Spotter",
+                    "EquipmentName": "equipment_augment_marksman_q3",
+                    "Augment": "marksman.png",
+                    "Quality": "q3.png",
+                    "0": "3269473706"
+                }
+            },
+            "Slow and Steady": {
+                "Bronze": {
+                    "Nickname": "Bronze Slow and Steady",
+                    "EquipmentName": "equipment_augment_slow_and_steady_q1",
+                    "Augment": "slow_and_steady.png",
+                    "Quality": "q1.png",
+                    "0": "107150944"
+                },
+                "Silver": {
+                    "Nickname": "Silver Slow and Steady",
+                    "EquipmentName": "equipment_augment_slow_and_steady_q2",
+                    "Augment": "slow_and_steady.png",
+                    "Quality": "q2.png",
+                    "0": "892086041"
+                },
+                "Gold": {
+                    "Nickname": "Gold Slow and Steady",
+                    "EquipmentName": "equipment_augment_slow_and_steady_q3",
+                    "Augment": "slow_and_steady.png",
+                    "Quality": "q3.png",
+                    "0": "925810158"
+                }
+            },
+            "Sound Muffling": {
+                "Bronze": {
+                    "Nickname": "Bronze Sound Muffling",
+                    "EquipmentName": "equipment_augment_sound_muffling_q1",
+                    "Augment": "sound_muffling.png",
+                    "Quality": "q1.png",
+                    "0": "361172814"
+                },
+                "Silver": {
+                    "Nickname": "Silver Sound Muffling",
+                    "EquipmentName": "equipment_augment_sound_muffling_q2",
+                    "Augment": "sound_muffling.png",
+                    "Quality": "q2.png",
+                    "0": "578121907"
+                },
+                "Gold": {
+                    "Nickname": "Gold Sound Muffling",
+                    "EquipmentName": "equipment_augment_sound_muffling_q3",
+                    "Augment": "sound_muffling.png",
+                    "Quality": "q3.png",
+                    "0": "3033892562"
+                }
+            },
+            "Stabilization": {
+                "Bronze": {
+                    "Nickname": "Bronze Stabilization",
+                    "EquipmentName": "equipment_augment_stabilization_q1",
+                    "Augment": "stabilization.png",
+                    "Quality": "q1.png",
+                    "0": "1212429095"
+                },
+                "Silver": {
+                    "Nickname": "Silver Stabilization",
+                    "EquipmentName": "equipment_augment_stabilization_q2",
+                    "Augment": "stabilization.png",
+                    "Quality": "q2.png",
+                    "0": "3490981795"
+                },
+                "Gold": {
+                    "Nickname": "Gold Stabilization",
+                    "EquipmentName": "equipment_augment_stabilization_q3",
+                    "Augment": "stabilization.png",
+                    "Quality": "q3.png",
+                    "0": "1073997939"
+                }
+            }
+        }
+    }
+}

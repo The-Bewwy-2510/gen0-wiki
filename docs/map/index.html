@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gen0 Map</title>
+<meta name="description" content="Interactive map of Generation Zero: collectibles, safehouses, locations and placed loot, with filters.">
+<link rel="icon" href="assets/app.ico">
+<link rel="stylesheet" href="map.css?v=5">
+<!-- start the map data and the coarsest map image (always on screen first) downloading with the page, not after map.js -->
+<link rel="preload" href="map/markers.json" as="fetch" crossorigin>
+<link rel="preload" href="map/locations.json" as="fetch" crossorigin>
+<link rel="preload" href="map/tiles/1/0_0.webp" as="image" type="image/webp">
+<link rel="preload" href="map/tiles/1/1_0.webp" as="image" type="image/webp">
+<link rel="preload" href="map/tiles/1/0_1.webp" as="image" type="image/webp">
+<link rel="preload" href="map/tiles/1/1_1.webp" as="image" type="image/webp">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand"><img src="assets/logo.png" alt="Generation Zero"><span>MAP</span></div>
+  <div class="mapcoords" id="mapCoords"></div>
+</header>
+
+<section class="mapview" id="mapView">
+  <div class="mapstage" id="mapStage" tabindex="0" aria-label="World map">
+    <div class="maptiles" id="mapTiles"></div>
+    <svg class="mapborders" id="mapBorders" hidden><g id="mapBordersG"></g></svg>
+    <svg class="maplegs" id="mapLegs"></svg>
+    <div class="mapmarkers" id="mapMarkers"><div class="maplayer" id="mapLayer"></div></div>
+    <div class="maptools" role="toolbar" aria-label="Map tools">
+      <button id="mapZoomIn" title="Zoom in (+)"><svg viewBox="0 0 20 20"><path d="M9 3h2v6h6v2h-6v6H9v-6H3V9h6z"/></svg></button>
+      <button id="mapZoomOut" title="Zoom out (-)"><svg viewBox="0 0 20 20"><path d="M3 9h14v2H3z"/></svg></button>
+      <button id="mapBordersBtn" title="Region borders (B)" aria-pressed="false"><svg viewBox="0 0 20 20"><path d="M3 4.5 8.5 2l8.5 3-1 6.5-5.5 6.5L3.5 15zM5 6v8l5.8 1.8 3.8-4.6.8-5.1L8.6 4.1z"/></svg></button>
+      <button id="mapFit" title="Show whole map (0)"><svg viewBox="0 0 20 20"><path d="M2 2h6v2H4v4H2zm10 0h6v6h-2V4h-4zM2 12h2v4h4v2H2zm14 0h2v6h-6v-2h4z"/></svg></button>
+      <button id="mapSizeBtn" title="Icon size: 2x (S)"><svg viewBox="0 0 20 20"><path d="M8.2 2.2a6 6 0 0 1 4.8 9.6l4.7 4.7-1.5 1.5-4.7-4.7A6 6 0 1 1 8.2 2.2zm0 2a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/></svg><span class="szl" id="mapSizeLbl">2x</span></button>
+    </div>
+    <button class="mappanelbtn" id="mapPanelBtn" title="Hide the filters panel (F)" aria-expanded="true" aria-controls="mapPanel"><svg viewBox="0 0 20 20"><path d="m7.5 4 6 6-6 6-1.6-1.6 4.4-4.4-4.4-4.4z"/></svg></button>
+    <div class="mappopup" id="mapPopup" hidden></div>
+    <div class="maploading" id="mapLoading">LOADING MAP...</div>
+  </div>
+  <aside class="mappanel" id="mapPanel">
+    <h2 class="ptitle mptitle">MAP FILTERS<button class="madv" id="mapAdv" type="button" aria-pressed="false">Extra Locations</button></h2>
+    <div class="mpsum"><span id="mapCount"></span>
+      <span class="mpbtns"><button class="btn small" id="mapAll">SHOW ALL</button><button class="btn small" id="mapNone">HIDE ALL</button></span></div>
+    <div id="mapCats"></div>
+  </aside>
+</section>
+
+<footer class="hintbar">
+  <div class="maphints"><span><b>[Scroll]</b> ZOOM</span><span><b>[Drag]</b> PAN</span><span><b>[Click]</b> DETAILS</span><span><b>[0]</b> WHOLE MAP</span><span><b>[B]</b> BORDERS</span><span><b>[F]</b> FILTERS</span><span><b>[S]</b> ICON SIZE</span><span><b>[G]</b> ICON STYLE</span></div>
+</footer>
+
+<script src="map.js?v=5"></script>
+</body>
+</html>

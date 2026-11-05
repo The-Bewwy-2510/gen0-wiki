@@ -1,0 +1,1094 @@
+{
+ "categories": [
+  {
+   "id": "props",
+   "name": "Props & models",
+   "about": "Things you see in the world: furniture, vehicles, rubble, signs, decals."
+  },
+  {
+   "id": "loot",
+   "name": "Loot & items",
+   "about": "Where loot and items appear, and the collectibles."
+  },
+  {
+   "id": "spawns",
+   "name": "Machines & spawns",
+   "about": "Where machines, animals, vehicles and the player appear, and what draws machines."
+  },
+  {
+   "id": "map",
+   "name": "Map, missions & story",
+   "about": "Map icons, regions, landmarks, mission hooks, dialogue and notes."
+  },
+  {
+   "id": "logic",
+   "name": "Triggers & logic",
+   "about": "Invisible switches that react to the player, timers and events, and wire things together."
+  },
+  {
+   "id": "motion",
+   "name": "Animation, physics & damage",
+   "about": "Moving parts, joints, forces, explosions and what can be damaged."
+  },
+  {
+   "id": "lights",
+   "name": "Lights & effects",
+   "about": "Lamps, particle effects, glows, outlines and animated textures."
+  },
+  {
+   "id": "sound",
+   "name": "Sound",
+   "about": "Sound emitters, music and the acoustic rooms that shape echo and muffling."
+  },
+  {
+   "id": "env",
+   "name": "Environment & rendering",
+   "about": "Weather and fog zones, shading volumes, water, plants that bend, draw distance."
+  },
+  {
+   "id": "ai",
+   "name": "AI & navigation",
+   "about": "What machines can see, where they may walk, paths and behaviour."
+  },
+  {
+   "id": "system",
+   "name": "Engine & system",
+   "about": "Behind-the-scenes objects: resources to preload, game systems, UI and debug helpers."
+  }
+ ],
+ "kinds": {
+  "CRigidObject": {
+   "name": "Model / prop",
+   "cat": "props",
+   "about": "A placed 3D model: furniture, cars, crates, rubble, doors, fences ... Its 'filename' is the model, 'collision' its physics shape, 'type' whether it is static, can be pushed or breaks. The most common kind of object by far."
+  },
+  "CStaticDecalObject": {
+   "name": "Decal (painted on)",
+   "cat": "props",
+   "about": "A texture projected onto the ground or a wall: oil stains, road markings, dirt, scorch marks, posters. Has its own colour, glow and fade distance."
+  },
+  "CDynamicDecalObject": {
+   "name": "Decal (on something)",
+   "cat": "props",
+   "about": "A decal stuck to an object or a body bone (blood, dirt) that can be switched on and off by events."
+  },
+  "CSkeletalAnimatedObject": {
+   "name": "Animated model",
+   "cat": "props",
+   "about": "A model with a skeleton that plays animations (e.g. a moving machine part or a dead body pose)."
+  },
+  "CDeployableDestructibleObject": {
+   "name": "Destructible deployable",
+   "cat": "props",
+   "about": "Something placed that can be taken, destroyed or explodes: mines, explosive barrels, deployable gear."
+  },
+  "CCompiledRoadObject": {
+   "name": "Road decoration piece",
+   "cat": "props",
+   "about": "A piece generated along a road: how it sits on the terrain, its width and texture."
+  },
+  "CPlaceBuilding": {
+   "name": "Base building slot",
+   "cat": "props",
+   "about": "A place where the player can build a base structure."
+  },
+  "CBuildingGridSpawned": {
+   "name": "Base building grid",
+   "cat": "props",
+   "about": "The building grid of a player base."
+  },
+  "CAttachableObject": {
+   "name": "Attachable part",
+   "cat": "props",
+   "about": "A part that can be attached to another object."
+  },
+  "COffsetObject": {
+   "name": "Offset helper",
+   "cat": "props",
+   "about": "Moves its children by an offset."
+  },
+  "CPosRefObject": {
+   "name": "Position reference",
+   "cat": "props",
+   "about": "A point other objects refer to for their position."
+  },
+  "CMoveRigidObjectOverTime": {
+   "name": "Moving model",
+   "cat": "props",
+   "about": "Moves a model from one place to another over time."
+  },
+  "CWaterBox": {
+   "name": "Water volume",
+   "cat": "env",
+   "about": "A box of water (pools, flooded rooms)."
+  },
+  "CLootCrateSpawnPoint": {
+   "name": "Loot spot",
+   "cat": "loot",
+   "about": "A spot where loot can appear. 'spawn_tags' says what kind (weapons, ammo, apparel_pack ...), 'chance' how likely, and 'distance_limit' how close you must be for it to spawn."
+  },
+  "CLootCrateSpawnPointGroup": {
+   "name": "Loot spot group",
+   "cat": "loot",
+   "about": "Groups loot spots so only some of them spawn at once."
+  },
+  "CPlacementRule": {
+   "name": "Item placement",
+   "cat": "loot",
+   "about": "Places an item or object by tag (fuel cans, consumables ...) with a chance, like a loot spot."
+  },
+  "CEquipmentItem": {
+   "name": "Item",
+   "cat": "loot",
+   "about": "An item lying in the world, or an item definition (weapons, clothes, augments, consumables)."
+  },
+  "CAmmunitionItem": {
+   "name": "Ammo item",
+   "cat": "loot",
+   "about": "Ammunition lying in the world."
+  },
+  "CThrowableItem": {
+   "name": "Throwable item",
+   "cat": "loot",
+   "about": "A grenade, flare or other throwable lying in the world."
+  },
+  "CDeployableItem": {
+   "name": "Deployable item",
+   "cat": "loot",
+   "about": "A deployable (trap, mine, decoy) lying in the world."
+  },
+  "CScopeItem": {
+   "name": "Scope item",
+   "cat": "loot",
+   "about": "A weapon scope."
+  },
+  "CLootModifier": {
+   "name": "Loot modifier",
+   "cat": "loot",
+   "about": "Changes the loot of the containers in its area (quality, amount)."
+  },
+  "CCollectable": {
+   "name": "Collectible",
+   "cat": "loot",
+   "about": "A collectible pickup (notes, photos, gnomes, mixtapes, schematic points ...). 'save_type' controls whether picking it up is remembered in the save."
+  },
+  "CLootSystem": {
+   "name": "Loot system",
+   "cat": "system",
+   "about": "The game's loot system (one in the world)."
+  },
+  "CAnimalGroupSpawnPoint": {
+   "name": "Machine spawn",
+   "cat": "spawns",
+   "about": "A fixed machine group spawn (patrols, guards, rivals). Its spawn components say which machine type and class."
+  },
+  "CDynamicMachineSpawnPoint": {
+   "name": "Machine spawn (dynamic)",
+   "cat": "spawns",
+   "about": "A machine spawn used by events and missions."
+  },
+  "CMachineInterest": {
+   "name": "Machine point of interest",
+   "cat": "spawns",
+   "about": "A point machines walk to and investigate ('type': investigate_point, look_at ...)."
+  },
+  "CMachineInterestZone": {
+   "name": "Machine interest zone",
+   "cat": "spawns",
+   "about": "An area machines like to patrol or gather in."
+  },
+  "CMachineLureObject": {
+   "name": "Machine lure",
+   "cat": "spawns",
+   "about": "Attracts machines within its range when switched on (alarms, noises)."
+  },
+  "CVehicleSpawnPoint": {
+   "name": "Vehicle spawn",
+   "cat": "spawns",
+   "about": "Where a vehicle (bike, flakmoped) appears."
+  },
+  "CCompanionSpawnPoint": {
+   "name": "Companion spawn",
+   "cat": "spawns",
+   "about": "Where the companion machine appears."
+  },
+  "CPlayerSpawnPoint": {
+   "name": "Player spawn / safehouse",
+   "cat": "spawns",
+   "about": "Where the player can respawn: safehouses and bases."
+  },
+  "CBirdSpawner": {
+   "name": "Bird spawner",
+   "cat": "spawns",
+   "about": "Spawns birds flying around."
+  },
+  "CHordeMission": {
+   "name": "Horde / wave event",
+   "cat": "spawns",
+   "about": "A machine horde or wave event: which machines come in which waves."
+  },
+  "CBaseAssaultObject": {
+   "name": "Base assault",
+   "cat": "spawns",
+   "about": "Sets up machine attacks on a player base."
+  },
+  "CNotifySpawner": {
+   "name": "Spawn notifier",
+   "cat": "spawns",
+   "about": "Tells a spawner to spawn when triggered."
+  },
+  "CVehicleRule": {
+   "name": "Vehicle rules",
+   "cat": "spawns",
+   "about": "Rules for vehicles in an area."
+  },
+  "CCharacterRule": {
+   "name": "Character rules",
+   "cat": "ai",
+   "about": "Rules for characters (machines/NPCs) in an area."
+  },
+  "CPOI": {
+   "name": "Map marker / point of interest",
+   "cat": "map",
+   "about": "A point of interest: map icons, mission markers, tooltips. 'show_on_map' puts it on the map."
+  },
+  "CControlPOI": {
+   "name": "Control point marker",
+   "cat": "map",
+   "about": "The map marker of a control point (a base you can take)."
+  },
+  "CControlPoint": {
+   "name": "Control point",
+   "cat": "map",
+   "about": "A control point / player base."
+  },
+  "CLandmark": {
+   "name": "Landmark",
+   "cat": "map",
+   "about": "A named landmark the game discovers when you come close."
+  },
+  "CRegion": {
+   "name": "Region",
+   "cat": "map",
+   "about": "A map region or zone (regions, world borders, mission areas) with its border shape."
+  },
+  "CBookMark": {
+   "name": "Editor bookmark / note",
+   "cat": "map",
+   "about": "A note the developers left in the level ('note' holds the text key). Not seen in game."
+  },
+  "CLocationSummary": {
+   "name": "Location summary",
+   "cat": "map",
+   "about": "The summary of a map location: what it holds and how far you have looted it."
+  },
+  "CLocationSummaryWeaponToken": {
+   "name": "Location summary: weapon",
+   "cat": "map",
+   "about": "Counts a weapon in the location's summary."
+  },
+  "CLocationSummaryMissionToken": {
+   "name": "Location summary: mission",
+   "cat": "map",
+   "about": "Counts a mission in the location's summary."
+  },
+  "CLocationSummaryNestToken": {
+   "name": "Location summary: nest",
+   "cat": "map",
+   "about": "Counts a nest in the location's summary."
+  },
+  "CLocationSummarySpawnedInteractToken": {
+   "name": "Location summary: loot",
+   "cat": "map",
+   "about": "Counts a loot container in the location's summary."
+  },
+  "CMissionQuery": {
+   "name": "Mission check",
+   "cat": "map",
+   "about": "Watches a mission or objective and sends events when it starts, completes or becomes inactive."
+  },
+  "CProceduralMissionHandler": {
+   "name": "Procedural mission",
+   "cat": "map",
+   "about": "Runs a generated (procedural) mission."
+  },
+  "CPostMissionEventObject": {
+   "name": "After-mission event",
+   "cat": "map",
+   "about": "Sends an event after a mission."
+  },
+  "CBountyCompleteTrigger": {
+   "name": "Bounty complete",
+   "cat": "map",
+   "about": "Fires when a bounty is completed."
+  },
+  "CNamedPoint": {
+   "name": "Named point",
+   "cat": "map",
+   "about": "A named position that missions refer to."
+  },
+  "CDialogue": {
+   "name": "Dialogue line",
+   "cat": "map",
+   "about": "A voice line / subtitle played on an event."
+  },
+  "CConversation": {
+   "name": "Conversation",
+   "cat": "map",
+   "about": "A conversation made of dialogue lines."
+  },
+  "CUIMessage": {
+   "name": "On-screen message",
+   "cat": "map",
+   "about": "Shows a message or prompt on the HUD when triggered."
+  },
+  "CUIHealthBar": {
+   "name": "Health bar",
+   "cat": "map",
+   "about": "Shows a health bar on the HUD."
+  },
+  "CUIDialogue": {
+   "name": "Dialogue UI",
+   "cat": "map",
+   "about": "Shows the dialogue on screen."
+  },
+  "CIncreaseStatTrigger": {
+   "name": "Stat counter",
+   "cat": "map",
+   "about": "Increases a player statistic (for challenges and achievements)."
+  },
+  "CGoTrackMessageEvent": {
+   "name": "Tracking event",
+   "cat": "map",
+   "about": "Sends a game tracking / statistics event."
+  },
+  "CEventTrigger": {
+   "name": "Event trigger",
+   "cat": "logic",
+   "about": "A switch that passes events on (enable / disable / next / random)."
+  },
+  "CLookAtTrigger": {
+   "name": "Look-at trigger",
+   "cat": "logic",
+   "about": "Fires when the player looks at something within 'range' (e.g. to show a prompt)."
+  },
+  "CDistanceTrigger": {
+   "name": "Distance trigger",
+   "cat": "logic",
+   "about": "Fires when the player (on foot, in a car, on a bike, in a boat) comes within 'trigger_distance'."
+  },
+  "CShapeTrigger": {
+   "name": "Area trigger",
+   "cat": "logic",
+   "about": "Fires when the player, a vehicle, a weapon or an explosion enters or leaves its shape."
+  },
+  "CTimeTrigger": {
+   "name": "Timer",
+   "cat": "logic",
+   "about": "Waits 'time' seconds after it starts, then fires (optionally looping or showing a bar)."
+  },
+  "CPersistentTimer": {
+   "name": "Saved timer (respawn)",
+   "cat": "logic",
+   "about": "A timer kept in the save, e.g. loot respawn time ('time' in seconds, 14400 = 4 hours)."
+  },
+  "CTimer": {
+   "name": "Timer (simple)",
+   "cat": "logic",
+   "about": "A simple timer."
+  },
+  "CCountTrigger": {
+   "name": "Counter",
+   "cat": "logic",
+   "about": "Counts events and fires when it reaches a number."
+  },
+  "CCreationTrigger": {
+   "name": "On-creation trigger",
+   "cat": "logic",
+   "about": "Fires when the location is created / loaded."
+  },
+  "CEventRouter": {
+   "name": "Event switch",
+   "cat": "logic",
+   "about": "Routes events one way or the other depending on its state."
+  },
+  "CEventRepeater": {
+   "name": "Event repeater",
+   "cat": "logic",
+   "about": "Repeats an event."
+  },
+  "CGraphObject": {
+   "name": "Scripted object (graph)",
+   "cat": "logic",
+   "about": "Runs a logic graph ('script') - doors, switches, lockers, hack consoles, light flicker ..."
+  },
+  "CNetworkBoolState": {
+   "name": "On/off state (synced)",
+   "cat": "logic",
+   "about": "An on/off state shared in co-op and kept in the save (a door open, a light on)."
+  },
+  "CRemoteTrigger": {
+   "name": "Remote trigger",
+   "cat": "logic",
+   "about": "Sends a signal to remote receivers with the same 'filter' (e.g. satellite dishes)."
+  },
+  "CRemoteTriggerReceiver": {
+   "name": "Remote receiver",
+   "cat": "logic",
+   "about": "Receives remote trigger signals with its 'filter'."
+  },
+  "CSendObjectDestroyed": {
+   "name": "Destroyed notifier",
+   "cat": "logic",
+   "about": "Tells the game a named object was destroyed."
+  },
+  "CDoActOnEventObject": {
+   "name": "Act on event",
+   "cat": "logic",
+   "about": "Does an action when an event comes in."
+  },
+  "CEnableParentObject": {
+   "name": "Enable parent",
+   "cat": "logic",
+   "about": "Enables or disables the object it is in."
+  },
+  "CSequenceObject2": {
+   "name": "Sequence",
+   "cat": "logic",
+   "about": "Plays a sequence of events."
+  },
+  "CBuildingEventsInterface": {
+   "name": "Building events",
+   "cat": "logic",
+   "about": "Events of a player base building."
+  },
+  "CAttachableObjectEventComponent": {
+   "name": "Attach events",
+   "cat": "logic",
+   "about": "Events of an attachable part."
+  },
+  "CAnimRotation": {
+   "name": "Rotating part",
+   "cat": "motion",
+   "about": "Turns its children around an axis on events: doors, hatches, gates, fans."
+  },
+  "CAnimTranslation": {
+   "name": "Sliding part",
+   "cat": "motion",
+   "about": "Slides its children along a direction on events: drawers, lifts, sliding doors."
+  },
+  "CAnimSpline": {
+   "name": "Path animation",
+   "cat": "motion",
+   "about": "Moves its children along a curve."
+  },
+  "CConstraint": {
+   "name": "Physics joint",
+   "cat": "motion",
+   "about": "Joins two physics objects (hinges, ball joints, wheels)."
+  },
+  "CForcePulse": {
+   "name": "Explosion",
+   "cat": "motion",
+   "about": "An explosion: radius, force and the effect it plays."
+  },
+  "CForcePoint": {
+   "name": "Force",
+   "cat": "motion",
+   "about": "Pushes physics objects with a force while on."
+  },
+  "CDamageController": {
+   "name": "Damage / health",
+   "cat": "motion",
+   "about": "Gives its object health and a faction, and sends events when it is hit or destroyed."
+  },
+  "CAreaDamage": {
+   "name": "Damage area",
+   "cat": "motion",
+   "about": "Hurts what is inside its radius every 'interval' seconds (fire, gas, saw blades)."
+  },
+  "CDamageableCharacterPart": {
+   "name": "Damageable part",
+   "cat": "motion",
+   "about": "A part of a character that can take damage."
+  },
+  "CMotionAttachmentVolume": {
+   "name": "Motion attach volume",
+   "cat": "motion",
+   "about": "Things inside it move along with it."
+  },
+  "CTurret": {
+   "name": "Turret",
+   "cat": "motion",
+   "about": "A turret weapon."
+  },
+  "CBulletSpawner": {
+   "name": "Bullet spawner",
+   "cat": "motion",
+   "about": "Fires bullets."
+  },
+  "CBulletWeaponBase": {
+   "name": "Weapon",
+   "cat": "motion",
+   "about": "A placed weapon that fires."
+  },
+  "CDynamicLightObject": {
+   "name": "Light",
+   "cat": "lights",
+   "about": "A lamp: colour ('diffuse'), radius, spot angles, shadows, flare and flicker ranges."
+  },
+  "CDynamicLightFlasher": {
+   "name": "Flashing light",
+   "cat": "lights",
+   "about": "A light that flashes on and off."
+  },
+  "CEffectPointEmitter": {
+   "name": "Effect (point)",
+   "cat": "lights",
+   "about": "Plays a particle effect and/or sound at a point: smoke, sparks, fire, dust, insects ..."
+  },
+  "CEffectPlaneEmitter": {
+   "name": "Effect (area)",
+   "cat": "lights",
+   "about": "Plays an effect over a flat area."
+  },
+  "CEffectLineEmitter": {
+   "name": "Effect (line)",
+   "cat": "lights",
+   "about": "Plays an effect along a line."
+  },
+  "CEffectLayerEmitter": {
+   "name": "Effect (layer)",
+   "cat": "lights",
+   "about": "Plays a layered effect."
+  },
+  "COutline": {
+   "name": "Outline (highlight)",
+   "cat": "lights",
+   "about": "The coloured outline drawn around an object (e.g. lootables)."
+  },
+  "CAnimatedTexture": {
+   "name": "Animated texture",
+   "cat": "lights",
+   "about": "Animates a texture (screens, flickering signs)."
+  },
+  "CSpeaker": {
+   "name": "Sound emitter",
+   "cat": "sound",
+   "about": "Plays a sound from its spot (hums, radios, machinery)."
+  },
+  "CSoundModuleFMODEvent": {
+   "name": "Sound event",
+   "cat": "sound",
+   "about": "Plays a sound event from the game's sound banks."
+  },
+  "CSoundModuleSendFunction": {
+   "name": "Sound function",
+   "cat": "sound",
+   "about": "Sends a command to the sound system."
+  },
+  "CSoundModuleEntityGameObject": {
+   "name": "Sound entity",
+   "cat": "sound",
+   "about": "A sound module object."
+  },
+  "CSoundModuleControllerGO": {
+   "name": "Sound controller",
+   "cat": "sound",
+   "about": "Controls sound modules."
+  },
+  "CSoundAcousticBox": {
+   "name": "Acoustic room",
+   "cat": "sound",
+   "about": "A room that changes how sound echoes and is muffled inside it ('room_name')."
+  },
+  "CSoundAcousticCompound": {
+   "name": "Acoustic room (compound)",
+   "cat": "sound",
+   "about": "A room made of several acoustic boxes."
+  },
+  "CSoundLayerEmitter": {
+   "name": "Sound layer",
+   "cat": "sound",
+   "about": "Plays a layer of ambient sound."
+  },
+  "CSoundBeatTrigger": {
+   "name": "Sound beat trigger",
+   "cat": "sound",
+   "about": "Fires on the beat of a sound."
+  },
+  "CSoundGroupRandom": {
+   "name": "Random sound group",
+   "cat": "sound",
+   "about": "Plays a random sound from a group."
+  },
+  "CSoundOcclusionTerrainPlane": {
+   "name": "Sound occlusion plane",
+   "cat": "sound",
+   "about": "Lets terrain block sound."
+  },
+  "CSoundResourcePreloader": {
+   "name": "Sound preloader",
+   "cat": "system",
+   "about": "Loads sound banks ahead of time."
+  },
+  "CSoundAcousticsSettings": {
+   "name": "Acoustics settings",
+   "cat": "sound",
+   "about": "World acoustic settings."
+  },
+  "CVegetationSoundContainer": {
+   "name": "Vegetation sounds",
+   "cat": "sound",
+   "about": "Sounds of plants moving."
+  },
+  "CListenerEffects": {
+   "name": "Listener effects",
+   "cat": "sound",
+   "about": "Effects on what the player hears."
+  },
+  "CWorldAudioExtensions": {
+   "name": "World audio",
+   "cat": "sound",
+   "about": "World audio settings."
+  },
+  "CDialogueSystem": {
+   "name": "Dialogue system",
+   "cat": "system",
+   "about": "The dialogue system."
+  },
+  "CAOVolumeObject": {
+   "name": "Shading volume",
+   "cat": "env",
+   "about": "Darkens the space inside it (ambient occlusion) so interiors and under-roof areas look shaded; also blocks rain ('RainOccluder')."
+  },
+  "CEnvironmentPresets": {
+   "name": "Weather / fog zone",
+   "cat": "env",
+   "about": "Changes fog, sky and lighting in an area using an environment file ('file')."
+  },
+  "CEnvironmentZoneGroup": {
+   "name": "Environment zone group",
+   "cat": "env",
+   "about": "Groups environment zones."
+  },
+  "CVegInteractionObject": {
+   "name": "Plant bender",
+   "cat": "env",
+   "about": "Pushes grass and bushes aside around it (under cars, crates)."
+  },
+  "CDisableAtDistance": {
+   "name": "Distance switch-off",
+   "cat": "env",
+   "about": "Switches the objects in it off when the player is far away, to save performance."
+  },
+  "CDisableAtDistanceSystem": {
+   "name": "Distance switch-off system",
+   "cat": "system",
+   "about": "The system behind distance switch-off."
+  },
+  "CDayCycle": {
+   "name": "Day cycle",
+   "cat": "env",
+   "about": "Controls the time of day."
+  },
+  "CVisibilityGroup": {
+   "name": "Visibility group",
+   "cat": "env",
+   "about": "Shows or hides a group of objects together."
+  },
+  "CAIVisionBlocker": {
+   "name": "Vision blocker",
+   "cat": "ai",
+   "about": "Blocks machines' sight through it (bushes, smoke, fences)."
+  },
+  "CDynamicNavMeshCutter": {
+   "name": "Navigation blocker",
+   "cat": "ai",
+   "about": "Cuts machines' walkable area where it stands."
+  },
+  "CAiRestrictedZone": {
+   "name": "No-go zone for AI",
+   "cat": "ai",
+   "about": "Machines may not enter this area."
+  },
+  "CTeleportBlocker": {
+   "name": "Fast-travel blocker",
+   "cat": "ai",
+   "about": "Blocks teleporting / fast travel into this spot."
+  },
+  "CTeleport": {
+   "name": "Teleport",
+   "cat": "ai",
+   "about": "Moves the player somewhere else."
+  },
+  "CBreadcrumbWaypointGroup": {
+   "name": "Waypoint path",
+   "cat": "ai",
+   "about": "A path of waypoints for characters to follow."
+  },
+  "CExternalBehaviorTree": {
+   "name": "Behaviour",
+   "cat": "ai",
+   "about": "Gives characters a behaviour tree."
+  },
+  "CAIAirTrafficSpline": {
+   "name": "Air traffic path",
+   "cat": "ai",
+   "about": "Path for flying machines."
+  },
+  "CMachineInterestSystem": {
+   "name": "Machine interest system",
+   "cat": "system",
+   "about": "The system behind machine interests."
+  },
+  "CResourceObject": {
+   "name": "Resource to load",
+   "cat": "system",
+   "about": "Makes the game load a file (a texture, model ...) with the location."
+  },
+  "CEmoteResourceObject": {
+   "name": "Emote resource",
+   "cat": "system",
+   "about": "Loads an emote."
+  },
+  "CDebugTextObject": {
+   "name": "Debug text",
+   "cat": "system",
+   "about": "Developer debug text, not shown in the game."
+  },
+  "CUIManagerGO": {
+   "name": "UI manager",
+   "cat": "system",
+   "about": "Runs UI for the location."
+  },
+  "CCameraPoint": {
+   "name": "Camera point",
+   "cat": "system",
+   "about": "A camera position (cutscenes, menus)."
+  },
+  "CCameraObject": {
+   "name": "Camera",
+   "cat": "system",
+   "about": "A camera."
+  },
+  "CSplineObject": {
+   "name": "Curve",
+   "cat": "system",
+   "about": "A curve used by other objects."
+  },
+  "CShapeTriggerComponent": {
+   "name": "Trigger shape",
+   "cat": "logic",
+   "about": "The shape (box, sphere ...) of an area trigger."
+  },
+  "CLookAtTriggerPointComponent": {
+   "name": "Look-at point",
+   "cat": "logic",
+   "about": "The point a look-at trigger checks, with its 'angle'."
+  },
+  "CLookAtTriggerShapeComponent": {
+   "name": "Look-at shape",
+   "cat": "logic",
+   "about": "The shape a look-at trigger checks."
+  },
+  "CEnvironmentZone": {
+   "name": "Weather / fog zone shape",
+   "cat": "env",
+   "about": "One box or shape of a weather / fog zone, with its falloff."
+  },
+  "CSoundModuleFMODEventFunction": {
+   "name": "Sound event function",
+   "cat": "sound",
+   "about": "Starts, stops or changes a sound event."
+  },
+  "CSoundGroupRandomComponent": {
+   "name": "Random sound",
+   "cat": "sound",
+   "about": "One sound of a random sound group."
+  },
+  "SSoundAcousticComponent": {
+   "name": "Acoustic room part",
+   "cat": "sound",
+   "about": "One part of an acoustic room."
+  },
+  "SSoundAcousticPortal": {
+   "name": "Acoustic opening",
+   "cat": "sound",
+   "about": "A door or window opening that lets sound out of an acoustic room."
+  },
+  "CVegetationSound": {
+   "name": "Vegetation sound",
+   "cat": "sound",
+   "about": "A sound of plants moving."
+  },
+  "SAttachedEffect": {
+   "name": "Attached effect",
+   "cat": "lights",
+   "about": "An effect attached to an object."
+  },
+  "CMaterialEffectTable": {
+   "name": "Impact effects",
+   "cat": "lights",
+   "about": "Which effect plays when something hits each material."
+  },
+  "COutlineRef": {
+   "name": "Outline link",
+   "cat": "lights",
+   "about": "Links an object to its outline."
+  },
+  "CUIController": {
+   "name": "UI controller",
+   "cat": "system",
+   "about": "Controls a UI element."
+  },
+  "CCameraTransition": {
+   "name": "Camera transition",
+   "cat": "system",
+   "about": "Moves between cameras."
+  },
+  "SAnimationLayerInfo": {
+   "name": "Animation layer",
+   "cat": "motion",
+   "about": "An animation layer of an animated model."
+  },
+  "STargetPoint": {
+   "name": "Aim point",
+   "cat": "ai",
+   "about": "A point machines aim at on an object ('size_scale')."
+  },
+  "SMachineInterestTarget": {
+   "name": "Interest target",
+   "cat": "spawns",
+   "about": "A target a machine point of interest points at."
+  },
+  "SMachineInterestZoneSetting": {
+   "name": "Interest zone setting",
+   "cat": "spawns",
+   "about": "A setting of a machine interest zone."
+  },
+  "CGameObjectDespawnObject": {
+   "name": "Despawner",
+   "cat": "logic",
+   "about": "Removes its object on an event."
+  },
+  "SAnimalGroupSpawnComponent": {
+   "name": "Spawned machine group",
+   "cat": "spawns",
+   "about": "What a machine spawn spawns: machine type ('machine_type') and class, rival title and name, tags."
+  },
+  "SDynamicMachineSpawnComponent": {
+   "name": "Spawned machine (dynamic)",
+   "cat": "spawns",
+   "about": "What a dynamic machine spawn spawns."
+  },
+  "SHordeSpawnedAnimal": {
+   "name": "Horde machine",
+   "cat": "spawns",
+   "about": "A machine type and class in a horde."
+  },
+  "SHordeSpawnPoint": {
+   "name": "Horde spawn point",
+   "cat": "spawns",
+   "about": "Where horde machines come from."
+  },
+  "CBaseAttackPlan": {
+   "name": "Base attack plan",
+   "cat": "spawns",
+   "about": "How machines attack a player base."
+  },
+  "CConstraintBallAndSocketData": {
+   "name": "Ball joint",
+   "cat": "motion",
+   "about": "A ball-and-socket physics joint."
+  },
+  "CConstraintHingeData": {
+   "name": "Hinge",
+   "cat": "motion",
+   "about": "A hinge physics joint (doors, lids)."
+  },
+  "CConstraintLimitedHingeData": {
+   "name": "Limited hinge",
+   "cat": "motion",
+   "about": "A hinge that only swings so far."
+  },
+  "CConstraintWheelData": {
+   "name": "Wheel joint",
+   "cat": "motion",
+   "about": "A wheel physics joint."
+  },
+  "CBreadcrumbWaypoint": {
+   "name": "Waypoint",
+   "cat": "ai",
+   "about": "One waypoint of a path."
+  },
+  "CModelAttachementWeaponComponent": {
+   "name": "Weapon attachment",
+   "cat": "motion",
+   "about": "A weapon attached to a model."
+  },
+  "SWeaponPoint": {
+   "name": "Weapon point",
+   "cat": "motion",
+   "about": "Where a weapon sits on an object."
+  },
+  "SBulletSpawnerBarrel": {
+   "name": "Gun barrel",
+   "cat": "motion",
+   "about": "A barrel of a bullet spawner."
+  }
+ },
+ "components": {
+  "SEventTriggerComponent": "An event name another object fires.",
+  "SDCRef": "A link from a damage controller to the object it damages.",
+  "SPhysicsParams": "Physics settings of an object: mass, drag, buoyancy, damping.",
+  "SEnvironmentPreset": "One setting of a weather / fog zone.",
+  "SMachineInterestTarget": "A target a machine interest points at.",
+  "SDamageLink": "Links damage to another object.",
+  "SAnimalGroupSpawnComponent": "What a machine spawn spawns: machine type and class, rival names, tags.",
+  "SItemCompatibility": "Which items an item works with.",
+  "SHordeSpawnedAnimal": "A machine in a horde wave."
+ },
+ "props": {
+  "name": "The object's name in the level (not shown in game).",
+  "_class": "The kind of object (engine class).",
+  "_class_hash": "The kind of object, as a hash.",
+  "_object_id": "The object's unique id. Saves remember looted / destroyed / collected objects by it; copies get new ones.",
+  "world": "Position and rotation (relative to the object it is in).",
+  "name_hash": "Hash of the name, used by events and scripts to find the object.",
+  "filename": "The model (or file) it uses, as a path hash.",
+  "filename_variant": "Which variant of the model (burnt, prototype ...).",
+  "collision": "The physics shape, as a path hash.",
+  "collision_enabled": "Whether it collides with things.",
+  "cast_shadows": "Whether it casts shadows (1 = yes).",
+  "visible": "Whether it is shown (1 = yes).",
+  "enabled": "Whether it starts switched on (1 = yes).",
+  "Enabled": "Whether it starts switched on (1 = yes).",
+  "type": "A setting that picks how it behaves; the numbers differ by kind.",
+  "debris": "Whether it is debris (physics pieces).",
+  "sound_occlusion": "Whether it blocks sound.",
+  "send_to_reverb": "Whether its sound goes through the room echo.",
+  "clip": "Whether it is clipped by the camera near plane.",
+  "debug_me": "A developer debug switch (always 0 in the shipped game).",
+  "size_cull": "Hide it when it is small on screen (likely name).",
+  "color_tint_detail": "Colour tint of the detail texture (likely name).",
+  "make_dynamic": "Event that makes it a physics object.",
+  "faction": "Which side it belongs to (machines, player, neutral ...).",
+  "health": "How much damage it takes before it is destroyed.",
+  "invulnerable": "1 = can't be damaged.",
+  "on_destroy": "Events sent when it is destroyed.",
+  "on_hit": "Events sent when it is hit.",
+  "chance": "How likely it is to spawn (0 to 1).",
+  "spawn_tags": "What spawns here (tags of loot or items).",
+  "distance_limit": "Spawns only when the player is within this many metres.",
+  "ground_snap": "Snap to the ground when spawning.",
+  "orientation": "How the spawned thing is turned.",
+  "priority": "Which wins when several compete.",
+  "unload_auto_despawn": "Remove what it spawned when the area unloads.",
+  "networked": "Synced in co-op.",
+  "weather": "Only spawns in this weather (0 = any).",
+  "time_start": "Only spawns after this hour (0 = any).",
+  "time_end": "Only spawns before this hour (0 = any).",
+  "attach_object": "The object it is attached to.",
+  "radius": "Size of the area / light, in metres.",
+  "range": "How far it reaches, in metres.",
+  "diffuse": "Light colour (red, green, blue).",
+  "multiplier": "Brightness.",
+  "specular_multiplier": "How shiny the light makes surfaces.",
+  "spot_inner_angle": "Inner cone angle of a spot light.",
+  "spot_outer_angle": "Outer cone angle of a spot light.",
+  "volumetric_mode": "Light shafts in fog.",
+  "volume_intensity": "Strength of the light shafts.",
+  "has_flare": "Whether it shows a lens flare.",
+  "flare_offset": "Where the flare sits.",
+  "cull_distance": "Not drawn further away than this (metres).",
+  "fade_in_duration": "Seconds to fade in.",
+  "fade_out_duration": "Seconds to fade out.",
+  "duration": "How long it lasts (-1 = forever).",
+  "effect": "The effect it plays, as a path hash.",
+  "sound": "The sound it plays.",
+  "play_on_enabled": "Plays as soon as it is switched on.",
+  "play_count": "How many times it plays (4294967295 = forever).",
+  "retrigger_time": "Seconds before it can play again.",
+  "opacity": "How see-through it is (1 = solid).",
+  "random_offset": "Random shift each time it plays.",
+  "event_play": "Events that start it.",
+  "event_stop": "Events that stop it.",
+  "enable_event": "Events that switch it on.",
+  "disable_event": "Events that switch it off.",
+  "next_event": "Events it sends on.",
+  "trigger_distance": "Fires within this many metres.",
+  "player_trigger": "Reacts to the player.",
+  "no_vehicle": "Reacts only to the player on foot.",
+  "ground_car": "Reacts to cars.",
+  "ground_bike": "Reacts to bikes.",
+  "water_vehicle": "Reacts to boats.",
+  "once": "Fires only once.",
+  "test_visibility": "Only fires when the target is actually visible.",
+  "time": "Time in seconds.",
+  "loop": "Repeat.",
+  "script": "The logic graph it runs.",
+  "state": "Starting state (0 = off, 1 = on).",
+  "show_on_map": "Shown on the map.",
+  "max_distance": "Shown up to this distance (-1 = always).",
+  "save_type": "How picking it up is saved.",
+  "collect_event": "Events when it is picked up.",
+  "room_name": "Which acoustic room preset.",
+  "occlusion": "How much the walls muffle sound.",
+  "intensity": "Strength.",
+  "max_ao": "Darkest shading inside.",
+  "RainOccluder": "Stops rain inside.",
+  "falloff_x": "Soft edge along X.",
+  "falloff_y": "Soft edge along Y.",
+  "falloff_z": "Soft edge along Z.",
+  "offset_x": "Shift along X.",
+  "offset_y": "Shift along Y.",
+  "offset_z": "Shift along Z.",
+  "animation_speed": "Speed (degrees or metres per second).",
+  "angle": "Angle in degrees.",
+  "rotation_axis": "Which axis it turns around.",
+  "translation": "How far it slides (x, y, z).",
+  "loop_mode": "Once / loop / back and forth.",
+  "start": "Events that start the animation.",
+  "reverse": "Events that play it backwards.",
+  "at_end": "Events sent when it reaches the end.",
+  "at_start": "Events sent when it is back at the start.",
+  "min_damage": "Least damage per hit.",
+  "max_damage": "Most damage per hit.",
+  "interval": "Seconds between hits.",
+  "damage_type": "Kind of damage (fire, melee, explosion ...).",
+  "player": "Affects the player.",
+  "npc": "Affects machines / NPCs.",
+  "vehicle": "Affects vehicles.",
+  "explosion_radius": "Size of the explosion (metres).",
+  "explosion_velocity": "Push of the explosion.",
+  "friendly_fire": "Also hurts its own side.",
+  "mission_id": "The mission it watches (hash).",
+  "objective_id": "The objective it watches (hash).",
+  "mission_file": "The mission file.",
+  "label_key": "Text key of the name shown in game.",
+  "description_key": "Text key of the description.",
+  "display_name": "Text key of the name.",
+  "display_icon": "The icon.",
+  "quality": "Item quality.",
+  "category": "Item category.",
+  "weight": "Weight.",
+  "note": "The developers' note (a text key).",
+  "machine_type": "Machine type (runner, hunter, tank ...).",
+  "machine_class": "Machine class (a, b, c ...).",
+  "is_rival": "A rival machine.",
+  "tags": "Tags.",
+  "file": "The file it uses.",
+  "preset": "The preset it uses.",
+  "diffuse_texture": "Colour texture.",
+  "normal_texture": "Bump texture.",
+  "mpm_texture": "Metal / roughness texture.",
+  "distance_fade_end": "Fades out by this distance.",
+  "color": "Colour.",
+  "shape_type": "Shape (box, sphere ...).",
+  "density": "How much it blocks.",
+  "lure_type": "What kind of lure.",
+  "tag": "Tag.",
+  "content_key": "Which game content (base game / DLC) it belongs to."
+ }
+}

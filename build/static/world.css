@@ -1,0 +1,36 @@
+/* World section: location icons in lists and tables, the location lists of the region pages, page nav. */
+img.lic { height: 24px; width: 24px; max-width: none; object-fit: contain; vertical-align: middle; margin-right: 7px; }
+img.lic.big { height: 30px; width: 30px; }
+table.wt td img.lic { max-height: 24px; }
+a.ll { white-space: nowrap; }
+h3 img.lic { margin-right: 10px; }
+h3 small.dim { font-weight: 400; margin-left: 6px; }
+ul.loclist { list-style: none; padding: 0; margin: 6px 0 16px; display: grid; gap: 6px;
+             grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+ul.loclist li { margin: 0; }
+ul.loclist a { display: flex; align-items: center; gap: 4px; background: var(--card); padding: 6px 10px;
+               border-left: 3px solid var(--bar); color: var(--ink); height: 100%; }
+ul.loclist a:hover { text-decoration: none; background: rgba(255,255,255,.08); }
+ul.loclist span { display: flex; flex-direction: column; min-width: 0; }
+ul.loclist b { font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ul.loclist small { color: var(--dim); font-size: 12px; }
+.shmark { color: #7fd38d; }
+table.missions td:last-child { min-width: 260px; font-size: 13.5px; color: var(--ink2); }
+table.loctable td:last-child code { font-size: 11.5px; }
+table.kinds td, table.kinds th { white-space: nowrap; }
+.pnav { display: flex; justify-content: space-between; gap: 12px; margin: 28px 0 8px; flex-wrap: wrap; }
+.pnav a { background: var(--card); padding: 8px 14px; }
+.infobox.locbox .ibimg img { max-height: 96px; width: auto; }
+/* whole-world overview map (overview_map in world.py): an inline SVG in world units */
+figure.ovmap { margin: 12px 0 16px; }
+figure.ovmap svg { display: block; width: 100%; height: auto; background: #0d1419; border: 1px solid var(--line); }
+figure.ovmap figcaption, p.mmcap { font-size: 13px; color: var(--dim); margin: -8px 0 14px; }
+figure.ovmap figcaption { margin: 6px 0 0; }
+.ovreg polygon, .ovreg rect { fill: var(--c); fill-opacity: .16; stroke: var(--c); stroke-opacity: .9; }
+.ovreg:hover polygon, .ovreg:hover rect, .ovreg:focus polygon, .ovreg:focus rect { fill-opacity: .34; }
+.ovlabel { fill: #fff; font-weight: 700; text-anchor: middle; dominant-baseline: middle; paint-order: stroke;
+           stroke: rgba(0,0,0,.8); stroke-linejoin: round; pointer-events: none; }
+.ovlabel.faint { fill-opacity: .75; }
+figure.ovmap circle { fill: #e8bd3f; stroke: #fff; stroke-width: 40; }
+figure.ovmap circle.main { fill: #e2507f; }
+figure.ovmap a:hover circle { fill: #fff; }

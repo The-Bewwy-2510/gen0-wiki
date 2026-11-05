@@ -1,0 +1,76 @@
+/* Missions section: the filterable mission list, the Warboard arcs, mission pages (briefing, objectives, page nav)
+   and the challenge tables. */
+
+/* mission list: hide a pack block / type group when the filter bar leaves none of its rows */
+.mspack:not(:has(tbody tr:not(.hidden))), .msgroup:not(:has(tbody tr:not(.hidden))) { display: none; }
+.msgroup h3 { margin: 18px 0 4px; }
+.msfilter .chip { padding: 4px 10px; }
+.msfilter .chip[data-f="*"] { margin-left: 6px; }
+table.mstable td.mname { white-space: nowrap; }
+table.mstable td.mname .tag { margin-left: 6px; }
+table.mstable td.msum { min-width: 280px; font-size: 13.5px; }
+table.mstable td small { color: var(--dim); }
+.tag.arc { background: #1f6b5c; }
+.tag.opt { background: transparent; border: 1px solid var(--dim); color: var(--ink2); margin-left: 8px; }
+
+/* Warboard arcs */
+.arcs { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 18px; margin: 10px 0 18px; }
+.arccol { background: var(--panel); padding: 4px 14px 10px; border-top: 3px solid #1f6b5c; }
+.arccol h3 { margin: 10px 0 6px; }
+ol.arclist { margin: 0; padding-left: 22px; }
+ol.arclist li { margin: 4px 0; }
+ol.arclist small { color: var(--dim); margin-left: 8px; font-size: 12px; }
+
+/* mission page */
+.mslead { font-size: 16px; color: var(--ink); }
+.briefing { background: var(--panel); padding: 14px 18px 4px; margin: 10px 0 16px; border-left: 3px solid var(--bar); }
+.briefing p { color: var(--ink2); }
+.briefing p.bnote { color: var(--dim); font-size: 13.5px; border: 1px dashed var(--line); padding: 6px 10px; }
+ol.objectives { list-style: none; counter-reset: obj; padding: 0; margin: 10px 0 18px; display: grid; gap: 4px; }
+ol.objectives li { counter-increment: obj; display: grid; grid-template-columns: 34px 1fr; column-gap: 8px;
+                   background: var(--panel); padding: 8px 12px 8px 0; margin: 0; align-items: baseline; }
+ol.objectives li::before { content: counter(obj); grid-row: 1 / span 2; text-align: right; color: var(--dim);
+                           font-weight: 700; font-variant-numeric: tabular-nums; }
+ol.objectives li.opt { background: rgba(4, 6, 9, .6); }
+ol.objectives li.opt .otext { color: var(--ink2); }
+ol.objectives li:target { outline: 1px solid rgba(255,255,255,.5); }
+ol.objectives .otext { color: var(--ink); }
+ol.objectives .cnt { margin-left: 8px; color: var(--gold); font-weight: 700; font-size: 13px; }
+ol.objectives .odeps { grid-column: 2; color: var(--dim); font-size: 12.5px; }
+ul.chlist li { margin: 6px 0; }
+.msnav { display: grid; gap: 8px; margin: 28px 0 8px; }
+.msnrow { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-items: stretch; }
+.msnrow small { grid-column: 1 / -1; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
+.msnrow a { background: var(--card); padding: 8px 14px; }
+.msnrow a.next { text-align: right; }
+
+/* challenges */
+h3.chh { margin-top: 26px; }
+h3.chh small { font-weight: 400; margin-left: 6px; font-size: 13px; }
+table.chtable td:nth-child(4) { min-width: 300px; }
+table.chtable td .title { color: var(--gold); font-weight: 600; }
+table.chtable ul.tlist { margin: 4px 0 0; padding-left: 18px; }
+table.chtable ul.tlist li { margin: 1px 0; }
+
+@media (max-width: 600px) {
+  .msnrow { grid-template-columns: 1fr; }
+  .msnrow a.next { text-align: left; }
+  table.mstable td.msum { min-width: 220px; }
+}
+table.ovtable td:first-child { white-space: nowrap; }
+/* the same column widths in every challenge table, so they line up down the page */
+table.chtable th:nth-child(1) { width: 6%; }
+table.chtable th:nth-child(2) { width: 10%; }
+table.chtable th:nth-child(3) { width: 8%; }
+table.chtable th:nth-child(5) { width: 22%; }
+table.trees td:last-child { min-width: 260px; }
+
+/* the base game's later storyline: a sub table inside the main-missions group */
+.mssub:not(:has(tbody tr:not(.hidden))) { display: none; }
+.mssub h4 { margin: 16px 0 2px; }
+.mssub p { margin: 2px 0 6px; }
+/* overview count tables: empty cells' dashes line up with the right-aligned numbers */
+table.wt.counts td.n0 { text-align: right; }
+/* the bunker barcode key next to a Warboard mission's first barcode objective */
+ol.objectives .okey { margin-left: 12px; font-size: 13.5px; }
+ol.objectives .okey small { color: var(--dim); text-transform: uppercase; letter-spacing: .08em; font-size: 11px; }

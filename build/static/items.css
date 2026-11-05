@@ -1,0 +1,73 @@
+/* Items & crafting section: item icons in tables, recipe chips, the schematic path grid, material blocks. */
+img.ii { height: 40px; width: 40px; max-width: none; object-fit: contain; vertical-align: middle; }
+img.ingi { height: 20px; width: 20px; max-width: none; object-fit: contain; vertical-align: -5px; margin-right: 4px; }
+img.cur { height: 20px; width: 20px; object-fit: contain; vertical-align: middle; margin-right: 6px; }
+.ing { display: inline-block; white-space: nowrap; background: rgba(255,255,255,.06); padding: 1px 7px 1px 4px; margin: 2px 4px 2px 0; font-size: 13px; }
+.gtext { display: block; border-left: 2px solid var(--faint); padding-left: 8px; }
+table.equip td:nth-child(4) { min-width: 210px; }
+table.equip td:nth-child(5) { min-width: 240px; font-size: 13.5px; }
+table.equip td:nth-child(7) code, table.schtab td:last-child code { font-size: 11.5px; }
+table.wt tr:target td { background: rgba(232,189,63,.14); }
+table.schtab td:nth-child(2) { min-width: 240px; }
+table.schtab td:nth-child(7) { min-width: 200px; }
+table.schtab .sdesc { margin-top: 3px; font-size: 12.5px; }
+
+/* currency box */
+.curbox { display: flex; gap: 14px; align-items: center; background: var(--card); padding: 12px 16px; margin: 10px 0 14px; border-left: 4px solid var(--gold); }
+.curbox p { margin: 2px 0 4px; }
+img.curbig { width: 56px; height: 56px; object-fit: contain; flex: none; }
+
+/* schematic paths like the game menu */
+.spaths { background: rgba(4,6,9,.6); margin: 8px 0 14px; }
+.sprow { display: flex; align-items: stretch; border-bottom: 1px solid var(--line); }
+.splabel { flex: 0 0 150px; padding: 10px 12px; font-weight: 600; display: flex; flex-direction: column; justify-content: center; }
+.splabel small { font-weight: 400; color: var(--dim); font-size: 12px; }
+.spnodes { display: flex; align-items: center; gap: 0; overflow-x: auto; padding: 6px 8px; min-width: 0; flex: 1; }
+.sparr { font-style: normal; color: var(--dim); padding: 0 4px; font-size: 18px; }
+a.snode { display: flex; gap: 8px; align-items: center; flex: 0 0 188px; min-height: 58px; padding: 6px 8px; background: var(--card); border: 1px solid rgba(255,255,255,.12); color: var(--ink); }
+a.snode:hover { text-decoration: none; border-color: rgba(255,255,255,.5); }
+a.snode b { display: block; font-size: 12.5px; line-height: 1.25; font-weight: 600; }
+a.snode small { display: block; font-size: 11.5px; color: var(--dim); margin-top: 2px; }
+a.snode .qb { font-size: 9.5px; line-height: 14px; padding: 0 4px; margin-right: 3px; }
+a.snode .ndlc { font-style: normal; color: #e8bd3f; margin-left: 4px; font-weight: 700; }
+img.sni { width: 40px; height: 40px; object-fit: contain; flex: none; }
+a.snode.q2 { border-left: 3px solid var(--q2); } a.snode.q3 { border-left: 3px solid var(--q3); }
+a.snode.q4 { border-left: 3px solid var(--q4); } a.snode.q5 { border-left: 3px solid var(--q5); }
+a.snode.q6 { border-left: 3px solid var(--q6); } a.snode.q1 { border-left: 3px solid var(--q1); }
+
+/* materials */
+.matblock { background: var(--card); padding: 10px 16px 12px; margin: 10px 0; }
+.matblock:target { outline: 2px solid var(--q5); }
+.mathead { display: flex; align-items: center; gap: 10px; }
+.mathead h3 { margin: 0; }
+img.mati { width: 44px; height: 44px; object-fit: contain; vertical-align: middle; margin-right: 8px; }
+h3 img.mati { margin-right: 10px; }
+.matblock details summary { cursor: pointer; color: var(--link); margin-top: 4px; }
+.usetrees { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 18px; margin-top: 8px; }
+.usetree h4 { margin: 6px 0 2px; font-size: 14px; }
+ul.uselist { margin: 0; padding-left: 18px; font-size: 13px; }
+ul.uselist li { margin: 1px 0; }
+
+/* keys and companion tiles */
+.keygrid .icon img { height: 48px; }
+.keygrid .icon code { font-size: 10.5px; word-break: break-all; }
+.cgrid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.ctile code { font-size: 10.5px; word-break: break-all; color: var(--dim); }
+.ctile:target, .icongrid .icon:target { outline: 2px solid var(--q5); }
+
+@media (max-width: 700px) {
+  .sprow { flex-direction: column; }
+  .splabel { flex: none; padding: 8px 10px 0; flex-direction: row; gap: 8px; align-items: baseline; justify-content: flex-start; }
+  a.snode { flex-basis: 170px; }
+  .curbox { align-items: flex-start; }
+  img.curbig { width: 40px; height: 40px; }
+}
+.facts { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 13.5px; color: var(--ink2); margin: 6px 0 2px; }
+.facts i { font-style: normal; color: var(--dim); margin-right: 4px; }
+table.schtab td:nth-child(3), table.trees td:first-child { white-space: nowrap; }
+table.trees td:nth-child(3) { min-width: 220px; }
+/* per-region breakdown under a placed count */
+.regs { display: block; font-size: 11.5px; line-height: 1.3; text-align: right; min-width: 90px; white-space: normal; }
+.splabel .pdlc { display: block; margin: 3px 0 1px; font-weight: 400; }
+.splabel .pdlc .tag { font-size: 10.5px; }
+@media (max-width: 700px) { .splabel .pdlc { display: inline; margin: 0; } }
