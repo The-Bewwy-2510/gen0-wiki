@@ -1,47 +1,51 @@
-"""Character tab: skills, apparel, other vanity items (face paint, emotes, vehicles) and content packs.
+"""Character tab: skills, apparel, emotes & face paint, vehicles.
 
 Pages
-    character/skills.html    gamedata.json skills: the four trees as columns like the game's skill menu, every skill
-                             with icon, art, per-level effects, prerequisites and what it unlocks; skill point guide
-    character/apparel.html   vanity.json group 'apparel': every clothing item, grouped into cards by slot + base
-                             name + pack, with a filterable icon grid and a full item table
-    character/vanity.html    face paint, emotes and vehicles (bike paint jobs) from vanity.json, plus summaries that
-                             point to weapon skins (weapons section) and companion cosmetics (items section)
-    character/packs.html     every content pack hash: name (from the data where it has one, otherwise inferred from
-                             the contents), and everything in it (vanity.json + keys.json pack_items)
+    character/skills.html    gamedata.json skills: one "Skill tree" menu with a tab per tree (Combat, Support, Survival,
+                             Tech) drawn like the game's skill menu (icons, connector lines, rank pips, a details pane
+                             and a small point planner in character.js), specializations, skill points and tips
+    character/apparel.html   vanity.json group 'apparel': a card grid (one card per piece of clothing, its colours as
+                             swatches) filtered by slot and pack, and a table split into one collapsed fold per slot
+    character/emotes.html    vanity.json emotes (gestures, dances, companion tricks) and face paint; the dances that
+                             come from videotape collectibles
+    character/vehicles.html  vanity.json vehicles: every bike model with its paint jobs, Steam store text per model
+
+Item packs are listed on the DLC page (home module, kind 'pack' -> dlc.html#pack-<hash>); pack tags here link there.
+packs(site) stays here (pack hash -> short name, class) because other modules import it.
 
 Kinds registered
     skill     key = skill name ('Reload Speed'), aliases = internal key (skill_01_02), upper-case name, hash
     apparel   key = item name (internal name when the name is taken), aliases = internal name, item hash; one extra
               searchable entry per card (base name, e.g. 'Adventurer fedora')
-    vanity    every apparel, face paint, emote and vehicle item: key = name, aliases = internal name, hash
-    pack      key = content pack hash as a string, alias = pack name
+    vanity    every apparel, face paint, emote and vehicle item: key = name, aliases = internal name, hash; and each
+              vehicle model ('Dirt bike')
 
 vanity.json item fields (meanings checked against the Gen0 Editor, editor/web/panes.js and inv_editor.py):
     h  item hash (EquipmentHash in Profile.ItemStash)     n  display name        r  internal name
     g  group (apparel, facepaint, skins, companion, vehicles, emotes)           s  sub group (slot / weapon / bike)
     p  content pack hash (vanity.json base_pack = base game)                     i  icon file in img/vanity/
     l  lock flag: 'U' starts unlocked, 'L' starts locked, a trailing 'D' marks downloadable content (the editor
-       tags 'UD' and 'LD' items as DLC; the Gen0 Modder describes DLC skins as "unlocked from the start"). No game
-       file defines it, so the readings are inferred; heads and hands (slot 'body') are all 'L' although you pick
-       them in the character creator
+       tags 'UD' and 'LD' items as DLC). No game file defines it, so the readings are inferred; heads and hands
+       (slot 'body') are all 'L' although you pick them in the character creator
     m  model hash, apparel only: colour variants of one piece of clothing share it (0 for heads and hands)
-    x  body: 'F' / 'M' for the few items made for one body only (the editor shows FEMALE / MALE)
+    x  body: 'F' / 'M' for the few items made for one body only
+None of the hashes or internal names are printed on the pages (layout v2); they stay as search aliases.
 """
 import collections
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, bar, note, kv, tag
+from wiki.site import esc, slug, norm, fmt, table, bar, fold, panel, kv, tag, infobox, minimap, maplink
 
 CSS = '<link rel="stylesheet" href="~/assets/character.css">'
+JS = '<script src="~/assets/character.js" defer></script>'
+HEAD = CSS + JS
 SKILLS = "character/skills.html"
 APPAREL = "character/apparel.html"
-VANITY = "character/vanity.html"
-PACKS = "character/packs.html"
+EMOTES = "character/emotes.html"
+VEHICLES = "character/vehicles.html"
 
 # Names for the content packs the data doesn't name, inferred from what is in them: (short label, long name).
-# Where the internal names share a theme word it is used ('summer', 'fall', 'movies', 'raid' in char_part_*).
-# The base game and the two expansions are named by the data (vanity.json base_pack, missions.json packs).
+# Only a fallback: pack tags use the name the DLC page (home module) registers for the pack when there is one.
 INFERRED = {
     1275017523: ("Summer", "Summer set: Midsummer, Miami and Adventurer apparel"),
     175186114: ("Easter & rain", "Easter, rain, workout and Timeless apparel"),
@@ -70,16 +74,14 @@ INFERRED = {
 }
 PACK_CLASS = {"alpine": "alpine", "fnix": "fnix"}
 
-# No game file defines the flag; these readings follow how the Gen0 Editor treats it (see the module docstring).
-FLAG = {  # vanity.json 'l' -> (short label, explanation)
-    "U": ("Starts unlocked", "every profile has it from the start"),
-    "L": ("Starts locked", "not given automatically: found, earned, or chosen in the character creator"),
-    "UD": ("DLC, given", "downloadable content that is unlocked as soon as you own the pack"),
-    "LD": ("DLC, earned", "downloadable content that starts locked even when you own the pack"),
+# How you get an item, from its lock flag (vanity.json 'l'). No game file defines the flag; the readings follow how
+# the Gen0 Editor treats it (it marks UD and LD items as DLC). flag -> (tag text, tag class, explanation)
+AVAIL = {
+    "U": ("Unlocked", "green", "every profile has it from the start"),
+    "UD": ("With its pack", "dlc", "unlocked as soon as you own its pack (or add it, for the free packs)"),
+    "L": ("Find or earn", "", "not given automatically: found or earned in the game"),
+    "LD": ("Find or earn (pack)", "dlc", "needs its pack, and then you still find or earn it in the game"),
 }
-BODY = {"F": "Female body only", "M": "Male body only"}
-SEP = ' <span class="sep">·</span> '   # list separator: many vanity names contain commas
-GROUP_ORDER = ["apparel", "facepaint", "skins", "companion", "vehicles", "emotes"]
 
 
 # ===============================================================================================================
@@ -100,7 +102,8 @@ def items_of(site, group):
 
 
 def packs(site):
-    """Content pack hash -> {short, name, inferred, cls, dlc}. Names from the data first, then INFERRED."""
+    """Content pack hash -> {short, name, inferred, cls, dlc}. Names from the data first, then INFERRED.
+    Kept importable for the home module (from sections.character import packs)."""
     if hasattr(site, "_char_packs"):
         return site._char_packs
     v = van(site)
@@ -114,53 +117,47 @@ def packs(site):
     for h in sorted(hashes):
         if h in out:
             continue
-        short, name = INFERRED.get(h, (f"Pack {h}", f"Pack {h}"))
+        short, name = INFERRED.get(h, ("Item pack", "Item pack"))
         dlc_items = any(i["p"] == h and i["l"].endswith("D") for i in v["items"])
         out[h] = {"short": short, "name": name, "inferred": True, "cls": "dlc" if dlc_items else "", "dlc": None}
     site._char_packs = out
     return out
 
 
-def pack_tag(site, p, short=True):
-    """The pack as a coloured tag that links to its section on the packs page."""
-    pk = packs(site).get(p) or {"short": str(p), "cls": "", "inferred": True}
-    hint = f'{pk.get("name", p)} · name inferred from contents' if pk.get("inferred") else pk.get("name", str(p))
-    return (f'<a class="ptag" href="~/{PACKS}#pack-{p}" title="{esc(hint)}">'
-            f'{tag(pk["short"] if short else pk["name"], pk["cls"])}</a>')
+def pack_label(site, h):
+    """The pack's name: what the DLC page calls it (home module), else our short name."""
+    e = site.find("pack", str(h))
+    if e and e.get("title") and e["title"] != "Item pack":
+        return e["title"]
+    return (packs(site).get(h) or {}).get("short", "Item pack")
 
 
-def plain_pack_tag(site, p):
-    """The pack tag without a link (for the 1,200-row apparel table, where links would double the page size)."""
-    pk = packs(site).get(p) or {"short": str(p), "cls": ""}
-    return tag(pk["short"], pk["cls"])
+def pack_tag(site, h):
+    """The pack as a coloured tag that links to its entry on the DLC page."""
+    t = tag(pack_label(site, h), (packs(site).get(h) or {}).get("cls", ""))
+    u = site.url("pack", str(h))
+    return f'<a class="ptag" href="{esc(u)}">{t}</a>' if u else t
 
 
-def flag_tags(it):
-    """Tags for the lock flag and the body restriction of a vanity item ('L' is the normal case: no tag)."""
-    return lock_tag(it["l"]) + (tag(BODY[it["x"]].split(" body")[0]) if it.get("x") else "")
+def pack_key(site, h):
+    """Filter token for a pack (no hashes in the HTML)."""
+    return "p-" + slug(pack_label(site, h))
 
 
-def lock_tag(l):
-    return {"U": tag("Starts unlocked", "green"), "UD": tag("DLC", "dlc"),
-            "LD": tag("DLC, earned", "dlc")}.get(l, "")
+def avail_tag(l):
+    """How you get an item, as a small outlined label (explained by avail_legend in the side panel)."""
+    label, cls, why = AVAIL.get(l, (l, "", ""))
+    return f'<span class="av {slug(l)}">{esc(label)}</span>'
 
 
-def flag_cell(l):
-    label, why = FLAG.get(l, (l, ""))
-    return f'<code>{esc(l)}</code> <span class="dim">{esc(label)}</span>'
+def avail_legend(site, flags=("U", "UD", "L", "LD")):
+    rows = "".join(f"<li>{avail_tag(f)} <span>{esc(AVAIL[f][2].capitalize())}.</span></li>" for f in flags)
+    return (f'<ul class="avleg">{rows}</ul><p class="dim small">Read from each item\'s lock flag in the game '
+            "files. No file says what the flag means; this is how the Gen0 Editor reads it.</p>")
 
 
-def flag_counts(its):
-    """'5 × DLC, earned · 1 × DLC, given' for a list of vanity items."""
-    c = collections.Counter(i["l"] for i in its)
-    if len(c) == 1:
-        return esc(FLAG[next(iter(c))][0])
-    return " · ".join(f"{n} × {esc(FLAG[l][0])}" for l, n in c.most_common())
-
-
-def vimg(site, it, cls="vi"):
-    """Icon of a vanity item (img/vanity/), or '' when it has none."""
-    return site.img(f"img/vanity/{it['i']}", it["n"], cls=cls) if it.get("i") else ""
+def vimg(site, icon, alt="", cls="vi"):
+    return site.img(f"img/vanity/{icon}", alt, cls=cls) if icon else ""
 
 
 def first_free(site, kind, *keys):
@@ -169,6 +166,74 @@ def first_free(site, kind, *keys):
         if not site.find(kind, k):
             return k
     return keys[-1]
+
+
+def page_of(site, kind, key):
+    """The page (no #anchor) another section registered key under, or None."""
+    e = site.find(kind, key)
+    return "~/" + e["path"].split("#")[0] if e else None
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# colour swatches from colour names ('black/white', 'dark blue', 'Bodacious Blue')
+# ---------------------------------------------------------------------------------------------------------------
+COLOURS = {
+    "black": "#161616", "white": "#f1f1ef", "red": "#c4302b", "crimson": "#a3182a", "brown": "#74492a",
+    "blue": "#2d67c8", "navy": "#1d2f63", "marine": "#1f3f7a", "sky": "#73b4e8", "green": "#3c8a3a",
+    "army": "#4b5a2a", "forest": "#2f5a2f", "pink": "#e27aa8", "flamingo": "#f08fb0", "candy": "#f06aa8",
+    "yellow": "#e6c337", "butter": "#f0dc7a", "gray": "#85898d", "grey": "#85898d", "purple": "#7b45b0",
+    "amethyst": "#8a5cc0", "tyrian": "#66023c", "violet": "#9a6ad8", "blond": "#dcbc72", "blonde": "#dcbc72",
+    "ginger": "#c0602a", "beige": "#d6c29e", "khaki": "#b3a777", "gold": "#d2ad3a", "silver": "#c0c4c8",
+    "steel": "#7b8794", "bronze": "#a76d36", "brass": "#b5953a", "teal": "#23918d", "teel": "#23918d",
+    "turquoise": "#38c4bb", "mint": "#9ee6c2", "lime": "#9bd43a", "orange": "#e47f28", "peach": "#f1b38a",
+    "mustard": "#c69f24", "bordeaux": "#6a1a2a", "burgundy": "#6a1a2a", "emerald": "#1f8f5a", "ruby": "#b0142e",
+    "off-white": "#e8e3d6",
+}
+LIGHTER = {"light", "bleach", "pale"}
+DARKER = {"dark", "midnight"}
+
+
+def _mix(hexc, other, t):
+    a = [int(hexc[i:i + 2], 16) for i in (1, 3, 5)]
+    b = [int(other[i:i + 2], 16) for i in (1, 3, 5)]
+    return "#" + "".join(f"{round(x + (y - x) * t):02x}" for x, y in zip(a, b))
+
+
+def colours_of(label):
+    """CSS colours named in a variant label, one per '/' part; [] when the label names no colour."""
+    out = []
+    for part in label.lower().replace(" with ", "/").split("/"):
+        words = re.findall(r"[a-z-]+", part)
+        col = None
+        for n, w in enumerate(words):
+            c = COLOURS.get(w) or COLOURS.get(w.split("-")[0])
+            if c:
+                prev = words[n - 1] if n else ""
+                if prev in LIGHTER:
+                    c = _mix(c, "#ffffff", .38)
+                elif prev in DARKER:
+                    c = _mix(c, "#000000", .42)
+                col = c          # the last colour word of the part wins ('sky blue' -> sky, 'army green' -> green)
+                if w in ("sky", "army", "forest", "navy", "marine", "candy", "butter", "amethyst", "flamingo",
+                         "tyrian", "emerald", "ruby", "crimson"):
+                    break
+        if col:
+            out.append(col)
+    return out
+
+
+def swatch(label):
+    cs = colours_of(label)
+    if not cs:
+        return '<i class="sw none"></i>'
+    if len(cs) == 1:
+        bg = cs[0]
+    else:
+        step = 100 / len(cs)
+        bg = "linear-gradient(135deg," + ",".join(
+            f"{c} {step * k:.0f}% {step * (k + 1):.0f}%" for k, c in enumerate(cs)) + ")"
+    camo = " camo" if "camo" in label.lower() else ""
+    return f'<i class="sw{camo}" style="background:{bg}"></i>'
 
 
 # ===============================================================================================================
@@ -186,11 +251,35 @@ def apparel_icon(it):
     """An apparel item's icon file, with a wrong slot's generic icon replaced by its own slot's."""
     icon = it.get("i")
     fits = SLOT_ICONS.get(it["s"])
-    if not icon or not icon.startswith(GENERIC) or not fits:
+    if not fits:
         return icon
-    if any(icon == f"{GENERIC}{f}_alpha.png" for f in fits):
+    if not icon:
+        return f"{GENERIC}{fits[0]}_alpha.png"
+    if not icon.startswith(GENERIC) or any(icon == f"{GENERIC}{f}_alpha.png" for f in fits):
         return icon
     return f"{GENERIC}{fits[0]}_alpha.png"
+
+
+def slot_icon(key):
+    return f"{GENERIC}{SLOT_ICONS[key][0]}_alpha.png" if key in SLOT_ICONS else None
+
+
+def variant_label(it, base):
+    rest = it["n"][len(base):].lstrip(", ").strip()
+    return rest or "plain"
+
+
+def card_labels(c):
+    """Variant label of every item of a card; repeated labels (the game reuses some colour names) get ' 2', ' 3'."""
+    if "_labels" not in c:
+        seen, out = collections.Counter(), []
+        total = collections.Counter(variant_label(i, c["base"]) for i in c["items"])
+        for i in c["items"]:
+            lab = variant_label(i, c["base"])
+            seen[lab] += 1
+            out.append(f"{lab} {seen[lab]}" if total[lab] > 1 else lab)
+        c["_labels"] = {i["h"]: l for i, l in zip(c["items"], out)}
+    return c["_labels"]
 
 
 def apparel_cards(site):
@@ -201,25 +290,23 @@ def apparel_cards(site):
     for it in sorted(items_of(site, "apparel"), key=lambda i: (order.get(i["s"], 99), i["n"].lower())):
         base = it["n"].split(", ")[0]
         groups.setdefault((it["s"], base, it["p"]), []).append(it)
-    cards = []
+    cards, used = [], set()
     for (s, base, p), its in groups.items():
-        icons = collections.Counter(apparel_icon(i) for i in its if i.get("i"))
-        single = len(its) == 1
-        c = {"slot": s, "base": base, "pack": p, "items": its, "single": single,
+        icons = collections.Counter(apparel_icon(i) for i in its)
+        cid = f"ap-{slug(s)}-{slug(base)}"
+        if cid in used:
+            cid += "-" + slug(packs(site).get(p, {}).get("short", "pack"))
+        n = 2
+        while cid in used:
+            cid, n = f"{cid}-{n}", n + 1
+        used.add(cid)
+        c = {"slot": s, "base": base, "pack": p, "items": its, "id": cid,
              "icon": icons.most_common(1)[0][0] if icons else None,
-             "id": f"ap-{its[0]['h']}",
-             "flags": sorted({i["l"] for i in its}), "body": {i.get("x") for i in its} - {None}}
-        for i in its:
-            # where an item's own link goes: its variant chip, or the card when the card is just that item
-            i["_anchor"] = c["id"] if single else f"a-{i['h']}"
+             "flags": sorted({i["l"] for i in its}, key=list(AVAIL).index),
+             "body": sorted({i.get("x") for i in its} - {None})}
         cards.append(c)
     site._char_cards = cards
     return cards
-
-
-def variant_label(it, base):
-    rest = it["n"][len(base):].lstrip(", ").strip()
-    return rest or it["n"]
 
 
 # ===============================================================================================================
@@ -229,30 +316,6 @@ def collect(site):
     collect_skills(site)
     collect_apparel(site)
     collect_vanity(site)
-    for h, pk in packs(site).items():
-        site.register("pack", str(h), f"{PACKS}#pack-{h}", pk["name"], aliases=[] if pk["inferred"] else [pk["name"]],
-                      desc=f"Content pack {h}" + (" (name inferred from its contents)" if pk["inferred"] else ""),
-                      keywords="content pack dlc " + pk["short"])
-    for pack in weapon_packs(site):
-        name = weapon_pack_name(pack)
-        site.register("pack", name, f"{PACKS}#pack-{slug(name)}", name, aliases=[pack],
-                      desc="Weapon DLC pack (named in the weapon stats)", keywords="dlc weapons pack")
-
-
-def weapon_packs(site):
-    """Named weapon packs from stats.json ('US Weapons Pack (DLC)' -> [(category, weapon name)]), base game left out.
-    The stats file names these packs but doesn't give their content pack hashes."""
-    out = collections.OrderedDict()
-    for cat, ws in site.data("stats")["player_weapons"].items():
-        for name, d in ws.items():
-            pack = d.get("pack") if isinstance(d, dict) else None
-            if pack and not pack.startswith("Base game"):
-                out.setdefault(pack, []).append((cat, name))
-    return out
-
-
-def weapon_pack_name(pack):
-    return pack.replace(" (DLC)", "")
 
 
 def collect_skills(site):
@@ -263,7 +326,8 @@ def collect_skills(site):
                 s = sk["list"][sid]
                 site.register("skill", s["name"], f"{SKILLS}#{slug(s['name'])}", s["name"],
                               icon=s["icon"].replace("assets/", "img/", 1),
-                              desc=f"{t['name'].title()} skill, max level {s['max']}. " + " ".join(skill_text(s)[0])[:100],
+                              desc=f"{t['name'].title()} skill, max level {s['max']}. "
+                                   + " ".join(skill_text(s)[0])[:100],
                               aliases=[sid, s["upper"], str(s["hash"])],
                               keywords=f"skill {t['name'].lower()} {'specialization' if s['active'] else 'perk'}")
 
@@ -272,27 +336,36 @@ def collect_apparel(site):
     slot_name = dict(subs_of(site, "apparel"))
     for c in apparel_cards(site):
         icon = f"img/vanity/{c['icon']}" if c["icon"] else None
+        path = f"{APPAREL}#{c['id']}"
         for it in c["items"]:
-            path = f"{APPAREL}#{it['_anchor']}"
             key = first_free(site, "apparel", it["n"], it["r"])
             site.register("apparel", key, path, it["n"], icon=icon, aliases=[it["r"], str(it["h"])], search=False)
             site.register("vanity", first_free(site, "vanity", it["n"], it["r"]), path, it["n"], icon=icon,
                           aliases=[it["r"], str(it["h"])], search=False)
         n = len(c["items"])
-        key = first_free(site, "apparel", c["base"], f"{c['base']} ({packs(site)[c['pack']]['short']})")
-        site.register("apparel", key, f"{APPAREL}#{c['id']}", c["base"], icon=icon,
-                      desc=f"{slot_name.get(c['slot'], c['slot'])}, {n} version{'s' if n > 1 else ''} · "
-                           f"{packs(site)[c['pack']]['short']}",
+        short = packs(site)[c["pack"]]["short"]
+        key = first_free(site, "apparel", c["base"], f"{c['base']} ({short})")
+        site.register("apparel", key, path, c["base"], icon=icon,
+                      desc=f"{slot_name.get(c['slot'], c['slot'])}, {n} colour{'s' if n > 1 else ''} · {short}",
                       keywords="apparel clothing " + slot_name.get(c["slot"], ""))
 
 
 def collect_vanity(site):
-    for group, label in (("facepaint", "Face paint"), ("emotes", "Emote"), ("vehicles", "Vehicle paint job")):
+    for group, label, page, pre in (("facepaint", "Face paint", EMOTES, "fp"), ("emotes", "Emote", EMOTES, "em"),
+                                    ("vehicles", "Vehicle paint job", VEHICLES, "veh")):
         for it in items_of(site, group):
             icon = f"img/vanity/{it['i']}" if it.get("i") else None
-            site.register("vanity", first_free(site, "vanity", it["n"], it["r"]), f"{VANITY}#v-{it['h']}", it["n"],
-                          icon=icon, aliases=[it["r"], str(it["h"])],
+            site.register("vanity", first_free(site, "vanity", it["n"], it["r"]), f"{page}#{pre}-{slug(it['n'])}",
+                          it["n"], icon=icon, aliases=[it["r"], str(it["h"])],
                           desc=f"{label} · {packs(site)[it['p']]['short']}", keywords=f"{group} {label.lower()}")
+    for key, name in subs_of(site, "vehicles"):
+        its = [i for i in items_of(site, "vehicles") if i["s"] == key]
+        if not its:
+            continue
+        site.register("vanity", first_free(site, "vanity", name, key), f"{VEHICLES}#{vehicle_id(key, name)}",
+                      model_name(key, name), icon=f"img/vanity/{its[0]['i']}" if its[0].get("i") else None,
+                      aliases=[key, model_name(key, name)],
+                      desc=f"Vehicle · {len(its)} paint jobs", keywords="vehicle bike motorbike flakmoped")
 
 
 # ===============================================================================================================
@@ -301,8 +374,8 @@ def collect_vanity(site):
 def build(site):
     build_skills(site)
     build_apparel(site)
-    build_vanity(site)
-    build_packs(site)
+    build_emotes(site)
+    build_vehicles(site)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -324,44 +397,12 @@ def skill_text(s):
     return paras, levels
 
 
-NUM_RE = re.compile(r"\d+(?:\.\d+)?")
+def skill_img(site, s, key="icon", cls="skico"):
+    return site.img(s[key].replace("assets/", "img/", 1), "", cls=cls) if s.get(key) else ""
 
 
-def at_max(levels):
-    """The effect at the highest level, for the All skills table.
-    Levels that differ only by the number ('+5% damage', '+10% damage') replace each other, so the last one is the
-    effect at max. Levels with different wording add different effects (Armor: bullet, then explosive, then gas
-    resistance), so all of them are joined, folding a shared ending ('+10% bullet, +10% explosive, +10% gas damage
-    resistance')."""
-    if not levels:
-        return '<span class="dim">–</span>'
-    effects = [e.rstrip(".") for _, e in levels]
-    if len({NUM_RE.sub("#", e).replace(" ", "").lower() for e in effects}) == 1:
-        return esc(effects[-1])
-    words = [e.split() for e in effects]
-    common = 0      # number of trailing words all levels share
-    while common < min(map(len, words)) - 1 and len({tuple(w[len(w) - common - 1:]) for w in words}) == 1:
-        common += 1
-    if common:
-        heads = [" ".join(w[:len(w) - common]) for w in words]
-        joined = " and ".join(heads) if len(heads) == 2 else ", ".join(heads)
-        return esc(joined + " " + " ".join(words[0][-common:]))
-    return esc("; ".join(effects))
-
-
-def skill_pos(site):
-    """skill id -> (tree index, column, row), from the trees' column lists."""
-    out = {}
-    for ti, t in enumerate(site.data("gamedata")["skills"]["trees"]):
-        for ci, col in enumerate(t["cols"]):
-            for ri, sid in enumerate(col):
-                out[sid] = (ti, ci, ri)
-    return out
-
-
-def skill_links(site, ids):
-    L = site.data("gamedata")["skills"]["list"]
-    return ", ".join(site.link("skill", L[i]["name"]) for i in ids)
+def tree_points(L, t):
+    return sum(L[sid]["max"] for col in t["cols"] for sid in col)
 
 
 def build_skills(site):
@@ -369,176 +410,133 @@ def build_skills(site):
     L, trees = sk["list"], sk["trees"]
     total = sum(s["max"] for s in L.values())
     specs = [sid for sid, s in L.items() if s["active"]]
-    lead = (f"<p>Your character has <b>{len(L)} skills</b> in four trees ({', '.join(t['name'].title() for t in trees)})."
-            f" Each tree has two columns of six skills; a skill opens once the skill above it is learned, and the "
-            f"bottom skill of every column is a <b>specialization</b>, an ability you switch on. Ranks cost one "
-            f"skill point each, and maxing every skill takes <b>{total} skill points</b>. All names, descriptions "
-            f"and level values below are the game's own text.</p>")
-    b = [bar("Skill trees at a glance", f"{len(L)} skills · {total} points to max"),
-         "<p>The four trees laid out as in the game's skill menu: each tree is two columns, read from top to "
-         "bottom. The number on a skill is how many ranks it has. Specializations have a gold frame. Click a "
-         "skill for its details.</p>",
-         overview_trees(site)]
-    b += skill_point_guide(site, L, trees, total, specs)
-    for ti, t in enumerate(trees):
-        b += tree_section(site, L, ti, t)
-    b += specialization_table(site, L, specs)
-    b += skill_table(site, L)
-    site.page(SKILLS, "Skills", "\n".join(b), "character", sub="skills", lead=lead, head_extra=CSS,
-              kind="Character · Skill trees",
+    lead = (f"<p>Skills are the perks you buy with skill points as your character levels up. There are "
+            f"<b>{len(L)} skills</b> in four trees: {', '.join(t['name'].title() for t in trees)}. Each tree has two "
+            f"columns of six skills, and the last skill of every column is a <b>specialization</b>, an ability you "
+            f"switch on. Every rank costs one point; maxing everything takes <b>{total} points</b>.</p>")
+    ib = infobox("Skills", [
+        ("Trees", str(len(trees))), ("Skills", str(len(L))), ("Specializations", f"{len(specs)} (one active)"),
+        ("Cost", "1 skill point per rank"), ("Points to max", f"{total}"),
+    ], image=f"~/{sk['list'][specs[0]]['image'].replace('assets/', 'img/', 1)}"
+    if site.has_file(L[specs[0]]["image"].replace("assets/", "img/", 1)) else None)
+    side = [panel("Points per tree", kv(
+        [(t["name"].title(), f'<a href="#tree-{esc(t["key"])}" data-tree="{esc(t["key"])}">'
+                             f'{tree_points(L, t)} points</a>') for t in trees]))]
+    b = [bar("Skill tree", f"{len(L)} skills · {total} points", id="skill-tree"),
+         "<p>Pick a tree in the bar below. Click a skill to read what it does; with <b>+</b> and <b>−</b> you can "
+         "plan your points. As in the game, a skill opens once the skill above it has a point.</p>",
+         skill_menu(site, L, trees)]
+    b += specialization_section(site, L, specs)
+    b += skill_points_section(site, L, trees, specs)
+    site.page(SKILLS, "Skills", "\n".join(b), "character", sub="skills", lead=lead, head_extra=HEAD,
+              kind="Character · Skills", infobox_html=ib, side=side,
               desc=f"All {len(L)} Generation Zero skills in the Combat, Support, Survival and Tech trees: per-level "
                    "effects, prerequisites, specializations and skill point costs.")
 
 
-def overview_trees(site):
-    """The four trees side by side, each a 2 x 6 grid of skill icons (like the game's menu)."""
-    sk = site.data("gamedata")["skills"]
-    L = sk["list"]
-    out = ['<div class="sktrees">']
-    for t in sk["trees"]:
-        pts = sum(L[sid]["max"] for col in t["cols"] for sid in col)
-        cells = []
+def skill_menu(site, L, trees):
+    """The four trees as one menu with a tab bar, like the game's skill menu."""
+    tabs = "".join(
+        f'<button type="button" role="tab" class="{"on" if ti == 0 else ""}" data-t="{esc(t["key"])}">'
+        f'{esc(t["name"].title())}<small>{tree_points(L, t)} pts</small></button>' for ti, t in enumerate(trees))
+    panes = []
+    for ti, t in enumerate(trees):
+        nodes, details = [], []
+        first = True
         for ci, col in enumerate(t["cols"]):
             for ri, sid in enumerate(col):
                 s = L[sid]
-                cls = "sknode" + (" spec" if s["active"] else "") + (" linked" if ri else "")
-                cells.append(f'<a class="{cls}" href="#{slug(s["name"])}" style="grid-column:{ci + 1};'
-                             f'grid-row:{ri + 1}" title="{esc(s["name"])}">'
-                             f'{site.img(s["icon"].replace("assets/", "img/", 1), "", cls="skico")}'
-                             f'<span class="skn">{esc(s["name"])}</span><span class="skr">{s["max"]}</span></a>')
-        out.append(f'<section class="sktree"><h3><a href="#{slug(t["name"])}">{esc(t["name"])}</a>'
-                   f'<small>{pts} points</small></h3><div class="skgrid">{"".join(cells)}</div></section>')
-    out.append("</div>")
-    return "".join(out)
+                sl = slug(s["name"])
+                par = slug(L[s["parents"][0]]["name"]) if s["parents"] else ""
+                cls = "sknd" + (" spec" if s["active"] else "") + (" sel" if first else "")
+                nodes.append(
+                    f'<button type="button" class="{cls}" id="{sl}" data-s="{sl}" data-max="{s["max"]}" '
+                    f'data-par="{par}" style="grid-column:{ci + 1};grid-row:{ri + 1 if ri < 5 else 7}" '
+                    f'aria-label="{esc(s["name"])}, {s["max"]} rank{"s" if s["max"] > 1 else ""}">'
+                    f'<span class="skic">{skill_img(site, s)}</span>'
+                    f'<span class="skpips">{"<i></i>" * s["max"]}</span>'
+                    f'<span class="sknm">{esc(s["name"])}</span></button>')
+                details.append(skill_detail(site, L, s, t, first))
+                first = False
+        panes.append(
+            f'<div class="skpane{" on" if ti == 0 else ""}" id="tree-{esc(t["key"])}" data-t="{esc(t["key"])}" '
+            f'role="tabpanel">'
+            f'<div class="skhead"><span class="skttl">{esc(t["name"])} skill tree</span>'
+            f'<span class="skpts"><span class="plan"><b class="skspent">0</b> / </span>{tree_points(L, t)} points'
+            f'</span><button type="button" class="skreset plan">Reset</button></div>'
+            f'<div class="skwrap"><div class="skgrid">{"".join(nodes)}<span class="skspec" '
+            f'aria-hidden="true">Specializations</span></div>'
+            f'<div class="skinfo">{"".join(details)}</div></div></div>')
+    return (f'<div class="skmenu" id="skmenu"><div class="sktabs" role="tablist">{tabs}</div>'
+            f'{"".join(panes)}</div>')
 
 
-def skill_point_guide(site, L, trees, total, specs):
-    rows = []
-    for t in trees:
-        for ci, col in enumerate(t["cols"]):
-            spec = L[col[-1]]
-            rows.append([f'<b>{esc(t["name"].title())}</b>', f"Column {ci + 1}",
-                         f'{site.link("skill", L[col[0]]["name"])} → {site.link("skill", spec["name"])}',
-                         len(col), sum(L[s]["max"] for s in col)])
-    one_rank = [s for s in L.values() if s["max"] == 1 and not s["active"]]
-    out = [bar("Skill points"),
-           "<p>Each level-up gives you a skill point. A rank of a skill costs one point, so a skill with three "
-           "levels costs three points to max. One rank in a skill is enough to open the next skill in its "
-           "column (the Gen0 Editor's skill tab works the same way), which means the cheapest way down a column "
-           "is one point per skill.</p>",
-           "<p>The table shows each column of each tree: its first skill and the specialization at the bottom, "
-           "and how many points it takes to max the whole column. Reaching any specialization takes 6 points "
-           "(one rank in each of the five skills above it, plus the specialization itself).</p>",
-           table(["Tree", "Column", "From → specialization", "Skills", "Points to max"], rows, num={3, 4}),
-           kv([(t["name"].title(), f"{sum(L[s]['max'] for col in t['cols'] for s in col)} points to max all "
-                                   f"{sum(len(c) for c in t['cols'])} skills") for t in trees]
-              + [("All trees", f"<b>{total} points</b>")]),
-           bar("Tips from the numbers"),
-           "<ul>"
-           f"<li><b>Every specialization costs at least 6 points</b>: five skills above it at one rank each, plus "
-           f"the specialization's single rank. With {len(specs)} specializations and only one active at a time, "
-           f"it's worth getting one early and filling in the rest later.</li>"
-           f"<li><b>One-point skills give their full effect at once</b>: "
-           f"{', '.join(site.link('skill', s['name']) for s in one_rank)}. Of these, "
-           f"{site.link('skill', 'Lockpicking')} (open locked doors with lockpicks) and "
-           f"{site.link('skill', 'Healer')} (heal other players with a first aid kit) add abilities rather than "
-           f"bonuses.</li>"
-           f"<li><b>{site.link('skill', 'Armor')} protects against a different damage type per level</b>: level 1 "
-           f"is bullets, level 2 explosives, level 3 gas. If gas is your problem you need all three ranks; "
-           f"{site.link('skill', 'Chemist')} adds another 10% gas resistance for one point.</li>"
-           f"<li><b>Each damage skill covers one kind of hit</b>: {site.link('skill', 'Armor Damage')} (Combat) works "
-           f"on armor and {site.link('skill', 'Component Damage')} (Tech) on components, "
-           f"{site.link('skill', 'Trigger Happy')} on automatic fire, and {site.link('skill', 'Make Em Count')} adds "
-           f"component damage for single shots from automatic weapons, so it works alongside Component Damage "
-           f"rather than as a general damage boost.</li>"
-           f"<li><b>Binocular skills</b> ({site.link('skill', 'Enemy Marking')}, "
-           f"{site.link('skill', 'Designated Target')}, {site.link('skill', 'Spotting Intel')}, "
-           f"{site.link('skill', 'Remote Hacking')}) all work through the binoculars, so keep them on you.</li>"
-           f"<li>{site.link('skill', 'Inquisitive Mind')} doubles mission XP at level 2 (+100%), so it pays back "
-           f"fastest when you take it early.</li>"
-           "</ul>"]
-    return out
-
-
-def tree_section(site, L, ti, t):
-    pts = sum(L[s]["max"] for col in t["cols"] for s in col)
-    out = [bar(f"{t['name'].title()} tree", f"{sum(len(c) for c in t['cols'])} skills · {pts} points",
-               id=slug(t["name"]))]
-    out.append('<div class="skcols">')
-    for ci, col in enumerate(t["cols"]):
-        out.append('<div class="skcol">')
-        for ri, sid in enumerate(col):
-            if ri:
-                out.append('<div class="skarrow" aria-hidden="true"></div>')
-            out.append(skill_card(site, L, sid, t, ci, ri))
-        out.append("</div>")
-    out.append("</div>")
-    return out
-
-
-def skill_card(site, L, sid, t, ci, ri):
-    s = L[sid]
+def skill_detail(site, L, s, t, on):
     paras, levels = skill_text(s)
-    art = site.img(s["image"].replace("assets/", "img/", 1), "", cls="skart") if s.get("image") else ""
-    icon = site.img(s["icon"].replace("assets/", "img/", 1), "", cls="skico")
-    kind = tag("Specialization", "exp") if s["active"] else tag("Passive", "base")
+    kind = "Specialization" if s["active"] else "Skill"
     lv = ""
     if levels:
-        lv = '<ol class="sklv">' + "".join(f"<li><b>Level {n}</b> {esc(e)}</li>" for n, e in levels) + "</ol>"
+        lv = '<ol class="sklv">' + "".join(
+            f'<li data-l="{n}"><span class="lvn">{n}</span><span>{esc(e)}</span></li>' for n, e in levels) + "</ol>"
     elif s["max"] > 1:
-        lv = f'<p class="dim small">The game gives no per-level values for its {s["max"]} levels.</p>'
-    req = skill_links(site, s["parents"]) if s["parents"] else '<span class="dim">nothing (top of the column)</span>'
-    unl = skill_links(site, s["children"]) if s["children"] else '<span class="dim">nothing (end of the column)</span>'
-    return (f'<div class="skc{" spec" if s["active"] else ""}" id="{slug(s["name"])}">'
-            f'<div class="skhd">{art}{icon}<div><b>{esc(s["name"])}</b>'
-            f'<span class="dim small">{kind} {esc(t["name"].title())} · column {ci + 1}, row {ri + 1}</span></div>'
-            f'<span class="skmax" title="Maximum level">{s["max"]}<small>max</small></span></div>'
-            f'<div class="skbody">'
-            + "".join(f"<p>{esc(p)}</p>" for p in paras) + lv +
-            f'<dl class="skrel"><dt>Requires</dt><dd>{req}</dd><dt>Unlocks</dt><dd>{unl}</dd></dl>'
-            f'<div class="skid"><code>{esc(sid)}</code> · hash <code>{s["hash"]}</code></div></div></div>')
+        lv = f'<p class="dim small">The game gives no per-level values for its {s["max"]} ranks.</p>'
+    req = (", ".join(f'<a href="#{slug(L[p]["name"])}">{esc(L[p]["name"])}</a>' for p in s["parents"])
+           or '<span class="dim">nothing, top of the column</span>')
+    unl = (", ".join(f'<a href="#{slug(L[c]["name"])}">{esc(L[c]["name"])}</a>' for c in s["children"])
+           or '<span class="dim">nothing, end of the column</span>')
+    cost = f'{s["max"]} point{"s" if s["max"] > 1 else ""}' + (f" ({s['max']} ranks)" if s["max"] > 1 else "")
+    return (f'<div class="skd{" on" if on else ""}" data-s="{slug(s["name"])}">'
+            f'<div class="skart">{skill_img(site, s, "image", "skimg")}<div class="skdt">{skill_img(site, s)}'
+            f'<div><b>{esc(s["name"])}</b><span>{esc(t["name"].title())} · {kind}</span></div></div></div>'
+            f'<div class="skdb">' + "".join(f"<p>{esc(p)}</p>" for p in paras) + lv +
+            f'<dl class="skrel"><dt>Cost</dt><dd>{cost}</dd><dt>Requires</dt><dd>{req}</dd>'
+            f'<dt>Unlocks</dt><dd>{unl}</dd></dl>'
+            f'<div class="skplan plan"><button type="button" data-d="-1" aria-label="Remove a point">−</button>'
+            f'<span class="skrk">0 / {s["max"]}</span>'
+            f'<button type="button" data-d="1" aria-label="Add a point">+</button>'
+            f'<span class="sklock dim small">Needs a point in the skill above</span></div></div></div>')
 
 
-def specialization_table(site, L, specs):
-    pos = skill_pos(site)
+def specialization_section(site, L, specs):
     trees = site.data("gamedata")["skills"]["trees"]
     rows = []
     for sid in specs:
         s = L[sid]
-        ti, ci, ri = pos[sid]
         paras, _ = skill_text(s)
         effect = " ".join(p for p in paras if not p.startswith("Only one specialization"))
-        rows.append([site.link("skill", s["name"], icon=True), esc(trees[ti]["name"].title()),
-                     site.link("skill", L[s["parents"][0]]["name"]) if s["parents"] else "–", esc(effect)])
-    return [bar("Specializations"),
-            f"<p>The {len(specs)} specializations are the last skill of each column. You can learn all of them, but "
-            "the game says only one specialization may be active at a time, so you pick the one that is switched "
-            "on.</p>",
-            table(["Specialization", "Tree", "Needs", "Effect"], rows, cls="spect")]
+        rows.append([site.link("skill", s["name"], icon=True), esc(trees[s["tree"]]["name"].title()), esc(effect)])
+    return [bar("Specializations", f"{len(specs)}"),
+            f"<p>The {len(specs)} specializations sit at the bottom of the columns. You can learn all of them, but "
+            "the game lets only one be active at a time, so you choose the one that is switched on.</p>",
+            table(["Specialization", "Tree", "Effect"], rows, cls="spect")]
 
 
-def skill_table(site, L):
-    pos = skill_pos(site)
-    trees = site.data("gamedata")["skills"]["trees"]
-    rows = []
-    for sid, s in sorted(L.items(), key=lambda kv_: pos[kv_[0]]):
-        ti, ci, ri = pos[sid]
-        _, levels = skill_text(s)
-        rows.append([site.link("skill", s["name"], icon=True), esc(trees[ti]["name"].title()),
-                     f'<span data-v="{ci * 10 + ri}">{ci + 1} / {ri + 1}</span>', s["max"],
-                     "Specialization" if s["active"] else "Passive",
-                     at_max(levels),
-                     skill_links(site, s["parents"]) or "–", skill_links(site, s["children"]) or "–",
-                     f"<code>{esc(sid)}</code>", f"<code>{s['hash']}</code>"])
-    return [bar("All skills"),
-            "<p>Every skill in one sortable table. <i>Col / row</i> is the position in its tree, "
-            "<i>At max</i> what the skill gives at its highest level, in the game's words (only for skills whose "
-            "text lists levels): the last level's value where the levels only change a number, or every level's "
-            "effect where each level adds something different (Armor, Explosives Expert, Spotting Intel). The "
-            "internal key and the hash are what save files and the "
-            f"{site.link('tool', 'Gen0 Editor')} use.</p>",
-            table(["Skill", "Tree", "Col / row", "Levels", "Type", "At max", "Requires", "Unlocks", "Key", "Hash"],
-                  rows, cls="compact sktab", num={3})]
+def skill_points_section(site, L, trees, specs):
+    one_rank = [s for s in L.values() if s["max"] == 1 and not s["active"]]
+    return [bar("Skill points and tips"),
+            "<p>Each level-up gives you a skill point, and a rank of a skill costs one point. One rank is enough to "
+            "open the next skill in the column, so the cheapest way down a column is one point per skill: "
+            "<b>any specialization costs at least 6 points</b> (one rank in each of the five skills above it, plus "
+            "the specialization itself).</p>",
+            "<ul>"
+            f"<li><b>One-point skills give their full effect at once</b>: "
+            f"{', '.join(site.link('skill', s['name']) for s in one_rank)}. Of these, "
+            f"{site.link('skill', 'Lockpicking')} (open locked doors with lockpicks) and "
+            f"{site.link('skill', 'Healer')} (heal other players with a first aid kit) add abilities rather than "
+            f"bonuses.</li>"
+            f"<li><b>{site.link('skill', 'Armor')} protects against a different damage type per level</b>: level 1 "
+            f"is bullets, level 2 explosives, level 3 gas. {site.link('skill', 'Chemist')} adds another 10% gas "
+            f"resistance for one point.</li>"
+            f"<li><b>Each damage skill covers one kind of hit</b>: {site.link('skill', 'Armor Damage')} (Combat) on "
+            f"armor, {site.link('skill', 'Component Damage')} (Tech) on components, "
+            f"{site.link('skill', 'Trigger Happy')} on automatic fire, and {site.link('skill', 'Make Em Count')} "
+            f"on components with single shots from automatic weapons.</li>"
+            f"<li><b>Binocular skills</b> ({site.link('skill', 'Enemy Marking')}, "
+            f"{site.link('skill', 'Designated Target')}, {site.link('skill', 'Spotting Intel')}, "
+            f"{site.link('skill', 'Remote Hacking')}) all work through the binoculars, so keep them on you.</li>"
+            f"<li>{site.link('skill', 'Inquisitive Mind')} doubles mission XP at level 2 (+100%), so it pays back "
+            f"fastest when you take it early.</li>"
+            "</ul>"]
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -549,288 +547,180 @@ def build_apparel(site):
     cards = apparel_cards(site)
     subs = subs_of(site, "apparel")
     base = van(site)["base_pack"]
-    lead = (f"<p>Apparel is the clothing your character wears: <b>{fmt(len(items))} items</b> in "
-            f"{len(subs)} slots, from hats and hair to shoes and backpacks. Many items are colour versions of the "
-            f"same piece, so they are grouped here into {len(cards)} cards. Unlocked apparel is kept in the "
-            "profile's item stash (<code>Profile.ItemStash</code>), so it is shared by every character on the "
-            "profile. The items on this page change your looks; bonuses such as bullet resistance come from the "
-            f"{schematics_link(site)}.</p>")
-    n_u = sum(1 for i in items if i["l"] == "U")
-    b = [bar("Slots"), "<p>How many items each slot has, how many of them are base game and how many come from "
-         "content packs, and how many carry the DLC flag. <i>Cards</i> is the number of different pieces (colour "
-         "versions folded together). The last two columns split the unlocked items: <code>U</code> is unlocked "
-         "for everyone, <code>UD</code> only on a profile that owns the item's pack"
-         + (", and no apparel item is plain <code>U</code>, so every apparel item that starts unlocked is DLC"
-            if n_u == 0 else "") + ".</p>",
-         slot_table(site, items, cards, subs, base)]
-    b += how_to_read(site)
-    b += [bar("Browse apparel", f"{len(cards)} cards · {fmt(len(items))} items", id="browse"),
-          "<p>Filter by slot and by pack (the pack chips are the packs that have apparel; names other than Base "
-          "game and the two expansions are inferred from the contents). The text box searches names, colours "
-          "and internal names. The <b>Grid</b> shows one card per piece with its colour versions; the "
-          "<b>Table</b> lists every single item with its hashes. Most apparel uses a generic icon per slot in "
-          "the game files, so the pictures show the slot, not the look.</p>",
-          '<div class="tabset"><div class="tsbtns"><button class="on">Grid</button><button>Table</button></div>',
-          '<div class="tspane">' + apparel_filter(site, "apgrid", items, subs) + apparel_grid(site, cards, subs)
-          + "</div>",
-          '<div class="tspane">' + apparel_filter(site, "aptable", items, subs) + apparel_table(site, items, subs)
-          + "</div></div>"]
-    b += apparel_oddities(site, items)
-    site.page(APPAREL, "Apparel", "\n".join(b), "character", sub="apparel", lead=lead, head_extra=CSS, wide=True,
-              kind="Character · Vanity",
-              desc=f"All {len(items)} Generation Zero apparel items by slot and pack, with colour versions, DLC "
-                   "flags and internal names.")
+    n_base = sum(1 for i in items if i["p"] == base)
+    sch = site.link("schematic", "Apparel", "apparel crafting schematics")
+    lead = (f"<p>Apparel is the clothing your character wears: <b>{fmt(len(items))} items</b> in {len(subs)} "
+            f"slots, from hats and hair to shoes and backpacks. Most pieces come in several colours, so they make "
+            f"<b>{len(cards)} different pieces</b>. Unlocked apparel belongs to your profile, so every character on "
+            f"it can wear it. Apparel only changes your looks; the bonuses (such as bullet resistance) come from the "
+            f"{sch}.</p>")
+    ib = infobox("Apparel", [
+        ("Items", fmt(len(items))), ("Pieces", fmt(len(cards))), ("Slots", str(len(subs))),
+        ("Base game", fmt(n_base)), ("From packs", fmt(len(items) - n_base)),
+    ], image=f"~/img/vanity/{slot_icon('head')}" if site.has_file(f"img/vanity/{slot_icon('head')}") else None)
+    side = [panel("How you get it", avail_legend(site))]
+    b = [bar("Browse apparel", f"{len(cards)} pieces · {fmt(len(items))} items", id="browse"),
+         "<p><b>Grid</b>: one card per piece of clothing, with its colours as little swatches. "
+         "Pick a slot, a pack, or type a name or a colour. <b>Table</b>: every single item, one "
+         "fold per slot.</p>",
+         '<div class="tabset aptabs"><div class="tsbtns"><button class="on">Grid</button><button>Table</button></div>',
+         '<div class="tspane">' + grid_filter(site, items, cards, subs) + apparel_grid(site, cards, subs) + "</div>",
+         '<div class="tspane">' + apparel_tables(site, items, subs) + "</div></div>",
+         bar("Good to know"),
+         "<ul>"
+         "<li><b>The pictures show the slot, not the look.</b> The game files give most apparel one generic icon per "
+         "slot, so only a few pieces (the Experimental set, for example) have a picture of their own.</li>"
+         "<li><b>Heads and hands</b> are picked in the character creator, whatever their lock flag says. A few of "
+         "them, and one hairstyle, are made for one body only (marked <i>female</i> or <i>male</i>).</li>"
+         f"<li>Packs are how the game files group content; many packs are free (rewards, events, updates). "
+         f"Every pack tag links to its entry on the {site.link('dlc', 'Base game', 'DLC page')}.</li>"
+         "</ul>"]
+    site.page(APPAREL, "Apparel", "\n".join(b), "character", sub="apparel", lead=lead, head_extra=HEAD,
+              kind="Character · Apparel", infobox_html=ib, side=side,
+              desc=f"All {len(items)} Generation Zero apparel items: {len(cards)} pieces of clothing by slot and "
+                   "pack, with their colours and how you get them.")
 
 
-def schematics_link(site):
-    return '<a href="~/items/schematics.html">apparel crafting schematics</a>'
-
-
-def slot_table(site, items, cards, subs, base):
-    rows = []
-    for key, name in subs:
-        its = [i for i in items if i["s"] == key]
-        rows.append([esc(name),
-                     f"<code>{esc(key)}</code>", len(its), sum(1 for c in cards if c["slot"] == key),
-                     sum(1 for i in its if i["p"] == base), sum(1 for i in its if i["p"] != base),
-                     sum(1 for i in its if i["l"].endswith("D"))] + unlock_counts(its))
-    rows.append(["<b>All slots</b>", "", len(items), len(cards), sum(1 for i in items if i["p"] == base),
-                 sum(1 for i in items if i["p"] != base), sum(1 for i in items if i["l"].endswith("D"))]
-                + unlock_counts(items))
-    return table(["Slot", "Internal", "Items", "Cards", "Base game", "From packs", "DLC flag",
-                  "Starts unlocked (U)", "Unlocked with pack (UD)"], rows, num={2, 3, 4, 5, 6, 7, 8})
-
-
-def unlock_counts(its):
-    """[plain U count, UD count]: UD items are unlocked only on a profile that owns their pack."""
-    return [sum(1 for i in its if i["l"] == "U"), sum(1 for i in its if i["l"] == "UD")]
-
-
-def how_to_read(site):
-    rows = [[f"<code>{esc(k)}</code>", esc(lbl), esc(why)] for k, (lbl, why) in FLAG.items()]
-    return [bar("How to read the data"),
-            "<p>Every apparel item in the game files has a display name, an internal name "
-            "(<code>char_part_…</code>), a slot, an icon and the hash of the content pack it belongs to. Three "
-            "more fields matter for players:</p>",
-            "<ul><li><b>Lock flag</b>: the item's starting state. <code>U</code> means unlocked from the start, "
-            "<code>L</code> not given automatically (found, earned, or chosen in the character creator); a "
-            "trailing <code>D</code> marks downloadable content. No game file says what the letters mean: this "
-            "reading is inferred from how the Gen0 Editor uses them (it marks <code>UD</code> and <code>LD</code> "
-            "items as DLC). It doesn't fit every slot: the heads and hands (slot <code>body</code>) are all "
-            "<code>L</code>, yet you choose them at character creation.</li>"
-            "<li><b>Model</b>: colour versions of the same piece of clothing share one model hash. The cards below "
-            "group by name instead, because a few model hashes are shared by differently named pieces (for example "
-            "<i>Band tee</i> and <i>Lousy T-shirt</i>).</li>"
-            "<li><b>Body</b>: a handful of items (one hairstyle and the heads and hands) are made for one body "
-            "only, marked <i>Female</i> or <i>Male</i>. Everything else fits both.</li></ul>",
-            table(["Flag", "Shown as", "Meaning"], rows, sortable=False, cls="compact"),
-            note("A <b>content pack</b> is how the game files group content; it is not always something you buy. "
-                 "Many packs hold items you get in the game for free (rewards, events), and the lock flag tells "
-                 f"you which. See <a href=\"~/{PACKS}\">Item packs</a> for what each pack contains.", "data")]
-
-
-def apparel_filter(site, target, items, subs):
-    """Filterbar with a slot chip group and a pack chip group (packs ordered by number of apparel items)."""
-    pk = packs(site)
-    count = collections.Counter(i["p"] for i in items)
-    slot_chips = "".join(f'<button class="chip" data-g="slot" data-f="s-{esc(k)}">{esc(n)}</button>'
-                         for k, n in subs)
-    pack_chips = "".join(f'<button class="chip" data-g="pack" data-f="p-{p}" title="{esc(pk[p]["name"])}">'
-                         f'{esc(pk[p]["short"])} <span class="dim">{n}</span></button>'
-                         for p, n in count.most_common())
-    return (f'<div class="filterbar" data-for="{target}"><input placeholder="Filter apparel...">'
+def grid_filter(site, items, cards, subs):
+    """Slot chips (with the slot's icon and number of pieces) and pack chips (packs that have apparel)."""
+    nslot = collections.Counter(c["slot"] for c in cards)
+    slot_chips = "".join(
+        f'<button class="chip ico" data-g="slot" data-f="s-{esc(k)}">{vimg(site, slot_icon(k), "", "chi")}'
+        f'{esc(n)} <span class="n">{nslot[k]}</span></button>' for k, n in subs if nslot[k])
+    npack = collections.Counter(c["pack"] for c in cards)
+    pack_chips = "".join(
+        f'<button class="chip" data-g="pack" data-f="{esc(pack_key(site, p))}">{esc(pack_label(site, p))} '
+        f'<span class="n">{n}</span></button>' for p, n in npack.most_common())
+    return (f'<div class="filterbar apfilter" data-for="apgrid"><input placeholder="Find a piece or a colour...">'
             f'<span class="count"></span>'
-            f'<div class="fgrp"><span class="flbl">Slot</span><button class="chip on" data-g="slot" data-f="*">All</button>'
-            f'{slot_chips}</div>'
-            f'<div class="fgrp"><span class="flbl">Pack</span><button class="chip on" data-g="pack" data-f="*">All</button>'
-            f'{pack_chips}</div></div>')
+            f'<div class="fgrp"><span class="flbl">Slot</span><button class="chip on" data-g="slot" data-f="*">All'
+            f'</button>{slot_chips}</div>'
+            f'<details class="fgrp more"><summary><span class="flbl">Pack</span> <span class="dim small">'
+            f'{len(npack)} packs</span></summary><div class="fgrp"><button class="chip on" data-g="pack" '
+            f'data-f="*">All</button>{pack_chips}</div></details></div>')
+
+
+def apparel_card(site, c):
+    its = c["items"]
+    icons = {apparel_icon(i) for i in its}
+    img = vimg(site, c["icon"], "") or '<span class="vglyph"></span>'
+    n = len(its)
+    tags = [pack_tag(site, c["pack"])] + [avail_tag(f) for f in c["flags"]]
+    tags += [tag({"F": "female", "M": "male"}[x]) for x in c["body"]]
+    if n == 1:
+        lab = variant_label(its[0], c["base"]) if its[0]["n"] != c["base"] else ""
+        sw = f'<div class="apsw one">{swatch(lab) if lab and colours_of(lab) else ""}' \
+             f'{f"<span>{esc(lab)}</span>" if lab else ""}</div>' if lab else ""
+    else:
+        # different pictures per colour: show them as thumbnails, else colour swatches with the names
+        thumbs = len(icons) == n
+        labs = card_labels(c)
+        sw = '<div class="apsw">' + "".join(
+            (f'<span class="apv th">{vimg(site, apparel_icon(i), labs[i["h"]], "vt")}'
+             f'<span>{esc(labs[i["h"]])}</span></span>' if thumbs else
+             f'<span class="apv">{swatch(labs[i["h"]])}<span>{esc(labs[i["h"]])}</span></span>') for i in its) + "</div>"
+    words = " ".join(dict.fromkeys(i["n"] for i in its)) + " " + pack_label(site, c["pack"])
+    meta = "1 version" if n == 1 else (
+        f"{n} colours" if all(colours_of(variant_label(i, c["base"])) for i in its) else f"{n} versions")
+    return (f'<div class="apc fitem" id="{c["id"]}" data-f="s-{esc(c["slot"])} {esc(pack_key(site, c["pack"]))}" '
+            f'data-w="{esc(words)}"><div class="apimg">{img}</div><div class="apinfo"><b>{esc(c["base"])}</b>'
+            f'<span class="apmeta">{meta}</span>'
+            f'<div class="aptags">{"".join(tags)}</div>{sw}</div></div>')
 
 
 def apparel_grid(site, cards, subs):
-    slot_name = dict(subs)
-    out = [f'<div class="apgrid" id="apgrid">']
-    for c in cards:
-        its = c["items"]
-        icon = site.img(f"img/vanity/{c['icon']}", "", cls="vi") if c["icon"] else '<span class="vglyph"></span>'
-        tags = [pack_tag(site, c["pack"])]
-        tags += [lock_tag(f) for f in c["flags"]]
-        for x in sorted(c["body"]):
-            tags.append(tag(BODY[x].split(" body")[0]))
-        if c["single"]:
-            it = its[0]
-            variants = f'<div class="apraw"><code>{esc(it["r"])}</code></div>'
-        else:
-            variants = '<div class="apvars">' + "".join(
-                f'<span class="apv" id="a-{i["h"]}" title="{esc(i["n"])} · {esc(i["r"])} · {i["h"]}">'
-                f'{esc(variant_label(i, c["base"]))}</span>' for i in its) + "</div>"
-        words = " ".join(i["r"] for i in its) + " " + packs(site)[c["pack"]]["name"]
-        n = len(its)
-        out.append(f'<div class="apc fitem" id="{c["id"]}" data-f="s-{esc(c["slot"])} p-{c["pack"]}" '
-                   f'data-w="{esc(words)}"><div class="aphd">{icon}<div><b>{esc(c["base"])}</b>'
-                   f'<span class="dim small">{esc(slot_name.get(c["slot"], c["slot"]))}'
-                   f'{f" · {n} versions" if n > 1 else ""}</span><div class="aptags">{"".join(tags)}</div></div></div>'
-                   f'{variants}</div>')
+    out = ['<div id="apgrid" class="apslots">']
+    for key, name in subs:
+        cs = [c for c in cards if c["slot"] == key]
+        if not cs:
+            continue
+        out.append(f'<section class="apslot"><h3 class="aph">{vimg(site, slot_icon(key), "", "chi")}{esc(name)}'
+                   f' <small>{len(cs)} pieces</small></h3><div class="apgrid">'
+                   + "".join(apparel_card(site, c) for c in cs) + "</div></section>")
     out.append("</div>")
     return "".join(out)
 
 
-def apparel_table(site, items, subs):
-    slot_name = dict(subs)
-    order = {k: n for n, (k, _) in enumerate(subs)}
-    rows = []
-    for it in sorted(items, key=lambda i: (order.get(i["s"], 99), i["n"].lower())):
-        rows.append([esc(it["n"]), f'<span data-v="{order.get(it["s"], 99)}">{esc(slot_name.get(it["s"]))}</span>',
-                     plain_pack_tag(site, it["p"]), flag_cell(it["l"]), esc(it.get("x", "")) or "–",
-                     f'<code>{it["m"]}</code>' if it.get("m") else "–", f'<code>{esc(it["r"])}</code>',
-                     f'<code>{it["h"]}</code>'])
-    html = table(["Name", "Slot", "Pack", "Lock flag", "Body", "Model", "Internal name", "Item hash"], rows,
-                 cls="compact aptab")
-    # rows need data-f for the chip filter: add it to each <tr> in order
-    tags = iter(f's-{i["s"]} p-{i["p"]}' for i in sorted(items, key=lambda i: (order.get(i["s"], 99),
-                                                                                 i["n"].lower())))
-    html = re.sub(r"<tr>(?=<td)", lambda m: f'<tr data-f="{next(tags)}">', html)
-    return f'<div id="aptable">{html}</div>'
-
-
-def apparel_oddities(site, items):
-    by_name = collections.defaultdict(list)
-    for it in items:
-        by_name[it["n"]].append(it)
-    dups = {n: its for n, its in by_name.items() if len(its) > 1}
-    rows = [[esc(n), len(its), ", ".join(f"<code>{esc(i['r'])}</code>" for i in its),
-             " ".join(sorted({pack_tag(site, i["p"]) for i in its}))] for n, its in sorted(dups.items())]
-    gnomes = [i for i in items if i["r"].startswith("char_part_head_gnome_reward")]
-    out = [bar("Oddities in the data"),
-           f"<p>{len(dups)} apparel names are used by more than one item. Most are two colour versions the game "
-                    "gives the same colour name; the internal names show they are different items. The most "
-           "striking case is <i>Uncle Calle's tin foil hat</i>: the name is shared by reward items whose "
-           "internal names are berets, a firefighter helmet and a construction helmet.</p>",
-           table(["Name", "Items", "Internal names", "Packs"], rows, cls="compact")]
-    if gnomes:
-        out.append(f"<p>The {len(gnomes)} gnome masks have internal names ending in <code>gnome_reward</code>; see "
-                   f"{site.link('collectible-type', 'gnomes', 'Gnomes')} for the gnome collectibles: "
-                   + ", ".join(site.link("apparel", i["n"]) for i in gnomes) + ".</p>")
-    return out
-
-
-# ---------------------------------------------------------------------------------------------------------------
-# face paint, emotes, vehicles (+ pointers to weapon skins and companion cosmetics)
-# ---------------------------------------------------------------------------------------------------------------
-def build_vanity(site):
-    allv = van(site)["items"]
-    lead = ("<p>Besides apparel, the game's vanity list has <b>face paint</b>, <b>emotes</b> (gestures, dances and "
-            "companion tricks), <b>vehicle paint jobs</b> for the bikes, <b>weapon skins</b> and <b>companion "
-            f"cosmetics</b>: {fmt(len(allv))} vanity items in all. This page lists face paint, emotes and vehicles "
-            "in full; weapon skins and companion parts have their own pages. Like apparel, unlocked vanity items "
-            "are shared by every character on a profile. Pack names other than Base game, Alpine Unrest and FNIX "
-            f"Rising are inferred from their contents (see <a href=\"~/{PACKS}\">Item packs</a>).</p>")
-    b = [bar("Overview"), "<p>Every vanity group with its item count, how many are base game items, how many "
-         "start unlocked for everyone (<code>U</code>), how many are unlocked only when you own their pack "
-         f"(<code>UD</code>) and how many carry the DLC flag. See <a href=\"~/{PACKS}#flags\">Lock flags</a> for "
-         "what the flags mean.</p>", vanity_overview(site)]
-    b += face_paint(site)
-    b += emotes(site)
-    b += vehicles(site)
-    b += skins_pointer(site)
-    b += companion_pointer(site)
-    site.page(VANITY, "Emotes, vehicles & more", "\n".join(b), "character", sub="vanity", lead=lead, head_extra=CSS,
-              kind="Character · Vanity",
-              desc="Generation Zero face paint, emotes, dances and bike paint jobs, with packs, unlock flags and "
-                   "internal names; pointers to weapon skins and companion cosmetics.")
-
-
-def vanity_overview(site):
-    base = van(site)["base_pack"]
-    where = {"apparel": f'<a href="~/{APPAREL}">Apparel</a>', "facepaint": '<a href="#face-paint">below</a>',
-             "emotes": '<a href="#emotes">below</a>', "vehicles": '<a href="#vehicles">below</a>',
-             "skins": '<a href="~/weapons/skins.html">Weapon skins</a>',
-             "companion": '<a href="~/items/companion.html">Companion</a>'}
-    rows = []
-    for g in sorted(van(site)["groups"], key=lambda g: GROUP_ORDER.index(g["key"]) if g["key"] in GROUP_ORDER else 9):
-        its = items_of(site, g["key"])
-        rows.append([f"<b>{esc(g['name'])}</b>", f"<code>{esc(g['key'])}</code>", len(g["subs"]), len(its),
-                     sum(1 for i in its if i["p"] == base)] + unlock_counts(its)
-                    + [sum(1 for i in its if i["l"].endswith("D")), where.get(g["key"], "")])
-    return table(["Group", "Internal", "Kinds", "Items", "Base game", "Starts unlocked (U)",
-                  "Unlocked with pack (UD)", "DLC flag", "Listed on"], rows, num={2, 3, 4, 5, 6, 7})
-
-
-def vanity_rows(site, its):
-    return [[f'<span id="v-{i["h"]}">{esc(i["n"])}</span>', pack_tag(site, i["p"]), flag_cell(i["l"]),
-             f'<code>{esc(i["r"])}</code>', f'<code>{i["h"]}</code>'] for i in its]
-
-
-def face_paint(site):
-    its = sorted(items_of(site, "facepaint"), key=lambda i: i["n"].lower())
-    base = van(site)["base_pack"]
-    nb = sum(1 for i in its if i["p"] == base)
-    return [bar("Face paint", f"{len(its)} items"),
-            f"<p>Face paint goes over your character's face in the looks menu. {nb} of the {len(its)} are base game "
-            f"items ({flag_counts([i for i in its if i['p'] == base]).lower()}); the rest come with content packs. "
-            + ("All face paints share one generic icon in the game files, so they are listed by name."
-               if len({i.get("i") for i in its}) == 1 else "") + "</p>",
-            table(["Face paint", "Pack", "Lock flag", "Internal name", "Item hash"], vanity_rows(site, its),
-                  cls="compact")]
-
-
-def emote_tile(site, it, extra=""):
-    return (f'<div class="icon vtile" id="v-{it["h"]}" style="--c:{"#8a6d1f" if it["l"].endswith("D") else "#3d4a50"}">'
-            f'{vimg(site, it)}<b>{esc(it["n"])}</b>{extra}'
-            f'<span>{pack_tag(site, it["p"])}{flag_tags(it)}</span><code class="small">{esc(it["r"])}</code></div>')
-
-
-def emotes(site):
-    its = items_of(site, "emotes")
-    base = van(site)["base_pack"]
-    tapes = videotape_titles(site)
-    out = [bar("Emotes", f"{len(its)} items"),
-           f"<p>Emotes are the gestures and dances your character can perform; you pick which ones go in your emote "
-           f"slots. There are {len(its)} in the files: "
-           + ", ".join(f"{sum(1 for i in its if i['s'] == k)} {esc(n.lower())}" for k, n in subs_of(site, "emotes"))
-           + f". {sum(1 for i in its if i['p'] == base and i['l'] == 'U')} base game emotes start unlocked.</p>"]
-    locked_dances = [i for i in its if i["s"] == "dance" and i["p"] == base and i["l"] == "L"]
-    if locked_dances:
-        matched = [i for i in locked_dances if norm(i["n"]) in tapes]
-        out.append(note(
-            f"The {len(locked_dances)} base game dances that start locked are "
-            + ", ".join(site.link("vanity", i["n"]) for i in locked_dances) + ". "
-            + (f"All {len(matched)} share their name with one of the "
-               if len(matched) == len(locked_dances) else f"{len(matched)} of them share their name with one of the ")
-            + f"{site.link('collectible-type', 'videotapes', 'Videotape')} collectibles; picking up the tape is "
-            "how you get the dance.", "info", "Dances from videotapes"))
-        out += videotape_table(site, locked_dances)
-    for key, name in subs_of(site, "emotes"):
-        sub = sorted((i for i in its if i["s"] == key), key=lambda i: i["n"].lower())
-        out.append(f'<h3 id="emotes-{esc(key)}">{esc(name)} ({len(sub)})</h3>')
-        out.append('<div class="icongrid vgrid">' + "".join(
-            emote_tile(site, i, ' <span class="dim small">videotape</span>' if norm(i["n"]) in tapes
-                       and i["p"] == base else "") for i in sub) + "</div>")
-    return out
-
-
-def videotape_table(site, dances):
-    """Dance -> the videotape that unlocks it, with its region and the nearest named map location."""
-    by_title = {norm(t["n"].split(" - ", 1)[-1]): t for t in videotapes(site)}
-    locs = [l for l in site.data("map_locations")["list"] if l["name"] != "Unknown"]
-    rows = []
-    for d in dances:
-        t = by_title.get(norm(d["n"]))
-        if not t:
+def apparel_tables(site, items, subs):
+    card_of = {i["h"]: c for c in apparel_cards(site) for i in c["items"]}
+    out = ['<div class="filterbar" data-for="aptables"><input placeholder="Filter all items..."><span class="count">'
+           '</span></div><div class="foldall" data-for="aptables"></div><div id="aptables">']
+    for key, name in subs:
+        its = sorted((i for i in items if i["s"] == key),
+                     key=lambda i: (card_of[i["h"]]["base"].lower(), i["n"].lower()))
+        if not its:
             continue
-        near = min(locs, key=lambda l: (l["x"] - t["x"]) ** 2 + (l["z"] - t["z"]) ** 2)
-        dist = ((near["x"] - t["x"]) ** 2 + (near["z"] - t["z"]) ** 2) ** 0.5
-        num = re.match(r"Videotape (\d+)", t["n"])
-        rows.append([site.link("vanity", d["r"], d["n"]), esc(t["n"]),
-                     f'<span data-v="{int(num.group(1)) if num else 0}">{num.group(1) if num else "–"}</span>',
-                     site.link("region", t["r"]),
-                     f'<span data-v="{dist:.0f}"><span class="dim">{"at" if dist < 40 else f"{dist:,.0f} m from"}'
-                     f'</span> {site.link("location", near["name"])}</span>'])
-    if not rows:
-        return []
-    return [f"<p>Where each tape lies (from the map markers). <i>Nearest location</i> is the closest named place "
-            f"on the map, to help you find the spot; the {site.link('collectible-type', 'videotapes', 'Videotapes')} "
-            "page has them on a map.</p>",
-            table(["Dance", "Videotape", "Tape no.", "Region", "Nearest location"], rows, num={2}, cls="compact")]
+        rows = []
+        for i in its:
+            c = card_of[i["h"]]
+            lab = card_labels(c)[i["h"]] if i["n"] != c["base"] or len(c["items"]) > 1 else ""
+            rows.append([f'<a href="#{c["id"]}" class="aptl" data-tab="0">{esc(c["base"])}</a>',
+                         (f'<span class="apcol">{swatch(lab) if colours_of(lab) else ""}{esc(lab)}</span>'
+                          if lab else '<span class="dim">–</span>'),
+                         pack_tag(site, i["p"]), avail_tag(i["l"])])
+        out.append(fold(name, table(["Piece", "Colour / version", "Pack", "How you get it"], rows,
+                                    cls="compact aptab"),
+                        level=3, id=f"t-{slug(key)}", right=f"{len(its)} items"))
+    out.append("</div>")
+    return "".join(out)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# emotes and face paint
+# ---------------------------------------------------------------------------------------------------------------
+def build_emotes(site):
+    em = items_of(site, "emotes")
+    fp = items_of(site, "facepaint")
+    base = van(site)["base_pack"]
+    esubs = subs_of(site, "emotes")
+    lead = (f"<p><b>Emotes</b> are the gestures and dances your character can perform; you choose which ones sit "
+            f"in your emote wheel. <b>Face paint</b> goes over your character's face in the looks menu. The game "
+            f"has {len(em)} emotes and {len(fp)} face paints. Like apparel, they belong to your profile, so every "
+            f"character on it can use them.</p>")
+    ib = infobox("Emotes & face paint", [(n, str(sum(1 for i in em if i["s"] == k))) for k, n in esubs]
+                 + [("Face paint", str(len(fp))),
+                    ("Base game", f"{sum(1 for i in em if i['p'] == base)} emotes, "
+                                  f"{sum(1 for i in fp if i['p'] == base)} face paints")],
+                 image=f"~/img/vanity/{em[0]['i']}" if em[0].get("i") and site.has_file(f"img/vanity/{em[0]['i']}")
+                 else None)
+    see = [l for l in (
+        (page_of(site, "skin", items_of(site, "skins")[0]["r"]), "Weapon skins"),
+        (page_of(site, "item", items_of(site, "companion")[0]["r"]), "Companion cosmetics"),
+        ("~/" + VEHICLES, "Vehicle paint jobs"), ("~/" + APPAREL, "Apparel")) if l[0]]
+    side = [panel("How you get it", avail_legend(site)),
+            panel("Other cosmetics", "<ul class=\"plain\">" + "".join(
+                f'<li><a href="{esc(u)}">{esc(t)}</a></li>' for u, t in see) + "</ul>")]
+    b = emotes_section(site, em, esubs, base)
+    b += face_paint(site, fp, base)
+    b += videotape_map(site)
+    site.page(EMOTES, "Emotes & face paint", "\n".join(b), "character", sub="emotes", lead=lead, head_extra=HEAD,
+              kind="Character · Emotes", infobox_html=ib, side=side,
+              desc=f"All {len(em)} Generation Zero emotes (gestures, dances, companion tricks) and {len(fp)} face "
+                   "paints: where they come from and how you get them; the dances hidden on videotapes.")
+
+
+def vtile(site, it, pre, extra=""):
+    return (f'<div class="vtile" id="{pre}-{slug(it["n"])}">{vimg(site, it.get("i"), it["n"]) or "<span class=vglyph></span>"}'
+            f'<b>{esc(it["n"])}</b>{extra}<span class="vtags">{pack_tag(site, it["p"])}{avail_tag(it["l"])}</span>'
+            f'</div>')
+
+
+def emotes_section(site, its, esubs, base):
+    tapes = videotape_titles(site)
+    out = [bar("Emotes", f"{len(its)}"),
+           f"<p>{sum(1 for i in its if i['p'] == base and i['l'] == 'U')} base game emotes are unlocked from the "
+           "start; the others come with packs or are found in the world. Companion tricks are the emotes of your "
+           f"{site.link('machine', 'Runner', 'machine companion')}.</p>"]
+    for key, name in esubs:
+        sub = sorted((i for i in its if i["s"] == key), key=lambda i: i["n"].lower())
+        out.append(f'<h3 class="vh" id="emotes-{esc(key)}">{esc(name)} <small>{len(sub)}</small></h3>')
+        out.append('<div class="vgrid">' + "".join(
+            vtile(site, i, "em", '<span class="dim small">from a videotape</span>'
+                  if norm(i["n"]) in tapes and i["p"] == base and i["l"] == "L" else "") for i in sub) + "</div>")
+    locked = [i for i in its if i["s"] == "dance" and i["p"] == base and i["l"] == "L"]
+    if locked:
+        out += videotape_section(site, locked)
+    return out
 
 
 def videotapes(site):
@@ -842,264 +732,230 @@ def videotape_titles(site):
     return {norm(i["n"].split(" - ", 1)[-1]) for i in videotapes(site)}
 
 
-def vehicles(site):
-    its = items_of(site, "vehicles")
-    out = [bar("Vehicles", f"{len(its)} paint jobs"),
-           "<p>" + " ".join(vehicle_facts(site, its)) + "</p>"]
+def videotape_section(site, dances):
+    """Dance -> the videotape that unlocks it, with its region, the nearest named map location and a map link."""
+    by_title = {norm(t["n"].split(" - ", 1)[-1]): t for t in videotapes(site)}
+    locs = [l for l in site.data("map_locations")["list"] if l["name"] != "Unknown"]
     rows = []
-    for key, name in subs_of(site, "vehicles"):
-        sub = sorted((i for i in its if i["s"] == key), key=lambda i: i["n"].lower())
-        if not sub:
+    for d in dances:
+        t = by_title.get(norm(d["n"]))
+        if not t:
             continue
-        ps = sorted({i["p"] for i in sub})
-        rows.append([f'<a href="#veh-{slug(key)}">{esc(name)}</a>', f"<code>{esc(key)}</code>", len(sub),
-                     " ".join(pack_tag(site, p) for p in ps), flag_counts(sub)])
-    out.append(table(["Bike", "Internal", "Paint jobs", "Pack", "Lock flags"], rows, num={2}, cls="compact"))
-    for key, name in subs_of(site, "vehicles"):
-        sub = sorted((i for i in its if i["s"] == key), key=lambda i: i["n"].lower())
-        if not sub:
-            continue
-        out.append(f'<h3 id="veh-{slug(key)}">{esc(name)} <code class="small">{esc(key)}</code></h3>')
-        out.append('<div class="icongrid vgrid">' + "".join(emote_tile(site, i) for i in sub) + "</div>")
-    dup_icons = [k for k, n in collections.Counter((i["s"], i.get("i")) for i in its).items() if n > 1]
-    if dup_icons:
-        out.append(note("Some paint jobs share one icon in the game files (for example every Dirt Bike, Military "
-                        "Motorcycle and Resistance Custom colour uses the model's default icon), so the pictures "
-                        "above don't always show the colour.", "data"))
-    return out
-
-
-def vehicle_facts(site, its):
-    """Sentences about the bike paint jobs, each checked against the data."""
-    bikes = subs_of(site, "vehicles")
-    out = [f"Each bike in the game has its paint jobs as separate vanity items: {len(bikes)} bike models with "
-           f"{len(its)} paint jobs in all."]
-    if all(len({i["p"] for i in its if i["s"] == k}) <= 1 for k, _ in bikes):
-        out.append("Every model's paint jobs come from a single content pack, shown next to its name.")
-    if not any(i["p"] == van(site)["base_pack"] for i in its):
-        out.append("None of them is base game content.")
-    out.append("The internal key (<code>v0xx_bike_…</code>) is the bike model.")
-    return out
-
-
-def skins_pointer(site):
-    its = items_of(site, "skins")
-    rows = []
-    for key, name in subs_of(site, "skins"):
-        sub = [i for i in its if i["s"] == key]
-        if sub:
-            rows.append([site.link("weapon", name), len(sub),
-                         ", ".join(site.link("skin", i["r"], i["n"]) for i in sorted(sub, key=lambda i: i["n"]))])
-    return [bar("Weapon skins", f"{len(its)} skins"),
-            f"<p>Weapon skins change how a weapon looks, not how it performs. There are {len(its)} skins for "
-            f"{len(rows)} weapons; the full list with pictures is on "
-            f'<a href="~/weapons/skins.html">Weapon skins</a>, and each weapon page shows its own.</p>',
-            table(["Weapon", "Skins", "Skin names"], rows, num={1}, cls="compact")]
-
-
-def companion_pointer(site):
-    its = items_of(site, "companion")
-    rows = []
-    for key, name in subs_of(site, "companion"):
-        sub = [i for i in its if i["s"] == key]
-        if sub:
-            rows.append([esc(name), f"<code>{esc(key)}</code>", len(sub),
-                         " ".join(pack_tag(site, p) for p in sorted({i["p"] for i in sub}))])
-    return [bar("Companion cosmetics", f"{len(its)} parts"),
-            f"<p>The companion (your Runner-type machine friend) has {len(its)} parts in the vanity list. They are "
-            'covered with the companion itself on <a href="~/items/companion.html">Companion</a>; this is just '
-            "the count per kind, the packs they come from and a link to each part. Companion tricks (the companion's emotes) are "
-            '<a href="#emotes-companion">listed above</a>.</p>',
-            table(["Kind", "Internal", "Parts", "Packs"], rows, num={2}, cls="compact"),
-            "<p>The parts by kind, each linked to its entry on the Companion page:</p>",
-            pack_group_list(site, "companion", its)]
-
-
-# ---------------------------------------------------------------------------------------------------------------
-# packs
-# ---------------------------------------------------------------------------------------------------------------
-def pack_extras(site):
-    """Content pack -> non-vanity items listed for it in keys.json pack_items: [(kind, name, link html)]."""
-    k = site.data("keys")
-    keys = {i["h"]: i for i in k["items"]}
-    stock = {i["h"]: i for i in site.data("stock")["stock"]}
-    sch = {i["h"]: i for i in site.data("schematics")["items"]}
-    vh = {i["h"] for i in van(site)["items"]}
-    out = collections.defaultdict(list)
-    for p, hs in k["pack_items"].items():
-        for h in hs:
-            if h in vh:
-                continue
-            if h in keys:
-                out[int(p)].append(("Keys and mission items", keys[h]["n"], site.link("key", keys[h]["n"])))
-            elif h in sch:
-                out[int(p)].append(("Schematics", sch[h]["n"], site.link("schematic", str(h), sch[h]["n"])))
-            elif h in stock:
-                s = stock[h]
-                kind = "material" if s["g"] == "materials" else "item"
-                out[int(p)].append(("Materials" if kind == "material" else "Items", s["name"],
-                                    site.link(kind, s["name"])))
-            else:
-                out[int(p)].append(("Unknown", str(h), f"<code>{h}</code>"))
-    return out
-
-
-def build_packs(site):
-    pk = packs(site)
-    by_pack = collections.defaultdict(list)
-    for it in van(site)["items"]:
-        by_pack[it["p"]].append(it)
-    extras = pack_extras(site)
-    base = van(site)["base_pack"]
-    order = sorted(pk, key=lambda h: (h != base, pk[h]["inferred"], -(len(by_pack[h]) + len(extras[h]))))
-    n_inf = sum(1 for h in pk if pk[h]["inferred"])
-    lead = (f"<p>The game files sort content into <b>content packs</b>, each known by a hash. This page lists all "
-            f"{len(pk)} packs that appear in the vanity list and in the key and item lists, with everything that "
-            f"belongs to each. The data names only three of them: the base game, "
-            f"{site.link('dlc', 'Alpine Unrest')} and {site.link('dlc', 'FNIX Rising')}. The other {n_inf} have no "
-            f"name in the files, so the names here are <b>inferred from their contents</b> and marked as such. "
-            f"The weapon DLC packs, which the weapon stats name but without a hash, are listed "
-            f'<a href="#weapon-packs">at the end</a>.</p>')
-    b = [bar("All packs"),
-         "<p>One row per pack. The counts are items of each vanity group; <i>Other</i> counts keys, mission items, "
-         "schematics and materials. <i>DLC flag</i> is how many of its vanity items carry the DLC lock flag "
-         "(see <a href=\"#flags\">below</a>). In the pack lists further down, <i>×N</i> after a name is the "
-         "number of versions: colours for apparel, qualities for schematics.</p>",
-         pack_overview(site, order, by_pack, extras),
-         note("A content pack is not always a paid DLC. The lock flag is set per item: items that start locked "
-              "(flag <code>L</code>) are things you earn or find in the game, like rewards and event items, and "
-              "items with the <code>D</code> flag are downloadable content. Some packs mix flags; the "
-              "<i>Lock flags</i> line of each pack below lists them. The Gen0 Editor reads a profile's owned packs from "
-              "the items it has unlocked and the items the game set aside as inaccessible.", "data")]
-    b += flags_section()
-    for h in order:
-        b += pack_section(site, h, by_pack[h], extras[h])
-    b += weapon_pack_sections(site)
-    # no table of contents: the overview table links every pack section
-    site.page(PACKS, "Item packs", "\n".join(b), "character", sub="packs", lead=lead, head_extra=CSS, toc=False,
-              kind="Character · Content packs",
-              desc="Every Generation Zero content pack hash with its apparel, emotes, skins, vehicles, companion "
-                   "parts, keys and schematics.")
-
-
-def weapon_pack_sections(site):
-    wp = weapon_packs(site)
-    if not wp:
+        near = min(locs, key=lambda l: (l["x"] - t["x"]) ** 2 + (l["z"] - t["z"]) ** 2)
+        dist = ((near["x"] - t["x"]) ** 2 + (near["z"] - t["z"]) ** 2) ** 0.5
+        num = re.match(r"Videotape (\d+)", t["n"])
+        href = maplink(show=["videotapes"], region=[t["r"]] if t.get("r") else (), at=(t["x"], t["z"]), zoom=0.6,
+                       focus=t["n"])
+        rows.append([f'<a href="#em-{slug(d["n"])}">{esc(d["n"])}</a>',
+                     (f'{esc(num.group(1))}' if num else "–", int(num.group(1)) if num else 0),
+                     site.link("region", t["r"]),
+                     (f'<span class="dim">{"at" if dist < 40 else f"{dist:,.0f} m from"}</span> '
+                      f'{site.link("location", near["name"])}', round(dist)),
+                     f'<a href="{href}">Map</a>'])
+    if not rows:
         return []
-    rows = [[f'<a href="#pack-{slug(weapon_pack_name(p))}">{esc(weapon_pack_name(p))}</a>', len(ws),
-             ", ".join(site.link("weapon", n) for _, n in ws)] for p, ws in wp.items()]
-    out = [bar("Weapon packs", f"{len(wp)} packs"),
-           "<p>The weapon stats name the DLC packs that add weapons. They have no cosmetics in the vanity list, "
-           "and the stats don't give their content pack hashes, so they are listed here by name. Weapons not "
-           "listed are base game.</p>",
-           table(["Pack", "Weapons", "Weapon list"], rows, num={1}, cls="compact")]
-    for p, ws in wp.items():
-        name = weapon_pack_name(p)
-        out.append(f'<h3 id="pack-{slug(name)}">{esc(name)} {tag("DLC", "dlc")}</h3>')
-        out.append('<dl class="pklist">' + "".join(
-            f"<dt>{esc(cat)}</dt><dd>{site.link('weapon', n)}</dd>" for cat, n in ws) + "</dl>")
-    return out
+    matched = len(rows)
+    return [bar("Dances from videotapes", f"{matched} tapes", id="videotapes"),
+            f"<p>{len(dances)} base game dances start locked. "
+            + (f"All {matched}" if matched == len(dances) else f"{matched} of them")
+            + f" share their name with one of the {site.link('collectible-type', 'videotapes', 'videotape')} "
+            "collectibles: picking up the tape is how you get the dance. <i>Nearest place</i> is the closest named "
+            "location on the map.</p>",
+            table(["Dance", "Tape no.", "Region", "Nearest place", "Map"], rows, num={1}, cls="compact")]
 
 
-def pack_name_html(site, h):
-    pk = packs(site)[h]
-    inferred = ' <span class="tag">name inferred</span>' if pk["inferred"] else ""
-    return f'<a href="#pack-{h}">{esc(pk["name"])}</a>{inferred}'
+def face_paint(site, its, base):
+    its = sorted(its, key=lambda i: i["n"].lower())
+    nb = sum(1 for i in its if i["p"] == base)
+    rows = [[f'<span id="fp-{slug(i["n"])}">{esc(i["n"])}</span>', pack_tag(site, i["p"]), avail_tag(i["l"])]
+            for i in its]
+    return [bar("Face paint", f"{len(its)}"),
+            f"<p>{nb} of the {len(its)} face paints are base game items; the rest come with packs. They all share "
+            "one icon in the game files, so they are listed by name.</p>",
+            table(["Face paint", "Pack", "How you get it"], rows, cls="compact")]
 
 
-def pack_overview(site, order, by_pack, extras):
-    rows = []
-    for h in order:
-        its = by_pack[h]
-        c = collections.Counter(i["g"] for i in its)
-        rows.append([pack_name_html(site, h), f"<code>{h}</code>"] + [c.get(g) or None for g in GROUP_ORDER]
-                    + [len(extras[h]) or None, sum(1 for i in its if i["l"].endswith("D")) or None])
-    groups = {g["key"]: g["name"] for g in van(site)["groups"]}
-    return table(["Pack", "Hash"] + [groups.get(g, g) for g in GROUP_ORDER] + ["Other", "DLC flag"], rows,
-                 num=set(range(2, 10)), cls="compact pktab")
+def videotape_map(site):
+    vt = videotapes(site)
+    if not vt:
+        return []
+    return [minimap(vt[0]["x"], vt[0]["z"], vt[0]["n"], markers=[(t["x"], t["z"], t["n"]) for t in vt[1:]],
+                    show=["videotapes"], small=True, zoom=1,
+                    text=f"<p><b>The {len(vt)} videotapes on the map.</b> Each tape unlocks the dance with the same "
+                         f"name. The {site.link('collectible-type', 'videotapes', 'videotapes page')} has every "
+                         "tape with directions.</p>")]
 
 
-def flags_section():
-    rows = [[f"<code>{esc(k)}</code>", esc(lbl), esc(why)] for k, (lbl, why) in FLAG.items()]
-    return [bar("Lock flags", id="flags"),
-            "<p>Every vanity item has a lock flag. The first letter is its starting state, a trailing D marks "
-            "downloadable content. A pack's flags tell you how you get its items. No game file defines the "
-            "letters; the meanings below are inferred from how the Gen0 Editor uses them. Heads and hands are "
-            "chosen at character creation whatever their flag (they are all <code>L</code>).</p>",
-            table(["Flag", "Shown as", "Meaning"], rows, sortable=False, cls="compact")]
+# ---------------------------------------------------------------------------------------------------------------
+# vehicles
+# ---------------------------------------------------------------------------------------------------------------
+# Families of bikes (by the model key in vanity.json) and where the Steam store describes each model:
+# model key -> (Steam app id, text before the description on the store page)
+FAMILIES = [
+    ("bicycle", "Bicycle", ["v007_bike_bicycle"]),
+    ("motorbikes", "Motorbikes", ["v012_bike_moped", "v011_bike_dirtbike", "v013_bike_military",
+                                  "v014_bike_resistance"]),
+    ("flakmopeds", "Flakmopeds", ["v015_bike_flakmoped", "v017_bike_ramming", "v019_bike_offroad",
+                                  "v018_bike_utility"]),
+]
+STEAM_TEXT = {
+    "v007_bike_bicycle": (1103830, "Cykel Bicycle:"),
+    "v011_bike_dirtbike": (2144761, "Dirt Bike:"),
+    "v013_bike_military": (2144761, "Military Motorcycle:"),
+    "v014_bike_resistance": (2144761, "Resistance Bike:"),
+    "v017_bike_ramming": (2689180, "- Stridsflak:"),
+    "v019_bike_offroad": (2689180, "- Terrängflak:"),
+    "v018_bike_utility": (2689180, "- Bruksflak:"),
+}
 
 
-def pack_section(site, h, its, extra):
-    pk = packs(site)[h]
-    out = [bar(pk["name"], f"pack {h}", id=f"pack-{h}")]
-    desc = []
-    if pk["dlc"]:
-        desc.append(f"The content pack of the {site.link('dlc', pk['dlc'])} expansion (named in the mission data).")
-    elif h == van(site)["base_pack"]:
-        desc.append(f"The base game's own pack ({h}). Several free additions, such as the companion, apparel "
-                    "crafting and event or story outfits, have packs of their own (flag <code>L</code> or "
-                    "<code>U</code>, no <code>D</code>); see below.")
-    elif pk["inferred"]:
-        desc.append("The files don't name this pack; the name above is inferred from its contents.")
-    flags = collections.Counter(i["l"] for i in its)
-    if flags:
-        desc.append("Lock flags: " + ", ".join(f"{n} × <code>{esc(l)}</code> ({esc(FLAG[l][0])})"
-                                               for l, n in flags.most_common()) + ".")
-    out.append(f"<p>{' '.join(desc)}</p>")
-    groups = {g["key"]: g["name"] for g in van(site)["groups"]}
-    for g in GROUP_ORDER:
-        gi = [i for i in its if i["g"] == g]
-        if gi:
-            out.append(f'<h4>{esc(groups.get(g, g))} ({len(gi)})</h4>')
-            out.append(pack_group_list(site, g, gi))
-    by_kind = collections.defaultdict(list)
-    for kind, name, link in extra:
-        by_kind[kind].append((name, link))
-    for kind, lst in by_kind.items():
-        out.append(f"<h4>{esc(kind)} ({len(lst)})</h4>")
-        out.append("<p>" + SEP.join(collapse(lst)) + "</p>")
-    if not its and not extra:
-        out.append('<p class="dim">No items found for this pack.</p>')
-    return out
+def model_name(key, name):
+    return {"v007_bike_bicycle": "Cykel (bicycle)"}.get(key, name[:1].upper() + name[1:])
 
 
-def collapse(lst):
-    """[(name, link)] -> links, with repeats folded into 'name ×5' (schematics have one entry per quality)."""
-    seen = collections.OrderedDict()
-    for name, link in lst:
-        if name in seen:
-            seen[name][1] += 1
-        else:
-            seen[name] = [link, 1]
-    return [link + (f' <span class="dim">×{n}</span>' if n > 1 else "") for link, n in seen.values()]
+def vehicle_id(key, name):
+    return "veh-" + slug(re.sub(r"\(.*?\)", "", name))
 
 
-def pack_group_list(site, g, gi):
-    """A pack's items of one vanity group, grouped by sub group; apparel folded into pieces with version counts."""
-    subs = dict(subs_of(site, g))
-    card_ids = {(c["slot"], c["base"], c["pack"]): c["id"] for c in apparel_cards(site)}
-    by_sub = collections.OrderedDict((k, []) for k in subs)
-    for i in gi:
-        by_sub.setdefault(i["s"], []).append(i)
-    rows = []
-    for s, lst in by_sub.items():
-        if not lst:
+def steam_dlc(site, appid):
+    return next((d for d in site.data("steam")["dlc"] if d["appid"] == appid), None)
+
+
+def steam_line(site, appid, prefix):
+    """The text after prefix on the Steam store page of a DLC (the same line, or the next one when the prefix ends
+    its line), or ''."""
+    d = steam_dlc(site, appid)
+    if not d:
+        return ""
+    lines = d.get("about", "").split("\n")
+    for n, ln in enumerate(lines):
+        i = ln.find(prefix)
+        if i < 0:
             continue
-        if g == "apparel":
-            pieces = collections.OrderedDict()
-            for i in sorted(lst, key=lambda i: i["n"].lower()):
-                pieces.setdefault(i["n"].split(", ")[0], []).append(i)
-            cells = [f'<a href="~/{APPAREL}#{card_ids[(s, base, ps[0]["p"])]}">{esc(base)}</a>'
-                     + (f' <span class="dim">×{len(ps)}</span>' if len(ps) > 1 else "")
-                     for base, ps in pieces.items()]
-        elif g == "skins":
-            cells = [site.link("skin", i["r"], i["n"]) for i in sorted(lst, key=lambda i: i["n"].lower())]
-        elif g == "companion":
-            # the items section registers every companion part (kind 'item', internal name as alias)
-            cells = collapse([(i["n"], site.link("item", i["r"], i["n"]))
-                              for i in sorted(lst, key=lambda i: i["n"].lower())])
-        else:
-            cells = [site.link("vanity", i["r"], i["n"]) for i in sorted(lst, key=lambda i: i["n"].lower())]
-        label = (site.link("weapon", subs.get(s, s)) if g == "skins" else esc(subs.get(s, s)))
-        rows.append(f"<dt>{label} <span class=\"dim\">{len(lst)}</span></dt><dd>{SEP.join(cells)}</dd>")
-    return f'<dl class="pklist">{"".join(rows)}</dl>'
+        rest = ln[i + len(prefix):].strip()
+        if not rest and n + 1 < len(lines):
+            rest = lines[n + 1].strip()
+        # keep it short: the first two sentences
+        sent = re.split(r"(?<=[.!?])\s+", rest)
+        return " ".join(sent[:2])
+    return ""
+
+
+def paint_label(it, model):
+    """'Dirt Bike - Bodacious Blue' -> 'Bodacious Blue'; 'Flakmoped Blue' -> 'Blue'."""
+    n = it["n"]
+    if " - " in n:
+        return n.split(" - ", 1)[1]
+    m = re.match(r"^(.*)\s(\w+)$", n)
+    return m.group(2) if m else n
+
+
+def build_vehicles(site):
+    its = items_of(site, "vehicles")
+    models = dict(subs_of(site, "vehicles"))
+    used = {i["s"] for i in its}
+    lead = (f"<p>Vehicles get you across Östertörn faster: a bicycle, motorbikes and three-wheeled flakmopeds, "
+            f"{len(used)} models with {len(its)} paint jobs in all. The Steam store says you spawn them at the "
+            f"<b>vehicle station</b> of a safehouse. Each colour is a separate unlock, kept in your profile.</p>")
+    first = next((i for i in its if i["s"] == "v007_bike_bicycle" and i["l"] == "UD"), its[0])
+    sh = [i for i in site.data("markers")["items"] if i.get("s") == "playersafehouses"]
+    sh_page = page_of(site, "safehouse", sh[0]["n"]) if sh else None
+    ib = infobox("Vehicles", [
+        ("Models", str(len(used))), ("Paint jobs", str(len(its))),
+        ("Spawned at", f'<a href="{esc(sh_page)}">safehouse vehicle stations</a>' if sh_page
+         else "safehouse vehicle stations"),
+        ("Packs", str(len({i["p"] for i in its}))),
+    ], image=f"~/img/vanity/{first['i']}" if first.get("i") and site.has_file(f"img/vanity/{first['i']}") else None)
+    side = [panel("How you get them", avail_legend(site, sorted({i["l"] for i in its}, key=list(AVAIL).index)))]
+    b = []
+    for fkey, fname, keys in FAMILIES:
+        keys = [k for k in keys if k in used]
+        if not keys:
+            continue
+        n = sum(1 for i in its if i["s"] in keys)
+        b.append(bar(fname, f"{len(keys)} model{'s' if len(keys) > 1 else ''} · {n} paint jobs", id=fkey))
+        b.append(family_intro(site, fkey))
+        for k in keys:
+            b.append(vehicle_block(site, k, models.get(k, k), [i for i in its if i["s"] == k]))
+    left = [k for k in models if k in used and not any(k in f[2] for f in FAMILIES)]
+    if left:
+        b.append(bar("Other vehicles"))
+        for k in left:
+            b.append(vehicle_block(site, k, models.get(k, k), [i for i in its if i["s"] == k]))
+    if sh:
+        b.append(minimap(sh[0]["x"], sh[0]["z"], sh[0]["n"], markers=[(m["x"], m["z"], m["n"]) for m in sh[1:]],
+                         show=["playersafehouses"], small=True, zoom=1,
+                         text=f"<p><b>Safehouses on the map.</b> Vehicles are spawned at the vehicle station of a "
+                              f"safehouse; the map shows all {len(sh)} safehouses.</p>"))
+    site.page(VEHICLES, "Vehicles", "\n".join(b), "character", sub="vehicles", lead=lead, head_extra=HEAD,
+              kind="Character · Vehicles", infobox_html=ib, side=side,
+              desc=f"All {len(used)} Generation Zero vehicles (Cykel bicycle, motorbikes, flakmopeds) and their "
+                   f"{len(its)} paint jobs: which pack each comes from and how you get it.")
+
+
+def family_intro(site, fkey):
+    if fkey == "bicycle":
+        d = steam_dlc(site, 1103830)
+        var = steam_line(site, 1103830, "Variations:")
+        return (f"<p>The {site.link('dlc', 'Bikes', 'Bikes')} update (free) added the Cykel. "
+                + (f"The store page: <q>{esc(var)}</q>" if var else "") + "</p>") if d else ""
+    if fkey == "motorbikes":
+        d = steam_dlc(site, 2144761)
+        txt = d.get("about", "") if d else ""
+        facts = []
+        if "fuel" in txt:
+            facts.append("they need fuel (jerry cans from abandoned cars and gas stations, or crafted)")
+        if "repair" in txt:
+            facts.append("they need repairs now and then (repair kits, found or crafted)")
+        if "loud" in txt:
+            facts.append("they are loud and can draw machines to you")
+        return (f"<p>The tuned moped is free; the other three came with the {site.link('dlc', 'Motorbikes Pack')}. "
+                + (f"The store page says {', '.join(facts[:-1])} and {facts[-1]}.</p>" if len(facts) > 1 else "</p>"))
+    if fkey == "flakmopeds":
+        return (f"<p>Flakmopeds are three-wheeled motorbikes with a flatbed at the front. The plain Flakmoped is "
+                f"free; the Stridsflak, Terrängflak and Bruksflak came with the "
+                f"{site.link('dlc', 'Reinforced Flakmoped Pack')}.</p>")
+    return ""
+
+
+def model_icon(its, label):
+    """The picture for a model: its 'default' icon, else a starting colour whose icon shows that colour, else the
+    first paint job whose icon shows its own colour."""
+    def own(i):
+        words = re.findall(r"[a-z]+", paint_label(i, label).lower())
+        return i.get("i") and any(w in i["i"] for w in words)
+    for test in (lambda i: "default" in (i.get("i") or ""), lambda i: i["l"].startswith("U") and own(i), own,
+                 lambda i: i.get("i")):
+        i = next((i for i in its if test(i)), None)
+        if i:
+            return i["i"]
+    return None
+
+
+def vehicle_block(site, key, name, its):
+    its = sorted(its, key=lambda i: i["n"].lower())
+    label = model_name(key, name)
+    st = STEAM_TEXT.get(key)
+    line = steam_line(site, *st) if st else ""
+    packs_ = sorted({i["p"] for i in its})
+    icons = collections.Counter(i.get("i") for i in its)
+    shared = len(icons) < len(its)
+    big = model_icon(its, label)
+    flags = collections.Counter(i["l"] for i in its)
+    mixed = len(flags) > 1
+    tiles = "".join(
+        f'<div class="vptile" id="veh-{slug(i["n"])}">'
+        f'{vimg(site, i.get("i"), i["n"], "vpi") if not shared else ""}'
+        f'<span class="vpn">{swatch(paint_label(i, label))}{esc(paint_label(i, label))}</span>'
+        f'{avail_tag(i["l"]) if mixed else ""}</div>' for i in its)
+    how = ""
+    given = [i for i in its if i["l"].startswith("U")]
+    if mixed and given and len(given) < len(its):
+        how = (f'<p class="small">{" and ".join(esc(paint_label(i, label)) for i in given)} '
+               f'{"comes" if len(given) == 1 else "come"} with the pack; the other {len(its) - len(given)} '
+               "colours you find or earn in the game.</p>")
+    return (f'<div class="vblock" id="{vehicle_id(key, name)}"><div class="vbimg">{vimg(site, big, label, "vbi")}'
+            f'</div><div class="vbinfo"><h3>{esc(label)}</h3><div class="vtags">'
+            f'{"".join(pack_tag(site, p) for p in packs_)}{"" if mixed else avail_tag(its[0]["l"])}</div>'
+            + (f'<p class="vq">{esc(line)} <span class="dim small">(Steam store)</span></p>' if line else "")
+            + how + f'<div class="vpgrid{" noimg" if shared else ""}">{tiles}</div></div></div>')

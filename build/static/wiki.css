@@ -80,12 +80,21 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .stab.on { color: #fff; }
 .stab.on::after { content: ""; position: absolute; left: 10px; right: 10px; bottom: 0; height: 3px; background: #fff; }
 
-/* ---------- page ---------- */
-.content { flex: 1; width: 100%; max-width: 1280px; margin: 0 auto; padding: 22px 32px 40px; display: grid; grid-template-columns: minmax(0, 1fr); align-content: start; }
-.content.hasbox { grid-template-columns: minmax(0, 1fr) 330px; column-gap: 28px; }
+/* ---------- page ----------
+   Two columns that follow the window width: the article, and on the right the "rail" (infobox, side panels and the
+   contents bar, which stays on screen while you scroll). Below 1100px it is one column and the contents bar is a
+   button in the bottom right corner. */
+:root { --railw: clamp(270px, 21vw, 360px); --gap: clamp(20px, 2.2vw, 36px); }
+.content { flex: 1; width: 100%; max-width: 1760px; margin: 0 auto; padding: 22px clamp(16px, 3vw, 48px) 48px;
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: var(--gap); align-content: start; }
+.content.hasrail { grid-template-columns: minmax(0, 1fr) var(--railw); }
 .content.wide { max-width: none; }
-.content > * { grid-column: 1; }
-.content.hasbox > .infobox { grid-column: 2; grid-row: 3 / span 4; align-self: start; }
+.content > .head { grid-column: 1; grid-row: 1; min-width: 0; }
+.content > .body { grid-column: 1; grid-row: 2; min-width: 0; }
+.content > .rail { grid-column: 2; grid-row: 1 / span 2; min-width: 0; display: flex; flex-direction: column; padding-top: 6px; }
+.content:not(.hasrail) > .rail { display: none; }
+.railtop:empty { display: none; }
+.railtop > *:last-child { margin-bottom: 18px; }
 .crumbs { font-size: 12.5px; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
 .crumbs a { color: var(--dim); } .crumbs a:hover { color: #fff; }
 .crumbs span { margin: 0 4px; color: var(--faint); }
@@ -107,13 +116,25 @@ h4 { font-size: 13px; font-weight: 700; margin: 14px 0 6px; color: var(--gold); 
 .small { font-size: 13px; }
 .nolink { color: inherit; }
 
-/* table of contents */
-.toc { background: var(--panel); padding: 10px 16px 12px; margin: 4px 0 8px; display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: baseline; border-left: 3px solid var(--bar); }
-.toc .toch { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); width: 100%; }
-.toc a { font-size: 13.5px; color: var(--ink2); }
+/* contents bar (right-hand rail) */
+.toc { position: sticky; top: 110px; max-height: calc(100vh - 128px); overflow-y: auto; background: var(--panel);
+  padding: 10px 0 12px; border-left: 4px solid var(--bar); scrollbar-width: thin; }
+.toc .toch { font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); padding: 0 14px 6px; }
+.toc a { display: block; font-size: 13.5px; line-height: 1.35; color: var(--ink2); padding: 5px 14px 5px 12px; border-left: 3px solid transparent; margin-left: -4px; }
+.toc a:hover { color: #fff; text-decoration: none; background: rgba(255,255,255,.05); }
+.toc a.on { color: #fff; border-left-color: #fff; background: rgba(255,255,255,.07); font-weight: 600; }
+.tocbtn { display: none; }
 
 /* infobox */
 .infobox { background: var(--card); border-left: 4px solid var(--bar); margin: 0 0 18px; font-size: 14px; }
+.sidepanel { background: var(--card); border-left: 4px solid var(--bar); margin: 0 0 18px; font-size: 14px; }
+.sidepanel .ibh { font-size: 14px; padding: 7px 14px; }
+.spb { padding: 10px 14px 12px; }
+.spb > *:first-child { margin-top: 0; } .spb > *:last-child { margin-bottom: 0; }
+.spb .tablewrap { margin: 0 -14px; background: none; }
+.spb table.wt { font-size: 13px; } .spb table.wt td, .spb table.wt th { padding: 5px 10px; }
+.spb dl.kv { background: none; padding: 0; margin: 0; gap: 3px 12px; }
+.spb ul { margin: 0; padding-left: 18px; }
 .ibh { background: var(--head); color: var(--head-ink); font-weight: 700; font-size: 16px; padding: 8px 14px; text-transform: uppercase; }
 .ibs { padding: 6px 14px; color: var(--dim); font-size: 13px; border-bottom: 1px solid var(--line); }
 .ibimg { padding: 14px; display: grid; place-items: center; background: radial-gradient(ellipse at center, rgba(255,255,255,.07), transparent 70%); }
@@ -121,6 +142,7 @@ h4 { font-size: 13px; font-weight: 700; margin: 14px 0 6px; color: var(--gold); 
 .infobox dl { margin: 0; padding: 4px 0 8px; display: grid; grid-template-columns: auto 1fr; }
 .infobox dt { color: var(--dim); padding: 5px 8px 5px 14px; border-top: 1px solid var(--line); font-size: 13px; }
 .infobox dd { margin: 0; padding: 5px 14px 5px 4px; border-top: 1px solid var(--line); text-align: right; }
+.infobox dd .tag, .sidepanel .tag { white-space: normal; }
 .infobox dt.sub { grid-column: 1 / -1; color: #fff; font-weight: 700; text-transform: uppercase; font-size: 11.5px; letter-spacing: .14em; padding-top: 12px; }
 
 /* tables */
@@ -211,6 +233,51 @@ dl.kv dt { color: var(--dim); font-size: 13.5px; } dl.kv dd { margin: 0; }
 .minimap .mmzoom { position: absolute; left: 8px; top: 8px; z-index: 2; display: flex; flex-direction: column; gap: 2px; }
 .minimap .mmzoom button { width: 28px; height: 28px; background: rgba(0,0,0,.75); color: #fff; border: 1px solid rgba(255,255,255,.4); font: 700 16px var(--font); cursor: pointer; }
 
+/* collapsible sections: <details class="fold l2|l3"><summary><h2 class="wbar">..</h2></summary><div class="foldbody">.. */
+details.fold { margin: 0; }
+details.fold.l2 { margin-top: 30px; }
+details.fold.l3 { margin: 8px 0; }
+details.fold > summary { list-style: none; cursor: pointer; position: relative; display: block; }
+details.fold > summary::-webkit-details-marker { display: none; }
+details.fold > summary > .wbar, details.fold > summary > .wbar3 { margin: 0; padding-right: 44px; }
+details.fold > summary::after { content: ""; position: absolute; right: 16px; top: 50%; width: 9px; height: 9px; margin-top: -7px;
+  border-right: 2px solid #111; border-bottom: 2px solid #111; transform: rotate(45deg); transition: transform .15s; }
+details.fold[open] > summary::after { transform: rotate(-135deg); margin-top: -2px; }
+details.fold.l3 > summary::after { border-color: #fff; right: 14px; width: 8px; height: 8px; }
+details.fold > summary:hover > .wbar { background: #fff; }
+details.fold > summary:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+details.fold > .foldbody { padding-top: 12px; }
+details.fold.l3 > .foldbody { padding: 8px 0 4px; }
+details.fold:not([open]) > summary > h2.wbar::after { width: 8%; }
+.wbar3 { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255,255,255,.08);
+  border-left: 3px solid var(--bar); color: #fff; font-size: 13.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; padding: 8px 12px; margin: 0; }
+.wbar3 small { font-size: 12.5px; font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--dim); }
+details.fold.l3 > summary:hover > .wbar3 { background: rgba(255,255,255,.14); }
+.foldall { display: flex; justify-content: flex-end; gap: 6px; margin: 10px 0 -2px; }
+.foldall button { background: none; border: 0; color: var(--dim); font: inherit; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; cursor: pointer; padding: 2px 4px; }
+.foldall button:hover { color: #fff; }
+
+/* picture switcher (machine classes ...) */
+.switcher { background: radial-gradient(ellipse at center, rgba(255,255,255,.07), transparent 70%); }
+.switcher .swpane { display: none; padding: 12px 14px 4px; text-align: center; }
+.switcher .swpane.on { display: block; }
+.switcher .swpane img { max-height: 200px; object-fit: contain; }
+.switcher .swpane .swcap { display: block; font-size: 12px; color: var(--dim); margin-top: 4px; }
+.swbtns { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 12px 12px; justify-content: center; align-items: center; }
+.swbtns button { border: 1px solid rgba(255,255,255,.45); background: rgba(0,0,0,.35); color: #fff; font: inherit; font-size: 11.5px;
+  text-transform: uppercase; letter-spacing: .06em; padding: 4px 9px; cursor: pointer; }
+.swbtns button:hover { background: rgba(255,255,255,.15); }
+.swbtns button.on { background: #fff; color: #000; font-weight: 700; }
+.swbtns button.swx { display: inline-grid; place-items: center; width: 30px; height: 26px; padding: 0; opacity: .55; cursor: not-allowed; }
+.swbtns button.swx svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; }
+
+/* small square overview map with text beside it */
+.mmrow { display: flex; gap: 20px; align-items: flex-start; background: var(--panel); padding: 14px; margin: 14px 0; }
+.mmrow .minimap.small { flex: none; margin: 0; max-width: 100%; }
+.mmrow .mmtext { flex: 1; min-width: 0; }
+.mmrow .mmtext > *:last-child { margin-bottom: 0; }
+.minimap.small .mmopen { font-size: 11px; padding: 3px 8px; }
+
 /* skill tree */
 .tree { display: grid; gap: 8px; }
 
@@ -222,8 +289,23 @@ dl.kv dt { color: var(--dim); font-size: 13.5px; } dl.kv dd { margin: 0; }
 
 /* ---------- narrow screens ---------- */
 @media (max-width: 1100px) {
-  .content.hasbox { grid-template-columns: minmax(0, 1fr); }
-  .content.hasbox > .infobox { grid-column: 1; grid-row: auto; max-width: 520px; }
+  .content.hasrail { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto; }
+  .content > .rail { grid-column: 1; grid-row: 2; padding-top: 0; }
+  .content > .body { grid-row: 3; }
+  .railtop { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 0 16px; align-items: start; }
+  .railtop > * { margin-bottom: 16px !important; }
+  .rail .toc { display: none; position: fixed; top: auto; right: 14px; bottom: 66px; z-index: 30; width: min(330px, calc(100vw - 28px));
+    max-height: 62vh; background: rgba(6, 8, 11, .97); box-shadow: 0 10px 40px rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.25); }
+  .rail .toc.open { display: block; }
+  .tocbtn { display: flex; align-items: center; gap: 8px; position: fixed; right: 14px; bottom: 14px; z-index: 30; height: 42px; padding: 0 16px;
+    background: var(--bar); color: #fff; border: 1px solid rgba(255,255,255,.55); font: 600 13px var(--font); letter-spacing: .1em;
+    text-transform: uppercase; cursor: pointer; box-shadow: 0 6px 20px rgba(0,0,0,.6); }
+  .tocbtn svg { width: 16px; height: 16px; fill: currentColor; }
+  .hintbar { padding-bottom: 66px; }
+}
+@media (max-width: 600px) {
+  .tocbtn { width: 44px; height: 44px; padding: 0; justify-content: center; border-radius: 50%; font-size: 0; letter-spacing: 0; opacity: .92; }
+  .tocbtn svg { width: 18px; height: 18px; }
 }
 @media (max-width: 860px) {
   .menubtn { display: block; flex: none; }
@@ -240,7 +322,14 @@ dl.kv dt { color: var(--dim); font-size: 13.5px; } dl.kv dd { margin: 0; }
   h1 { font-size: 23px; }
   .hintbar span:not(.fine) { display: none; }
 }
+@media (max-width: 600px) {
+  .mmrow { flex-direction: column; }
+  .mmrow .minimap.small { width: 100% !important; }
+  h2.wbar { font-size: 14.5px; }
+}
 @media print {
+  details.fold > .foldbody { display: block !important; }
+  .rail .toc, .tocbtn { display: none !important; }
   .topbar, .subbar, .hintbar, .bg, .search { display: none !important; }
   body { background: #fff; color: #000; }
 }

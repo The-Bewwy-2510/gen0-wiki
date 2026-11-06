@@ -1,4 +1,5 @@
-"""Weapons tab: the ammo page (weapons/ammo.html) and the attachments page (weapons/attachments.html).
+"""Weapons tab: the ammo page (weapons/ammo.html), one page per calibre (weapons/ammo/<calibre>.html) with all of
+its variants, and the attachments page (weapons/attachments.html).
 
 Data used
   stats.json   player_weapons: per weapon the ammo it fires with damage, multipliers, falloff and range, plus the
@@ -10,16 +11,30 @@ Data used
   loot.json    ammo crate counts and the attachments placed by hand in the world
   gamedata.json    schematic currencies and skills
 
-Kinds registered: 'caliber' (stock.json sub), 'ammo' (stock.json name), 'attachment' (IDs.json name).
+Kinds registered: 'caliber' (stock.json sub -> its calibre page), 'ammo' (stock.json name -> its section on the
+calibre page; aliases: internal name, item id), 'attachment' (IDs.json name -> its card on the attachments page).
+Internal names and item ids are only search aliases; the pages don't print them.
 """
 import math
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, bar, note, kv, minimap, qbadge, tag, REGIONS, QUALITY
+from wiki.site import (esc, slug, norm, fmt, table, bar, fold, panel, note, kv, cards, infobox, maplink, minimap,
+                       qbadge, tag, REGIONS)
 
 AMMO_PAGE = "weapons/ammo.html"
 ATT_PAGE = "weapons/attachments.html"
 HEAD = '<link rel="stylesheet" href="~/assets/ammo.css">'
+HEAD_JS = HEAD + '<script src="~/assets/ammo.js" defer></script>'   # the All ammo filter hides empty groups
+GROUPS = ("Launcher rounds", "Arrows", "Other ammo")   # ammo groups that are not one calibre
+
+
+def cal_path(cal):
+    """The calibre's own page: weapons/ammo/9mm.html, weapons/ammo/32-acp.html ..."""
+    return f"weapons/ammo/{slug(cal)}.html"
+
+
+def cal_title(cal):
+    return f"{cal} ammo" if cal[0] in ".0123456789" else cal
 
 # calibres in the order the page shows them (stock.json 'sub' values); anything else found in the data goes last
 CAL_ORDER = ["9mm", ".32 ACP", ".44", "5.56mm", "7.62mm", "9x39mm", ".243", ".270", ".50 BMG", "12ga",
@@ -363,7 +378,7 @@ def collect(site):
     for cal in m["cal_order"]:
         ammo = m["cal"][cal]
         users = sorted({w["name"] for a in ammo for w, _ in a["uses"]})
-        site.register("caliber", cal, f"{AMMO_PAGE}#cal-{slug(cal)}", f"{cal} ammo" if cal[0] in ".0123456789" else cal,
+        site.register("caliber", cal, cal_path(cal), cal_title(cal),
                       icon=ammo[0]["icon"], aliases=CAL_ALIASES.get(cal, []),
                       desc=f"{len(ammo)} ammo types" + (f", used by {', '.join(users[:4])}" if users else ""),
                       keywords="ammo caliber calibre " + " ".join(a["name"] for a in ammo))
@@ -381,7 +396,7 @@ def collect(site):
         dmg = _first_damage(a)
         desc = f"{a['cal']} · {KIND_LABEL.get(a['kind'], 'Ammo')}" + (f" · {fmt(dmg)} damage" if dmg else "") + \
             (" · experimental only" if a["exp_only"] else "")
-        site.register("ammo", a["name"], f"{AMMO_PAGE}#{a['id']}", a["name"], icon=a["icon"], desc=desc,
+        site.register("ammo", a["name"], f"{cal_path(a['cal'])}#{a['id']}", a["name"], icon=a["icon"], desc=desc,
                       aliases=aliases, keywords=f"ammo {a['cal']} {a['kind']} {KIND_LABEL.get(a['kind'], '')}")
     for at in m["att"]:
         aliases = [at["nick"], at["internal"]] + list(at["ids"].values())
@@ -527,15 +542,17 @@ def weapon_link(site, w, text=None):
     return site.link("weapon", w["name"], text=text)
 
 
-def firers_html(site, m, a):
-    """'Fired by' links. A weapon that only lists the round in its tuning for other calibres (the AI-76) gets a
-    '*' pointing to the note that explains it."""
-    out = []
-    for w, label in a["firers"]:
-        star = (' <a class="dim" href="#cross-calibre" title="Why does this weapon list other calibres?">*</a>'
+def firers_html(site, m, a, chips=True):
+    """'Fired by' links (with weapon icons when chips). A weapon that only lists the round in its tuning for other
+    calibres (the AI-76) gets a '*' pointing to the note that explains it (on the calibre page)."""
+    def star(w):
+        return (' <a class="dim star" href="#cross-calibre" title="Why does this weapon list other calibres?">*</a>'
                 if w["name"] in m["cross"] and any(x is a for x, _ in m["cross"][w["name"]]) else "")
-        out.append(weapon_link(site, w, text=label) + star)
-    return ", ".join(out)
+    if not a["firers"]:
+        return ""
+    if chips:
+        return wchips(site, a["firers"], star=star)
+    return ", ".join(weapon_link(site, w, text=label) + star(w) for w, label in a["firers"])
 
 
 def shots(hp, per_hit):
@@ -545,30 +562,81 @@ def shots(hp, per_hit):
 
 
 # =================================================================================================================
-# ammo page
+# the ammo page (weapons/ammo.html)
 # =================================================================================================================
 def build(site):
     m = model(site)
     build_ammo(site, m)
+    for cal in m["cal_order"]:
+        build_caliber(site, m, cal)
     build_attachments(site, m)
 
 
+def _users(ammo):
+    """The weapons that fire any round of this list (in data order), from the normal weapon tuning."""
+    out = []
+    for a in ammo:
+        for w, _ in a["uses"]:
+            if all(w is not x for x in out):
+                out.append(w)
+    return out
+
+
+def _loot_sub(site, key):
+    return next((s for s in site.data("loot")["subs"] if s["key"] == key), None)
+
+
+def _marker_count(site, key):
+    return next((s.get("count") for s in site.data("markers")["subs"] if s["key"] == key), None)
+
+
+def _currency(site, key):
+    return next((c for c in site.data("gamedata")["schematics"] if c["key"] == key), None)
+
+
 def build_ammo(site, m):
-    body = [section_guide(site, m), section_matrix(site, m), section_table(site, m), section_shots(site, m),
-            section_tips(site, m)]
-    for cal in m["cal_order"]:
-        body.append(section_caliber(site, m, cal))
-    body.append(section_finding(site, m))
-    n_ammo = len(m["ammo"])
-    lead = (f"<p>Every kind of ammunition in Generation Zero: {n_ammo} ammo items in {len(m['cal_order'])} calibre "
-            f"groups, with the damage each one does in every weapon that fires it, how much of that damage goes "
-            f"into armour and into components, how far it carries, how many fit in one inventory stack, what "
-            f"the experimental rounds actually do and how to craft them. All numbers are read from the game's "
-            f"tuning files; see the notes on each table for what they mean.</p>")
-    site.page(AMMO_PAGE, "Ammo", "\n".join(body), "weapons", sub="ammo", head_extra=HEAD, lead=lead,
-              desc="All Generation Zero ammo: damage per weapon, armour and component multipliers, falloff, "
-                   "stack sizes, experimental effects and schematics.",
+    body = [section_summary(site, m), section_guide(site, m), section_finding(site, m), section_tips(site, m),
+            section_table(site, m), section_shots(site, m)]
+    lead = (f"<p>Generation Zero has {len(m['ammo'])} kinds of ammunition in {len(m['cal_order'])} calibre groups. "
+            "Every calibre has its own page with all of its variants (full metal jacket, armour-piercing, "
+            "hollow-point, the experimental rounds and so on), the damage each one does from every weapon that fires "
+            "it, and how to craft it. This page compares them and explains how to choose.</p>")
+    site.page(AMMO_PAGE, "Ammo", "\n".join(body), "weapons", sub="ammo", head_extra=HEAD_JS, lead=lead,
+              infobox_html=ammo_infobox(site, m),
+              desc="All Generation Zero ammo: every calibre and variant, how to choose between them, where to find "
+                   "ammo, and damage compared.",
               search={"k": "Weapons", "w": "ammo ammunition calibre caliber damage armour component"})
+
+
+def ammo_infobox(site, m):
+    ammo = list(m["ammo"].values())
+    n_exp = sum(1 for a in ammo if a["exp_only"])
+    n_craft = sum(1 for a in ammo if a["schem"])
+    boxes = _loot_sub(site, "loot_c_ammo")
+    pic = m["ammo"].get("7.62mm Full Metal Jacket Ammo") or ammo[0]
+    rows = [("Ammo items", fmt(len(ammo))), ("Calibre groups", f'<a href="#summary">{len(m["cal_order"])}</a>'),
+            ("Experimental only", fmt(n_exp)), ("Craftable", f"{n_craft} of {len(ammo)}"),
+            ("Ammo box spots", f'<a href="#finding">{fmt(boxes["count"])}</a>' if boxes else None)]
+    img = "~/" + pic["icon"] if site.has_file(pic["icon"]) else None
+    return infobox("Ammo", rows, image=img, image_alt=pic["name"], subtitle="Ammunition for the player's weapons")
+
+
+def section_summary(site, m):
+    """Cards to the calibre pages, then the calibre x role grid."""
+    items = []
+    for cal in m["cal_order"]:
+        ammo = m["cal"][cal]
+        names = [w["name"] for w in _users(ammo)]
+        n_exp = sum(1 for a in ammo if a["exp_only"])
+        sub = f"{len(ammo)} variant{'s' if len(ammo) != 1 else ''}" + (f", {n_exp} experimental" if n_exp else "")
+        if names:
+            sub += "<br>" + esc(", ".join(names[:3])) + (f" +{len(names) - 3}" if len(names) > 3 else "")
+        icon = ammo[0]["icon"]
+        items.append({"href": "~/" + cal_path(cal), "title": cal_title(cal), "sub": sub,
+                      "img": "~/" + icon if site.has_file(icon) else None})
+    return (bar("Summary", id="summary") +
+            "<p>Pick a calibre to see all of its variants, the damage they do from each weapon and how to craft "
+            "them.</p>" + cards(items, cls="calcards") + section_matrix(site, m))
 
 
 def section_guide(site, m):
@@ -592,6 +660,8 @@ def section_guide(site, m):
         rows.append([esc(KIND_LABEL.get(k, k)), mult_html(am), mult_html(cm), ", ".join(links),
                      esc(_role(am, cm, k))])
     skills = " and ".join(site.link("skill", s) for s in ("Armor Damage", "Component Damage"))
+    others = ", ".join(site.link("caliber", c, text=cal_title(c)) for c in ("Launcher rounds", "Arrows", "Other ammo")
+                       if c in m["cal"])
     return (bar("Choosing ammo", id="choosing") +
             "<p>Machines in Generation Zero are built from two kinds of parts. <b>Armour plates</b> cover the "
             "body and have to be shot off before you can reach what is under them. <b>Components</b> are the "
@@ -611,21 +681,26 @@ def section_guide(site, m):
             "multiplier.</p>" +
             table(["Ammo type", "Armour ×", "Component ×", "Calibres", "Best for"], rows, cls="compact") +
             note("Launcher rounds, explosive arrows and napalm do their work with a blast or with fire instead of "
-                 "the projectile, so they are left out of this table; their numbers are in their own sections "
-                 "below.", "info") + _cross_note(site, m))
+                 f"the projectile, so they are left out of this table; their numbers are on their pages: {others}.",
+                 "info"))
 
 
-def _cross_note(site, m):
+def _cross_note(site, m, cal):
     """Explain the experimental weapon(s) whose tuning has entries for other calibres' rounds (the AI-76)."""
     out = []
     for name, pairs in m["cross"].items():
+        if not any(a["cal"] == cal for a, _ in pairs):
+            continue
         w = next(x for x in m["weapons"] if x["name"] == name)
         cals = [c for c in m["cal_order"] if any(a["cal"] == c for a, _ in pairs)]
-        out.append(f"The {weapon_link(site, w, text=exp_name(w))}'s tuning has entries for the rounds of other "
-                   f"calibres as well as its own: {len(pairs)} in the files, covering "
-                   f"{', '.join(esc(c) for c in cals)}. In other words it is set up to fire other calibres' ammo. "
-                   "It is listed under “Fired by” on those rounds (marked *), and where its numbers differ "
-                   "from the normal round they are in the calibre's “In experimental weapons” table.")
+        exp = site.link("weapon", exp_name(w)) if site.find("weapon", exp_name(w)) else \
+            weapon_link(site, w, text=exp_name(w))
+        out.append(f"The {exp}'s tuning has entries for the rounds of other calibres as well as its own: "
+                   f"{len(pairs)} in the files, covering {', '.join(esc(c) for c in cals)}. In other words it is "
+                   "set up to fire other calibres' ammo. It is listed under “Fired by” on those rounds (marked *)"
+                   + (", and where its numbers differ from the normal round they are in "
+                      "<a href=\"#in-experimental-weapons\">In experimental weapons</a>"
+                      if any(not _same_as_base(a, e) for a, e in pairs if a["cal"] == cal) else "") + ".")
     if not out:
         return ""
     return f'<div id="cross-calibre">{note(" ".join(out), "data", "Rounds of other calibres")}</div>'
@@ -676,65 +751,80 @@ def section_matrix(site, m):
                                     (' <span class="xq" title="Experimental only">Q6</span>' if a["exp_only"] else ""))
                     break
         cells = cells[1:] + cells[:1]       # support column last
-        rows.append([f'<a href="#cal-{slug(cal)}"><b>{esc(cal)}</b></a>'] + ["<br>".join(c) or "–" for c in cells])
-    return (bar("Summary", id="summary") +
-            "<p>What each calibre offers, by role. A <span class=\"xq\">Q6</span> mark means the round only "
-            "works in experimental weapons. Click a calibre for its section. The 9mm handgun and SMG rounds are "
-            "separate items, marked (handgun) and (SMG).</p>" +
+        rows.append([f"<b>{site.link('caliber', cal, text=cal)}</b>"] + ["<br>".join(c) or "–" for c in cells])
+    return ("<h3>What each calibre offers</h3>"
+            "<p>The variants of each calibre by role. A <span class=\"xq\">Q6</span> mark means the round only "
+            "works in experimental weapons. The 9mm handgun and SMG rounds are separate items, marked (handgun) "
+            "and (SMG).</p>" +
             table(["Calibre"] + [c[0] for c in cols[1:] + cols[:1]], rows, cls="matrix", sortable=False))
 
 
-def section_table(site, m):
-    """Every ammo item in one sortable, filterable table."""
-    rows, chips = [], []
-    for cal in m["cal_order"]:
-        chips.append(f'<button class="chip" data-g="cal" data-f="c-{slug(cal)}">{esc(cal)}</button>')
-        for a in m["cal"][cal]:
-            e = a["uses"][0][1] if a["uses"] else {}
-            dmg, pel = e.get("projectile_damage"), e.get("projectiles_per_shot") or 1
-            am, cm = e.get("armour_multiplier"), e.get("component_multiplier")
-            per_shot = dmg * pel if dmg is not None else None
-            if _blast_round(a, e):
-                # the projectile does (next to) nothing: show the blast, leave the projectile columns empty
-                b = (e.get("on_hit") or {}).get("blast")
-                dmg_cell = (f'{SORTV.format(b["damage_to_machines"])}{fmt(b["damage_to_machines"])} blast · '
-                            f'{fmt(b["radius_vs_machines_m"])} m' if b else "–")
-                mults = ["–"] * 4
-            else:
-                dmg_cell = ((f'{SORTV.format(dmg)}{pel} × {fmt(dmg)}' if pel > 1 else dmg)
-                            if dmg is not None else None)
-                mults = [mult_html(am) if e else "–", mult_html(cm) if e else "–",
-                         round(per_shot * am, 2) if per_shot is not None and am is not None else None,
-                         round(per_shot * cm, 2) if per_shot is not None and cm is not None else None]
-            w0 = a["uses"][0][0] if a["uses"] else None
-            rows.append((f"c-{slug(cal)} {'exp' if a['exp_only'] else 'std'}", [
-                site.link("ammo", a["name"], icon=True), esc(KIND_LABEL.get(a["kind"], "–")), dmg_cell] + mults + [
-                esc(falloff_text(e, w0) or "–"), rng(e.get("max_range_m")), a["stack"], len(a["firers"]),
-                tag("Q6 only", "exp") if a["exp_only"] else ""]))
-    html = sortv_cells(table(["Ammo", "Type", "Damage", "Armour ×", "Comp. ×", "vs armour / shot", "vs comp. / shot",
-                              "Falloff", "Range (m)", "Stack", "Weapons", ""],
-                             [r for _, r in rows], num={2, 5, 6, 8, 9, 10}, cls="compact"))
-    # add the filter tags to the rows (table() has no row attributes)
+def _all_ammo_rows(site, m, cal):
+    """[(filter tags, row)] of one calibre for the All ammo tables."""
+    out = []
+    for a in m["cal"][cal]:
+        e = a["uses"][0][1] if a["uses"] else {}
+        dmg, pel = e.get("projectile_damage"), e.get("projectiles_per_shot") or 1
+        am, cm = e.get("armour_multiplier"), e.get("component_multiplier")
+        per_shot = dmg * pel if dmg is not None else None
+        if _blast_round(a, e):
+            # the projectile does (next to) nothing: show the blast, leave the projectile columns empty
+            b = (e.get("on_hit") or {}).get("blast")
+            dmg_cell = (f'{SORTV.format(b["damage_to_machines"])}{fmt(b["damage_to_machines"])} blast · '
+                        f'{fmt(b["radius_vs_machines_m"])} m' if b else "–")
+            mults = ["–"] * 4
+        else:
+            dmg_cell = ((f'{SORTV.format(dmg)}{pel} × {fmt(dmg)}' if pel > 1 else dmg)
+                        if dmg is not None else None)
+            mults = [mult_html(am) if e else "–", mult_html(cm) if e else "–",
+                     round(per_shot * am, 2) if per_shot is not None and am is not None else None,
+                     round(per_shot * cm, 2) if per_shot is not None and cm is not None else None]
+        w0 = a["uses"][0][0] if a["uses"] else None
+        out.append(("exp" if a["exp_only"] else "std", [
+            site.link("ammo", a["name"], icon=True), esc(KIND_LABEL.get(a["kind"], "–")), dmg_cell] + mults + [
+            esc(falloff_text(e, w0) or "–"), rng(e.get("max_range_m")), a["stack"], len(a["firers"]),
+            tag("Q6 only", "exp") if a["exp_only"] else ""]))
+    return out
+
+
+def _rows_with_tags(html, rows):
+    """table() has no row attributes: add data-f to each body row."""
     parts = html.split("<tr>")
     out = parts[0] + "<tr>" + parts[1]
     for (f, _), p in zip(rows, parts[2:]):
         out += f'<tr data-f="{f}">' + p
-    return (bar("All ammo", f"{len(rows)} items", id="all-ammo") +
-            "<p>One row per ammo item. <b>Damage</b> is the base damage of one projectile (pellet) at weapon "
-            "multiplier 1.0, which is Q5 for most weapons (see the calibre sections for each weapon's own "
-            "numbers per quality); shotgun shells show pellets × damage. <b>vs armour / shot</b> and <b>vs comp. "
-            "/ shot</b> multiply that by the pellets and the armour or component multiplier. For launcher rounds "
-            "and explosive arrows the damage is the blast instead (damage to machines and its radius; for the "
-            "arrow the weakest, undrawn stage), and the projectile columns are left empty because the projectile "
-            "itself does no real damage. <b>Weapons</b> counts the weapons that can fire the round (for Q6-only "
-            "rounds, the experimental versions). Use the buttons to show one calibre and click a header to "
+    return out
+
+
+def section_table(site, m):
+    """Every ammo item, one closed fold (with a sortable table) per calibre."""
+    heads = ["Ammo", "Type", "Damage", "Armour ×", "Comp. ×", "vs armour / shot", "vs comp. / shot", "Falloff",
+             "Range (m)", "Stack", "Weapons", ""]
+    folds, total = [], 0
+    for cal in m["cal_order"]:
+        rows = _all_ammo_rows(site, m, cal)
+        total += len(rows)
+        html = _rows_with_tags(sortv_cells(table(heads, [r for _, r in rows], num={2, 5, 6, 8, 9, 10},
+                                                 cls="compact")), rows)
+        page = site.link("caliber", cal, text=f"the {cal_title(cal)} page")
+        folds.append(fold(cal_title(cal), f'<p class="small">Everything about these rounds is on {page}.</p>' + html,
+                          level=3, right=f"{len(rows)} item{'s' if len(rows) != 1 else ''}", id=f"all-{slug(cal)}"))
+    body = ("<p>One row per ammo item, grouped by calibre. <b>Damage</b> is the base damage of one projectile "
+            "(pellet) at weapon multiplier 1.0, which is Q5 for most weapons (each calibre page has every weapon's "
+            "own numbers per quality); shotgun shells show pellets × damage. <b>vs armour / shot</b> and <b>vs "
+            "comp. / shot</b> multiply that by the pellets and the armour or component multiplier. For launcher "
+            "rounds and explosive arrows the damage is the blast instead (damage to machines and its radius; for "
+            "the arrow the weakest, undrawn stage), and the projectile columns are left empty because the "
+            "projectile itself does no real damage. <b>Weapons</b> counts the weapons that can fire the round (for "
+            "Q6-only rounds, the experimental versions). Typing in the filter opens the groups that match; click a header to "
             "sort.</p>" +
-            f'<div class="filterbar" data-for="ammotable"><input placeholder="Filter ammo...">'
-            f'<button class="chip on" data-g="cal" data-f="*">All</button>{"".join(chips)}'
-            f'<button class="chip on" data-g="x" data-f="*">Any</button>'
-            f'<button class="chip" data-g="x" data-f="std">Standard</button>'
-            f'<button class="chip" data-g="x" data-f="exp">Experimental only</button><span class="count"></span></div>'
-            f'<div id="ammotable" class="ammotable">{out}</div>')
+            '<div class="filterbar" data-for="ammotable"><input placeholder="Filter ammo...">'
+            '<button class="chip on" data-g="x" data-f="*">Any</button>'
+            '<button class="chip" data-g="x" data-f="std">Standard</button>'
+            '<button class="chip" data-g="x" data-f="exp">Experimental only</button><span class="count"></span></div>'
+            '<div class="foldall" data-for="ammotable"></div>'
+            f'<div id="ammotable" class="ammotable">{"".join(folds)}</div>')
+    return fold("All ammo", body, open=False, right=f"{total} items", id="all-ammo")
 
 
 def _part(site, cls, mtype, comp, kind):
@@ -771,17 +861,17 @@ def section_shots(site, m):
             for _c, _t, _p, k, hp in targets:
                 row.append(shots(hp, dmg * (am if k == "armour" else cm)))
             rows.append(row)
-    return (bar("How many hits?", id="hits") +
-            "<p>A worked example to compare rounds: the number of hits needed to break one part, using the "
+    body = ("<p>A worked example to compare rounds: the number of hits needed to break one part, using the "
             "base damage (weapon multiplier 1.0, Q5 for most weapons), before difficulty scaling, with no skills "
-            "and no augments. Shotgun rows count whole shells with every pellet hitting. The part health comes from "
-            "the machines' layout files (first layout of each machine). Treat it as a comparison, not an exact "
-            "promise: weak-spot bonuses, falloff, difficulty and co-op scaling all change the real count.</p>" +
+            "and no augments. Shotgun rows count whole shells with every pellet hitting. The part health comes "
+            "from the machines' layout files (first layout of each machine). Treat it as a comparison, not an "
+            "exact promise: weak-spot bonuses, falloff, difficulty and co-op scaling all change the real count.</p>"
             '<div class="ammotable">' +
             table(["Ammo", "Armour dmg / shot", "Component dmg / shot"] + heads, rows, raw_headers=True,
                   num=set(range(1, 3 + len(heads))), cls="compact") + "</div>" +
             note("“never” means the round does no damage to that kind of part: HEAT ammo has an armour "
                  "multiplier of 0, so it cannot break armour plates at all.", "info"))
+    return fold("How many hits?", body, open=False, right=f"{len(rows)} rounds", id="hits")
 
 
 def _weapon_q5(w):
@@ -806,10 +896,10 @@ def section_tips(site, m):
                     "off.")
     b_ap, b_fmj = e0(".50 BMG Armor-Piercing Ammo"), e0(".50 BMG Full Metal Jacket Ammo")
     if b_ap and b_fmj:
-        tips.append(f"The .50 BMG rounds are special: AP has armour ×{fmt(b_ap['armour_multiplier'])} (the "
-                    f"highest of any bullet) and even the FMJ has component ×{fmt(b_fmj['component_multiplier'])}. "
-                    f"With {fmt(b_ap['projectile_damage'])} base damage and falloff “{esc(b_ap['falloff'])}”, a "
-                    f"{site.link('weapon', 'Pansarvärnsgevär 90')} with AP does "
+        tips.append(f"The {site.link('caliber', '.50 BMG', text='.50 BMG')} rounds are special: AP has armour "
+                    f"×{fmt(b_ap['armour_multiplier'])} (the highest of any bullet) and even the FMJ has component "
+                    f"×{fmt(b_fmj['component_multiplier'])}. With {fmt(b_ap['projectile_damage'])} base damage and "
+                    f"falloff “{esc(b_ap['falloff'])}”, a {site.link('weapon', 'Pansarvärnsgevär 90')} with AP does "
                     f"{fmt(b_ap['projectile_damage'] * b_ap['armour_multiplier'])} damage to armour per shot.")
     # 7.62mm in different weapons: the weapon's quality multiplier makes a big difference
     users = sorted(A["7.62mm Full Metal Jacket Ammo"]["uses"], key=lambda u: -_weapon_q5(u[0])) \
@@ -819,7 +909,8 @@ def section_tips(site, m):
         best = [f"{weapon_link(site, w)} ({fmt(base * _weapon_q5(w))})" for w, _ in users if _weapon_q5(w) > 1]
         tips.append(f"The same 7.62mm round hits harder from some guns: its base damage is {fmt(base)}, but at "
                     f"Q5 it does {', '.join(best)} per hit, because those weapons have higher quality "
-                    "multipliers. The calibre tables below show every weapon's numbers.")
+                    f"multipliers. The {site.link('caliber', '7.62mm', text='7.62mm page')} shows every weapon's "
+                    "numbers.")
     tips += _q6_drop_tips(site, m)
     buck, bird, slug_ = e0("12ga Buckshot Ammo"), e0("12ga Birdshot Ammo"), e0("12ga Slug Ammo")
     if buck and bird and slug_:
@@ -869,8 +960,8 @@ def _q6_drop_tips(site, m):
         d5, _ = _q_damage(w, a, e, "Q5")
         d6, e6 = _q_damage(w, a, e, "Q6")
         tip = (f"The {weapon_link(site, w)} loses damage at Q6: its quality multiplier is ×{fmt(q5)} at Q5 "
-               f"but ×{fmt(q6)} for the {esc(exp_name(w))}, so {esc(e['name'])} does {fmt(d5)} per bullet "
-               f"from a Q5 gun and {fmt(d6)} from the experimental one.")
+               f"but ×{fmt(q6)} for the {esc(exp_name(w))}, so {site.link('ammo', a['name'], text=e['name'])} "
+               f"does {fmt(d5)} per bullet from a Q5 gun and {fmt(d6)} from the experimental one.")
         if e6 is not e and e6.get("falloff") and e6.get("falloff") != e.get("falloff"):
             tip += (f" Its own experimental tuning also changes the falloff from "
                     f"“{esc(e.get('falloff'))}” to “{esc(e6['falloff'])}”.")
@@ -878,26 +969,220 @@ def _q6_drop_tips(site, m):
     return out
 
 
-# ---------------------------------------------------------------------------------------------------------------
-def section_caliber(site, m, cal):
-    """One calibre: intro, the weapon x round damage table, a card per round, experimental-weapon versions."""
+# loot.json ammo box names -> readable names
+BOX_NAMES = {
+    "Ammobox large rifle 1": "Large rifle ammo box", "Ammobox large sniper rifle 1": "Large sniper rifle ammo box",
+    "Ammobox large special explosives 1": "Large explosives ammo box",
+    "Ammobox small hunting 1": "Small hunting rifle ammo box", "Ammobox small magnum 1": "Small magnum ammo box",
+    "Ammobox small rifle 1": "Small rifle ammo box", "Ammobox small shotgun 1": "Small shotgun ammo box",
+    "Fnix ammobox large": "FNIX large ammo box", "Soviet large ammo box": "Soviet large ammo box",
+    "Soviet small ammo box": "Soviet small ammo box",
+}
+
+
+def _maplink_btn(href, text):
+    return f'<a class="mapbtn" href="{href}">{esc(text)}</a>'
+
+
+def _schem_trees(ammo):
+    """The schematic trees (currency keys) the crafting schematics of these rounds are in, in a fixed order."""
+    got = {_schem_tree(a["schem"]) for a in ammo if a["schem"]}
+    return [k for k in ("ammo", "experimental", "dlc", "equipment") if k in got] + sorted(got - {"ammo", "experimental",
+                                                                                                "dlc", "equipment"})
+
+
+def _sources_html(site, m, ammo):
+    """The ways to get these rounds, with map links that show just that category."""
+    boxes = _loot_sub(site, "loot_c_ammo")
+    packs = _loot_sub(site, "loot_i_ammo_station_01")
+    n_pts = _marker_count(site, "sch_ammo")
+    trees = _schem_trees(ammo)
+    out = ["<ul class=\"sources\">"]
+    if boxes:
+        out.append(f"<li><b>Ammo boxes.</b> The map files have {fmt(boxes['count'])} ammo box spawn points; what a "
+                   "box holds is rolled at random" + (f" ({esc(boxes['note'].rstrip('.').lower())})"
+                                                      if boxes.get("note") else "") + ". " +
+                   _maplink_btn(maplink(show=["loot_c_ammo"]), "Ammo boxes on the map") + "</li>")
+    out.append("<li><b>Destroyed machines</b> drop ammo when you loot their wrecks.</li>")
+    parts = []
+    for k in trees:
+        cur = _currency(site, k)
+        if not cur:
+            continue
+        what = {"ammo": "Ammo schematics", "experimental": "The experimental rounds' schematics",
+                "dlc": "DLC ammo schematics"}.get(k, f"The {k} schematics")
+        t = f"{what} are bought with {esc(cur['name'])}: “{esc(cur['earn'])}”"
+        if k == "ammo" and n_pts:
+            t += (f" The map files place {n_pts} pickups that give them. " +
+                  _maplink_btn(maplink(show=["sch_ammo"]), "Ammo schematic points"))
+        parts.append(t)
+    if parts:
+        out.append("<li><b>Crafting.</b> " + " ".join(parts) + "</li>")
+    if packs:
+        out.append(f"<li>The {site.link('item', 'Ammo Pack')} refills ammo; {packs['count']} of them are placed "
+                   "by hand in the world. " + _maplink_btn(maplink(show=["loot_i_ammo_station_01"]),
+                                                           "Ammo Packs on the map") + "</li>")
+    out.append(f"<li>The {site.link('skill', 'Salvage')} skill gives more ammo from every container and "
+               "machine.</li></ul>")
+    return "".join(out)
+
+
+def section_finding(site, m):
+    """Where ammo comes from, and the ammo boxes placed in the world by region and box type (loot.json)."""
+    loot = site.data("loot")
+    sub_idx = next((i for i, s in enumerate(loot["subs"]) if s["key"] == "loot_c_ammo"), None)
+    out = (bar("Where to find ammo", id="finding") + "<p>Ammo comes from:</p>" +
+           _sources_html(site, m, list(m["ammo"].values())))
+    if sub_idx is None:
+        return out
+    counts, total = {}, {}
+    for it in loot["items"]:
+        if it[0] != sub_idx:
+            continue
+        name, reg = loot["names"][it[3]], loot["regions"][it[4]]
+        counts.setdefault(name, {}).setdefault(reg, 0)
+        counts[name][reg] += 1
+        total[reg] = total.get(reg, 0) + 1
+    regs = [r for r, _ in REGIONS if r in total]
+    rows = []
+    for name, by in sorted(counts.items(), key=lambda x: -sum(x[1].values())):
+        rows.append([esc(BOX_NAMES.get(name, name))] + [by.get(r) for r in regs] + [sum(by.values())])
+    rows.append(["<b>All ammo boxes</b>"] + [total[r] for r in regs] + [sum(total.values())])
+    rows.append(['<span class="dim">On the map</span>'] +
+                [f'<a href="{maplink(show=["loot_c_ammo"], region=[r])}">Map</a>' for r in regs] +
+                [f'<a href="{maplink(show=["loot_c_ammo"])}">Map</a>'])
+    heads = ["Box"] + [site.link("region", r, text=dict(REGIONS)[r].split(" (")[0]) for r in regs] + ["Total"]
+    return (out + "<h3>Ammo boxes by region</h3>"
+            "<p>How many ammo box spawn points the map files have in each region, by box type. The <b>Map</b> links "
+            "open the interactive map with only the ammo boxes of that region shown.</p>" +
+            table(heads, rows, raw_headers=True, num=set(range(1, len(heads))), cls="compact boxes"))
+
+
+# =================================================================================================================
+# the calibre pages (weapons/ammo/<calibre>.html)
+# =================================================================================================================
+def build_caliber(site, m, cal):
     ammo = m["cal"][cal]
-    users = []
+    users = _users(ammo)
+    body = [_cal_note(site, m, cal, ammo), section_cal_damage(site, m, cal, ammo, users)]
     for a in ammo:
-        for w, _ in a["uses"]:
-            if w not in users:
-                users.append(w)
+        body.append(variant_section(site, m, a))
+    ov = overrides_table(site, m, ammo)
+    if ov:
+        body.append(bar("In experimental weapons", id="in-experimental-weapons") + ov)
+    body.append(section_cal_weapons(site, m, cal, ammo, users))
+    body.append(section_cal_finding(site, m, cal, ammo))
+    group = cal in GROUPS
+    site.page(cal_path(cal), cal_title(cal), "".join(body), "weapons", sub="ammo",
+              crumbs=[("Ammo", "~/" + AMMO_PAGE)], kind="Ammo · " + ("Ammo group" if group else "Calibre"),
+              lead=cal_lead(site, m, cal, ammo, users), infobox_html=cal_infobox(site, m, cal, ammo, users),
+              side=[fired_panel(site, m, cal, ammo, users), calibres_panel(site, m, cal)], head_extra=HEAD,
+              desc=f"Generation Zero {cal_title(cal)}: all {len(ammo)} variants, their damage from every weapon, "
+                   "effects and crafting.")
+
+
+def cal_lead(site, m, cal, ammo, users):
+    if cal == "Other ammo":
+        return ("<p>Ammo that belongs to one special weapon or tool: " + ", ".join(
+            f'<a href="#{a["id"]}">{esc(a["name"])}</a> ({firers_html(site, m, a, chips=False) or esc(OWNER_TEXT.get(a["kind"], "–"))})'
+            for a in ammo) + ".</p>")
+    exp = [a for a in ammo if a["exp_only"]]
+    what = "group" if cal in GROUPS else "calibre"
+    s = (f"<p>The {esc(cal.lower() if cal in GROUPS else cal)} {what} has {len(ammo)} kind"
+         f"{'s' if len(ammo) != 1 else ''} of ammo" +
+         (f", {len(exp)} of {'them' if len(exp) > 1 else 'it'} only for experimental weapons" if exp else "") + ".")
+    if users:
+        s += " It is fired by " + ", ".join(weapon_link(site, w) for w in users) + "."
+    return s + "</p>"
+
+
+def cal_infobox(site, m, cal, ammo, users):
+    std = [a for a in ammo if not a["exp_only"]]
+    exp = [a for a in ammo if a["exp_only"]]
     stacks = sorted({a["stack"] for a in ammo})
-    fired = ", ".join(weapon_link(site, w) for w in users)
-    if cal == "Other ammo":      # unrelated items: say per item what it belongs to
-        intro = "<p>" + ", ".join(
-            f"{site.link('ammo', a['name'])} ({firers_html(site, m, a) or esc(OWNER_TEXT.get(a['kind'], '–'))}, "
-            f"stack {fmt(a['stack'])})" for a in ammo) + ".</p>"
-    else:
-        intro = (f"<p>{len(ammo)} ammo item{'s' if len(ammo) != 1 else ''}" +
-                 (f", fired by {fired}." if users else ".") +
-                 f" Stack size: {' / '.join(fmt(s) for s in stacks)} per inventory slot.</p>")
-    cards = '<div class="agrid">' + "".join(ammo_card(site, m, a) for a in ammo) + "</div>"
+    n_craft = sum(1 for a in ammo if a["schem"])
+    packs = sorted({w["d"].get("pack") for w in users if (w["d"].get("pack") or "").endswith("(DLC)")})
+    rows = [("Ammo group" if cal in GROUPS else "Calibre", esc(cal)),
+            ("Variants", f"{len(std)} standard" + (f" + {len(exp)} experimental" if exp else "")),
+            ("Stack size", " / ".join(fmt(s) for s in stacks)),
+            ("Weapons", f'<a href="#weapons-that-use-it">{len(users)}</a>' if users else "None"),
+            ("DLC weapons", " ".join(pack_tag(p) for p in packs) or None),
+            ("Craftable", f'<a href="#where-to-find-it">{n_craft} of {len(ammo)}</a>')]
+    pic = ammo[0]
+    img = "~/" + pic["icon"] if site.has_file(pic["icon"]) else None
+    return infobox(cal_title(cal), rows, image=img, image_alt=pic["name"],
+                   subtitle=esc(_cal_subtitle(cal, users)))
+
+
+def _cal_subtitle(cal, users):
+    cats = []
+    for w in users:
+        c = CAT_SINGULAR.get(w["cat"], w["cat"].lower())
+        if c not in cats:
+            cats.append(c)
+    if cal in CAL_SUBTITLE:
+        return CAL_SUBTITLE[cal]
+    if not cats:
+        return "Ammo"
+    return "Ammo for " + (", ".join(cats[:-1]) + " and " + cats[-1] if len(cats) > 1 else cats[0])
+
+
+CAL_SUBTITLE = {"Arrows": "Ammo for the bow", "Other ammo": "Ammo for special weapons and tools"}
+# stats.json weapon categories -> plural words for the infobox subtitle
+CAT_SINGULAR = {"Handguns": "handguns", "Submachine Guns": "submachine guns", "Assault Rifles": "assault rifles",
+                "Machine Guns": "machine guns", "Shotguns": "shotguns", "Hunting Rifles": "hunting rifles",
+                "Sniper Rifles": "sniper rifles", "Launchers": "launchers",
+                "Bows and flamethrowers": "bows and flamethrowers"}
+
+
+def _weapon_entry(site, w, label=None):
+    """Registry entry of a weapon (its experimental version's anchor when label names it)."""
+    return (site.find("weapon", label) if label else None) or site.find("weapon", w["name"])
+
+
+def wchips(site, pairs, star=None):
+    """Weapon links with their icons: pairs = [(weapon, label)]; star(w) -> extra HTML after one."""
+    out = []
+    for w, label in pairs:
+        e = _weapon_entry(site, w, label)
+        ic = site.img(e["icon"], cls="wci") if e and e.get("icon") else ""
+        inner = f"{ic}<span>{esc(label)}</span>"
+        s = (f'<a class="wchip" href="~/{esc(e["path"])}">{inner}</a>' if e else f'<span class="wchip">{inner}</span>')
+        out.append(s + (star(w) if star else ""))
+    return '<span class="wchips">' + "".join(out) + "</span>"
+
+
+def fired_panel(site, m, cal, ammo, users):
+    """Side panel: the weapons that fire this calibre, with icons; experimental-only firers below."""
+    if not users and not any(a["firers"] for a in ammo):
+        return ""
+    out = []
+    if users:
+        out.append('<ul class="flist">' + "".join(
+            f"<li>{wchips(site, [(w, w['name'])])}</li>" for w in users) + "</ul>")
+    extra = []
+    for a in ammo:
+        for w, label in a["firers"]:
+            if label != w["name"] and all(label != x for _, x in extra):
+                extra.append((w, label))
+    if extra:
+        out.append('<div class="fsub">Experimental versions</div><ul class="flist">' + "".join(
+            f"<li>{wchips(site, [(w, label)])}</li>" for w, label in extra) + "</ul>")
+    return panel("Fired by", "".join(out), cls="amside")
+
+
+def calibres_panel(site, m, cal):
+    items = []
+    for c in m["cal_order"]:
+        ic = site.img(m["cal"][c][0]["icon"], cls="cpi")
+        if c == cal:
+            items.append(f'<li class="on">{ic}<b>{esc(cal_title(c))}</b></li>')
+        else:
+            items.append(f'<li><a href="~/{cal_path(c)}">{ic}{esc(cal_title(c))}</a></li>')
+    return panel("All ammo", f'<ul class="clist">{"".join(items)}</ul>', cls="amside amnav")
+
+
+def section_cal_damage(site, m, cal, ammo, users):
     groups = []   # rounds fired by the same set of weapons share one damage table (9mm: handguns / SMGs)
     for a in ammo:
         key = tuple(w["name"] for w, _ in a["uses"])
@@ -906,12 +1191,14 @@ def section_caliber(site, m, cal):
             g[1].append(a)
         else:
             groups.append((key, [a]))
-    if all(not e.get("projectile_damage") for a in ammo for _, e in a["uses"]):
+    blast = all(not e.get("projectile_damage") for a in ammo for _, e in a["uses"])
+    if blast:
         groups = [((), ammo)]          # blast rounds: one effect table for the whole group
     tables = "".join(damage_table(site, m, rounds, [w for w in users if not key or w["name"] in key], explain=i == 0)
                      for i, (key, rounds) in enumerate(groups))
-    return (bar(cal, f"{len(ammo)} types", id=f"cal-{slug(cal)}") + intro + _cal_note(site, m, cal, ammo) +
-            tables + cards + overrides_table(site, m, ammo))
+    if not tables:
+        return ""
+    return bar("What each round does" if blast else "Damage by weapon", id="damage") + tables
 
 
 def _cal_note(site, m, cal, ammo):
@@ -930,8 +1217,6 @@ def _cal_note(site, m, cal, ammo):
         return ("<p>The most widely used calibre: assault rifles, machine guns, a bolt-action rifle and two "
                 "sniper rifles all fire the same 7.62mm items, but with very different quality multipliers, so "
                 "check the table for your gun.</p>")
-    if cal == "Other ammo":
-        return "<p>Ammo that belongs to one special weapon or tool.</p>"
     if cal == "Launcher rounds":
         return ("<p>Launcher rounds do their damage with a blast, not with the projectile, so the tables show "
                 "the blast. The three launcher families use different items: the "
@@ -939,6 +1224,74 @@ def _cal_note(site, m, cal, ammo):
                 f"{site.link('weapon', 'G79 Grenade Launcher')} and {site.link('weapon', 'MGR-6 Grenade Launcher')} "
                 f"fire the “Cartridge” items, and the {site.link('weapon', 'RLG-7')} has its own LG-7V round.</p>")
     return ""
+
+
+def section_cal_weapons(site, m, cal, ammo, users):
+    """Cards of the weapons that fire this calibre (icon, which rounds, experimental version)."""
+    items = []
+    for w in users:
+        std = [a for a in ammo if not a["exp_only"] and any(x is w for x, _ in a["uses"])]
+        exp = [a for a in ammo if a["exp_only"] and any(x is w for x, _ in a["firers"])]
+        sub = "Loads " + esc(_and([_lc(_short(a)) for a in std])) if std else ""
+        if exp:
+            sub += ("<br>" if sub else "") + esc(f"{exp_name(w)} also: " + _and([_lc(_short(a)) for a in exp]))
+        e = site.find("weapon", w["name"])
+        pk = w["d"].get("pack") or ""
+        items.append({"href": "~/" + e["path"] if e else "#weapons-that-use-it", "title": w["name"],
+                      "img": "~/" + e["icon"] if e and e.get("icon") and site.has_file(e["icon"]) else None,
+                      "sub": sub, "tag": "DLC" if pk.endswith("(DLC)") else "",
+                      "color": "#8a6d1f"})
+    if not items:
+        return ""
+    return (bar("Weapons that use it", f"{len(items)} weapon{'s' if len(items) != 1 else ''}") +
+            cards(items, cls="wcards") + _cross_note(site, m, cal))
+
+
+def _lc(label):
+    """'Full metal jacket' -> 'full metal jacket'; 'HEAT' stays."""
+    return label if label[:2].isupper() else label[:1].lower() + label[1:]
+
+
+def _and(words):
+    return words[0] if len(words) == 1 else ", ".join(words[:-1]) + " and " + words[-1] if words else ""
+
+
+def _short(a):
+    """Short name of a round inside its calibre: its kind ('Armour-piercing'), or the name for one of a kind."""
+    return KIND_LABEL.get(a["kind"], a["name"])
+
+
+def schem_cells(site, s):
+    """(schematic link, cost, recipe) of a crafting schematic."""
+    cur = next((c for c in site.data("gamedata")["schematics"] if c["key"] == _schem_tree(s)), None)
+    cost = "–"
+    if s.get("c") is not None:
+        if s["c"] == 0:
+            cost = "Free"
+        elif cur:
+            ic = site.img(cur["icon"].replace("assets/", "img/", 1), alt="", cls="cur", title=cur["name"])
+            unit = re.sub(r"Points\b", "Point", cur["name"]) if s["c"] == 1 else cur["name"]
+            cost = f"{fmt(s['c'])} {ic}{esc(unit)}"
+        else:
+            cost = fmt(s["c"])
+    return site.link("schematic", s["n"]), cost, esc(s.get("r") or "–")
+
+
+def section_cal_finding(site, m, cal, ammo):
+    rows = []
+    for a in ammo:
+        icon = site.img(a["icon"], cls="li")
+        name = f'<a href="#{a["id"]}">{icon}{esc(a["name"])}</a>'
+        if a["schem"]:
+            rows.append([name, *schem_cells(site, a["schem"])])
+        else:
+            rows.append([name, '<span class="dim">No schematic</span>', "–", "–"])
+    return (bar("Where to find it") +
+            "<p>The crafting schematic of each round, what it costs and what one craft takes:</p>" +
+            table(["Ammo", "Crafting schematic", "Cost", "Recipe per craft"], rows, cls="compact") +
+            "<p>Where ammo comes from:</p>" + _sources_html(site, m, ammo) +
+            f'<p class="small">Ammo box counts per region are on the <a href="~/{AMMO_PAGE}#finding">main ammo '
+            'page</a>.</p>')
 
 
 OWNER_TEXT = {"repair": "the Companion's repair tool"}   # 'Other ammo' items no weapon fires
@@ -996,19 +1349,19 @@ def damage_table(site, m, ammo, users, explain=True):
         rows = []
         for a in used:
             e = a["uses"][0][1]
-            rows.append([f'<a href="#{a["id"]}">{esc(a["name"])}</a>', firers_html(site, m, a) or "–",
+            rows.append([f'<a href="#{a["id"]}">{esc(a["name"])}</a>', firers_html(site, m, a, chips=False) or "–",
                          on_hit_html(e) or "–", rng(e.get("max_range_m"))])
         has_blast = any((a["uses"][0][1].get("on_hit") or {}).get("blast") for a in used)
-        return ("<h4>What each round does</h4><p class=\"small\">Effect on impact as the tuning files give it" +
+        return ("<p class=\"small\">Effect on impact as the tuning files give it" +
                 (" (the files do not say whether the weapon's quality multiplier also scales the blast)"
                  if has_blast else "") + ".</p>" +
                 table(["Round", "Fired by", "Effect on impact", "Max range (m)"], rows, cls="compact", num={3}))
-    heads = ["Weapon", "Pack", "Quality multiplier Q1–Q6", "Q6 version"] + \
+    heads = ["Weapon", "Quality multiplier Q1–Q6", "Q6 version"] + \
         [f'<a href="#{a["id"]}" title="{esc(a["name"])}">{esc(KIND_LABEL.get(a["kind"], a["name"]))}'
          f'{" <span class=xq>Q6</span>" if a["exp_only"] else ""}</a>' for a in used]
     rows = []
     for w in users:
-        row = [weapon_link(site, w), pack_tag(w["d"].get("pack")) or '<span class="dim">Base game</span>',
+        row = [f'<span class="wcell">{site.link("weapon", w["name"], icon=True)}</span>',
                f'<span class="mono nw">{_qmul_text(w)}</span>', "Yes" if w["exp"] else "No"]
         for a in used:
             e = next((x for ww, x in a["uses"] if ww is w), None)
@@ -1020,9 +1373,9 @@ def damage_table(site, m, ammo, users, explain=True):
             "Columns marked <span class=\"xq\">Q6</span> are experimental-only rounds: their cells show the "
             "damage from the weapon's experimental version (base × its Q6 multiplier, or its own experimental "
             "tuning where it has one), and “–” for weapons without an experimental version, which cannot fire "
-            "them. Armour and component multipliers are on each round's card.</p>" if explain else "") +
+            "them. Armour and component multipliers are in each round's own section below.</p>" if explain else "") +
             '<div class="dmgtable">' +
-            table(heads, rows, cls="compact", raw_headers=True, num=set(range(4, 4 + len(used)))) + "</div>")
+            table(heads, rows, cls="compact", raw_headers=True, num=set(range(3, 3 + len(used)))) + "</div>")
 
 
 def _group_label(rounds):
@@ -1033,8 +1386,9 @@ def _group_label(rounds):
     return ""
 
 
-def ammo_card(site, m, a):
-    """One ammo item: icon, tags, what it does and the facts."""
+def variant_section(site, m, a):
+    """One ammo variant on its calibre page: a bar with the name, the icon and the facts on one side, what it does,
+    who fires it and how to craft it on the other."""
     e = a["uses"][0][1] if a["uses"] else {}
     tags_html = tag(KIND_LABEL.get(a["kind"], "Ammo"))
     if a["exp_only"]:
@@ -1042,7 +1396,7 @@ def ammo_card(site, m, a):
     packs = {w["d"].get("pack") for w, _ in a["uses"]}
     if packs and all(p and p.endswith("(DLC)") for p in packs):
         tags_html += "".join(pack_tag(p) for p in sorted(packs))
-    facts = [("Item ID", f"<code>{a['h']}</code>"), ("Stack size", fmt(a["stack"]))]
+    facts = [("Stack size", fmt(a["stack"]))]
     blast_only = e and not e.get("projectile_damage") and e.get("on_hit")
     if e and not blast_only:      # for blast rounds the projectile numbers mean nothing
         pel = e.get("projectiles_per_shot") or 1
@@ -1057,14 +1411,14 @@ def ammo_card(site, m, a):
         facts.append(("Max range", f"{fmt(rng(e['max_range_m']))} m"))
     lines = []
     if a["firers"]:
-        lines.append("<b>Fired by</b> " + firers_html(site, m, a))
-    lines.append("<b>Crafting</b> " + (schem_html(site, a["schem"]) or
-                                       '<span class="dim">no crafting schematic in the files</span>'))
-    head = (f'<div class="ahead">{site.img(a["icon"], alt=a["name"], cls="aicon")}'
-            f'<div><h3 id="{a["id"]}">{esc(a["name"])}</h3><div>{tags_html}</div>'
-            f'<code class="small">{esc(a["raw"])}</code></div></div>')
-    return (f'<section class="acard">{head}{effect_html(site, m, a, e)}<div class="facts">{kv(facts)}</div>'
-            f'<p class="small alines">{"<br>".join(lines)}</p></section>')
+        lines.append(f'<div class="vline"><b>Fired by</b>{firers_html(site, m, a)}</div>')
+    lines.append('<div class="vline"><b>Crafting</b><span>' +
+                 (schem_html(site, a["schem"]) or '<span class="dim">no crafting schematic in the files</span>') +
+                 "</span></div>")
+    pic = site.img(a["icon"], alt=a["name"], cls="vicon")
+    return (bar(a["name"], esc(KIND_LABEL.get(a["kind"], "Ammo")), id=a["id"]) +
+            f'<div class="avar"><div class="vside"><div class="vpic">{pic}</div><div class="vtags">{tags_html}</div>'
+            f'{kv(facts)}</div><div class="vmain">{effect_html(site, m, a, e)}{"".join(lines)}</div></div>')
 
 
 # launcher rounds whose kind word means something else than on a bullet
@@ -1097,8 +1451,7 @@ def _exp_only_text(site, m, a):
     """Where a Q6-only round can be loaded: the experimental versions of its weapons, or (.32 ACP) none of them."""
     own = [(w, label) for w, label in a["firers"] if any(ww is w for ww, _ in a["uses"])]
     if own:
-        return ("<p>Experimental only: it can be loaded only into an experimental (Q6) weapon: " +
-                ", ".join(weapon_link(site, w, text=label) for w, label in own) + ".</p>")
+        return "<p>Experimental only: it can be loaded only into an experimental (Q6) weapon (see Fired by).</p>"
     names = sorted({w["name"] for w, _ in a["uses"]})
     who = (f"neither {a['cal']} weapon has" if len(names) == 2 else
            f"the {a['cal']} weapon has no" if len(names) == 1 else f"none of the {a['cal']} weapons has")
@@ -1145,10 +1498,10 @@ def effect_html(site, m, a, e):
     if not a["uses"]:
         if k == "repair":
             out.append("<p>Not fired by a weapon, so there is no damage data. The companion and its gear "
-                       "are covered under Items › Companion.</p>")
+                       f"are covered under {site.link('item', a['name'], text='Items › Companion')}.</p>")
         elif k == "battery":
-            out.append("<p>The normal weapon tuning lists no weapon for it; its numbers are in the "
-                       "experimental table below.</p>")
+            out.append("<p>The normal weapon tuning lists no weapon for it; its numbers are in "
+                       "<a href=\"#in-experimental-weapons\">In experimental weapons</a> below.</p>")
         else:
             out.append("<p>No weapon in the extracted weapon tuning lists this item, so there is no damage, "
                        "range or effect data for it. It exists in the item table with an item ID.</p>")
@@ -1180,8 +1533,7 @@ def overrides_table(site, m, ammo):
             continue
         medical = a["kind"] == "medical"
         rows.append([weapon_link(site, w, text=exp_name(w)),
-                     f'<a href="#{a["id"]}">{esc(override_name(a, e))}</a><br>'
-                     f'<code class="tiny">{esc(e["internal_name"])}</code>',
+                     f'<a href="#{a["id"]}">{esc(override_name(a, e))}</a>',
                      e.get("projectile_damage"), e.get("projectiles_per_shot"),
                      mult_html(e.get("armour_multiplier")) if e.get("armour_multiplier") is not None else "–",
                      mult_html(e.get("component_multiplier")) if e.get("component_multiplier") is not None else "–",
@@ -1193,11 +1545,11 @@ def overrides_table(site, m, ammo):
             staged.setdefault(key, (w, e["on_hit_stages"], a["kind"] == "medical", []))[3].append(override_name(a, e))
     if not rows and not same and not staged:
         return ""
-    out = "<h4>In experimental weapons</h4>"
+    out = ""
     if rows:
         out += ("<p class=\"small\">Experimental weapons carry their own tuning for some rounds. When you fire the "
                 "round from that weapon, these numbers replace the normal ones.</p>" +
-                table(["Experimental weapon", "Round / internal name", "Damage", "Pellets", "Armour ×", "Comp. ×",
+                table(["Experimental weapon", "Round", "Damage", "Pellets", "Armour ×", "Comp. ×",
                        "Falloff", "Range (m)", "Extra effect"], rows, cls="compact", num={2, 3, 7}))
     for w, rounds in same.values():
         out += (f'<p class="small">The {weapon_link(site, w, text=exp_name(w))} also has its own entry for '
@@ -1213,46 +1565,6 @@ def overrides_table(site, m, ammo):
     return out
 
 
-# loot.json ammo box names -> readable names (the raw name stays in the cell's title)
-BOX_NAMES = {
-    "Ammobox large rifle 1": "Large rifle ammo box", "Ammobox large sniper rifle 1": "Large sniper rifle ammo box",
-    "Ammobox large special explosives 1": "Large explosives ammo box",
-    "Ammobox small hunting 1": "Small hunting rifle ammo box", "Ammobox small magnum 1": "Small magnum ammo box",
-    "Ammobox small rifle 1": "Small rifle ammo box", "Ammobox small shotgun 1": "Small shotgun ammo box",
-    "Fnix ammobox large": "FNIX large ammo box", "Soviet large ammo box": "Soviet large ammo box",
-    "Soviet small ammo box": "Soviet small ammo box",
-}
-
-
-def section_finding(site, m):
-    """Ammo boxes placed in the world, by region and box type (loot.json)."""
-    loot = site.data("loot")
-    sub_idx = next((i for i, s in enumerate(loot["subs"]) if s["key"] == "loot_c_ammo"), None)
-    if sub_idx is None:
-        return ""
-    counts, total = {}, {}
-    for it in loot["items"]:
-        if it[0] != sub_idx:
-            continue
-        name, reg = loot["names"][it[3]], loot["regions"][it[4]]
-        counts.setdefault(name, {}).setdefault(reg, 0)
-        counts[name][reg] += 1
-        total[reg] = total.get(reg, 0) + 1
-    regs = [r for r, _ in REGIONS if r in total]
-    rows = []
-    for name, by in sorted(counts.items(), key=lambda x: -sum(x[1].values())):
-        rows.append([f'<span title="{esc(name)}">{esc(BOX_NAMES.get(name, name))}</span>'] +
-                    [by.get(r) for r in regs] + [sum(by.values())])
-    rows.append(["<b>All ammo boxes</b>"] + [total[r] for r in regs] + [sum(total.values())])
-    heads = ["Box"] + [site.link("region", r, text=dict(REGIONS)[r].split(" (")[0]) for r in regs] + ["Total"]
-    return (bar("Where to find ammo", id="finding") +
-            "<p>Besides crafting, ammo comes from ammo boxes (and from looting destroyed machines). The map files "
-            "place this many ammo boxes in each region; what is inside is random. Use the "
-            f"{site.link('skill', 'Salvage')} skill to get more out of each box.</p>" +
-            table(heads, rows, raw_headers=True, num=set(range(1, len(heads))), cls="compact") +
-            '<p class="small">See every box on the <a href="~/map/index.html">interactive map</a>.</p>')
-
-
 # =================================================================================================================
 # attachments page
 # =================================================================================================================
@@ -1264,14 +1576,13 @@ def build_attachments(site, m):
         if items:
             body.append(att_section(site, m, cat, items, placed))
     body.append(att_placed_section(site, m, placed))
-    body.append(att_ids_section(site, m))
     lead = (f"<p>All {len(m['att'])} weapon attachments in Generation Zero: scopes and sights, vision modules, "
             "compensators, silencers, barrel extensions and chokes, and extended magazines. For each one: which "
-            "weapons it fits (straight from the game's compatibility list), what it does, its internal name, "
-            "the item ID of every quality, and where the hand-placed ones lie in the world.</p>")
+            "weapons it fits (straight from the game's compatibility list), what it does, and where the "
+            "hand-placed ones lie in the world.</p>")
     site.page(ATT_PAGE, "Attachments", "\n".join(body), "weapons", sub="attachments", head_extra=HEAD, lead=lead,
               desc="Every Generation Zero weapon attachment: scopes, vision modules, silencers, compensators, "
-                   "extended magazines, compatible weapons and item IDs.",
+                   "extended magazines, the weapons they fit and where to find them.",
               search={"k": "Weapons", "w": "attachments scope silencer suppressor magazine compensator choke"})
 
 
@@ -1289,10 +1600,9 @@ def att_overview(site, m):
             "(Dilapidated to Special), except vision modules, which have one. Every attachment fits only the "
             "weapons in its compatibility list; the tables below show them all.</p>" +
             table(["Type", "Slot", "Attachments", "Weapons they fit", "Qualities"], rows, num={2, 3}, cls="compact") +
-            note("The game files used for this wiki list which weapon each attachment fits and its item IDs, but "
-                 "not its exact effect (zoom steps, recoil or noise reduction, extra rounds per magazine, the "
-                 "difference between qualities). The effects below are described in words for that reason.",
-                 "data"))
+            note("The game files used for this wiki list which weapon each attachment fits, but not its exact "
+                 "effect (zoom steps, recoil or noise reduction, extra rounds per magazine, the difference between "
+                 "qualities). The effects below are described in words for that reason.", "data"))
 
 
 def att_by_weapon(site, m):
@@ -1317,11 +1627,11 @@ def att_by_weapon(site, m):
                 cells.append(f'<a href="#vision-modules">All {len(items)} vision modules</a>')
             else:
                 cells.append("<br>".join(f'<a href="#{a["id"]}">{esc(a["name"])}</a>' for a in items) or "–")
-        rows.append([site.link("weapon", w["name"])] + cells)
+        rows.append([f'<span class="wcell">{site.link("weapon", w["name"], icon=True)}</span>'] + cells)
     none = [m["tool"][t] for t in sorted(m["tool"], key=int) if t not in per]
     return (bar("Attachments by weapon", id="by-weapon") +
             "<p>Find your weapon to see everything that fits it. Weapons that take no attachments at all are "
-            "listed under the table.</p>" + table(["Weapon"] + slots, rows, cls="compact matrix") +
+            "listed under the table.</p>" + table(["Weapon"] + slots, rows, cls="compact matrix attw") +
             (f"<p class=\"small\">No attachments: {', '.join(site.link('weapon', w['name']) for w in none)}.</p>"
              if none else ""))
 
@@ -1333,25 +1643,32 @@ def att_section(site, m, cat, items, placed):
             "</div>")
 
 
+def _spot_link(s, zoom=1.2):
+    """Map link for one placed attachment: only its loot category, centred on it with its popup open."""
+    return maplink(show=[s["sub"]], at=(s["x"], s["z"]), zoom=zoom, focus=s["n"])
+
+
 def att_card(site, m, a, placed):
     weapons = [m["tool"][t] for t in a["compat"] if t in m["tool"]]
     if a["quals"] == ["0"]:
-        ids = f'<span class="idq"><span class="qb q0">Single</span> <code>{a["ids"]["0"]}</code></span>'
+        quals = '<span class="qb q0">Single quality</span>'
     else:
-        ids = "".join(f'<span class="idq">{qbadge(int(q), short=True)} <code>{a["ids"][q]}</code></span>'
-                      for q in a["quals"])
-    internal = a["internal"]
-    if internal and a["quals"] != ["0"]:
-        internal += "_q1 … _q5"
-    facts = [("Nickname", esc(a["nick"])), ("Slot", esc(ATT_CATS[a["cat"]][1])),
-             ("Internal name", f"<code>{esc(internal)}</code>" if internal else None),
+        qs = [int(q) for q in a["quals"]]
+        quals = qbadge(qs[0], short=True) + ("–" + qbadge(qs[-1], short=True) if len(qs) > 1 else "")
+    where = None
+    if placed:
+        best = max(placed, key=lambda s: s["q"] or 0)
+        subs = sorted({s["sub"] for s in placed})
+        href = maplink(show=subs, at=(best["x"], best["z"]), zoom=0.6, focus=best["n"])
+        where = (f'<a href="#placed">{len(placed)} spot{"s" if len(placed) != 1 else ""}</a> · '
+                 f'<a href="{href}">map</a>')
+    facts = [("Slot", esc(ATT_CATS[a["cat"]][1])), ("Qualities", quals),
              ("Fits", ", ".join(site.link("weapon", w["name"]) for w in weapons) or "–"),
-             ("Placed in world", f'<a href="#placed">{len(placed)}</a>' if placed else None)]
+             ("Placed in world", where)]
     what = att_what(a)
     return (f'<section class="acard att"><div class="ahead">{site.img(a["icon"], alt=a["name"], cls="aicon")}'
             f'<div><h3 id="{a["id"]}">{esc(a["name"])}</h3><div class="dim small">{esc(ATT_CATS[a["cat"]][0])}'
-            f'</div></div></div>{f"<p>{what}</p>" if what else ""}{kv(facts)}'
-            f'<div class="ids"><span class="dim small">Item IDs</span>{ids}</div></section>')
+            f'</div></div></div>{f"<p>{what}</p>" if what else ""}{kv(facts)}</section>')
 
 
 def att_what(a):
@@ -1372,7 +1689,8 @@ def att_what(a):
 
 
 def placed_attachments(site, m):
-    """Attachments placed by hand in the world (loot.json): name -> [(x, z, quality, region)]."""
+    """Attachments placed by hand in the world (loot.json): attachment name -> [spot dicts]. A spot's 'n' is the
+    marker name the interactive map shows ('Handgun Silencer (Dilapidated)'), 'sub' its loot category."""
     loot = site.data("loot")
     subs = {i: s for i, s in enumerate(loot["subs"]) if s["main"] == "loot_attachments"}
     out = {}
@@ -1380,43 +1698,63 @@ def placed_attachments(site, m):
         s = subs.get(it[0])
         if not s:
             continue
-        name = re.sub(r"\s*\([^)]*\)$", "", loot["names"][it[3]])
+        raw = loot["names"][it[3]]
+        name = re.sub(r"\s*\([^)]*\)$", "", raw)
         e = site.find("attachment", name)
         key = e["key"] if e else name
-        out.setdefault(key, []).append((it[1], it[2], s.get("q"), loot["regions"][it[4]]))
+        out.setdefault(key, []).append({"x": it[1], "z": it[2], "q": s.get("q"), "region": loot["regions"][it[4]],
+                                        "sub": s["key"], "n": raw})
     return out
 
 
+def _nearest_location(site, x, z):
+    best, bd = None, None
+    for loc in site.data("map_locations")["list"]:
+        dd = math.hypot(loc["x"] - x, loc["z"] - z)
+        if bd is None or dd < bd:
+            best, bd = loc, dd
+    return best, bd
+
+
 def att_placed_section(site, m, placed):
-    rows, pts = [], []
     reg_name = dict(REGIONS)
-    for name, spots in sorted(placed.items()):
-        for x, z, q, reg in sorted(spots, key=lambda s: (s[2] or 0, s[3])):
-            e = site.find("attachment", name)
-            link = f'<a href="#{e["path"].split("#")[1]}">{esc(name)}</a>' if e else esc(name)
-            rows.append([link, qbadge(q) if q else "–", site.link("region", reg, text=reg_name.get(reg, reg)),
-                         f"{x:.0f}, {z:.0f}"])
-            pts.append((x, z, f"{name} (Q{q})"))
-    if not rows:
+    spots = []
+    for name, ss in sorted(placed.items()):
+        for s in sorted(ss, key=lambda s: (s["q"] or 0, s["region"])):
+            spots.append((name, s))
+    if not spots:
         return ""
-    mm = minimap(pts[0][0], pts[0][1], pts[0][2], markers=pts[1:], height=360) if pts else ""
+    by_att = {a["name"]: a for a in m["att"]}
+    rows, pts = [], []
+    for name, s in spots:
+        e = site.find("attachment", name)
+        at = by_att.get(e["key"]) if e else None
+        icon = site.img(at["icon"], cls="li") if at else ""
+        link = f'<a href="#{e["path"].split("#")[1]}">{icon}{esc(name)}</a>' if e else esc(name)
+        loc, dist = _nearest_location(site, s["x"], s["z"])
+        rows.append([link, (qbadge(s["q"]), s["q"]) if s["q"] else "–",
+                     site.link("region", s["region"], text=reg_name.get(s["region"], s["region"]).split(" (")[0]),
+                     site.link("location", loc["name"]) if loc else "–", round(dist) if loc else None,
+                     round(s["x"]), round(s["z"]), f'<a href="{_spot_link(s)}">Map</a>'])
+        pts.append((s["x"], s["z"], s["n"]))
+    subs = sorted({s["sub"] for _, s in spots})
+    best = max(spots, key=lambda p: p[1]["q"] or 0)[1]
+    mm = minimap(pts[0][0], pts[0][1], pts[0][2], markers=pts[1:], height=360, zoom=1, show=subs)
+    # with several pins minimap() leaves the centre out: open the full map on the best one with its popup
+    full = maplink(show=subs, at=(best["x"], best["z"]), zoom=0.6, focus=best["n"])
+    mm = re.sub(r'(<a class="mmopen" href=")[^"]*', lambda x: x.group(1) + full, mm, count=1)
+    counts = []
+    for q in sorted({s["q"] for _, s in spots if s["q"]}):
+        counts.append(f"{sum(1 for _, s in spots if s['q'] == q)} {qbadge(q)}")
+    coords = fold("Detailed coordinates",
+                  "<p>Every spot, with the nearest named map location and its distance. Coordinates are the game's "
+                  "world x / z; <b>Map</b> opens the interactive map on that spot with its popup open.</p>" +
+                  table(["Attachment", "Quality", "Region", "Nearest location", "Distance (m)", "x", "z", ""], rows,
+                        cls="compact", num={4, 5, 6}),
+                  open=False, level=3, right=f"{len(rows)} spots", id="detailed-coordinates")
     return (bar("Found in the world", f"{len(rows)} placed", id="placed") +
             "<p>Most attachments come from weapon and equipment boxes and from machines, where the contents are "
             "rolled at random. These are the ones the map files place at a fixed spot, so you can go and pick "
-            "them up. Coordinates are the game's world x, z (the same as the interactive map).</p>" +
-            mm + table(["Attachment", "Quality", "Region", "Position (x, z)"], rows, cls="compact"))
-
-
-def att_ids_section(site, m):
-    rows = []
-    for a in m["att"]:
-        cells = [a["ids"].get(q) for q in "12345"]
-        if a["quals"] == ["0"]:
-            cells = [a["ids"]["0"] + " (single)"] + [None] * 4
-        rows.append([f'<a href="#{a["id"]}">{esc(a["name"])}</a>', esc(a["nick"]), esc(a["cat"])] +
-                    [f"<code>{c}</code>" if c else None for c in cells])
-    return (bar("Item IDs", id="item-ids") +
-            "<p>For modders and save editors: the item ID of every attachment at every quality, as in the Gen0 "
-            "Editor's ID table. The nickname is the short name the editor uses.</p>" +
-            table(["Attachment", "Nickname", "Category"] + [QUALITY[q][0] for q in range(1, 6)], rows,
-                  cls="compact"))
+            f"them up: {', '.join(counts)}. " +
+            f'<a class="mapbtn" href="{maplink(show=subs)}">All placed attachments on the map</a></p>' +
+            mm + coords)

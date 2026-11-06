@@ -24,9 +24,14 @@ ORDER = ["home", "weapons", "ammo", "augments", "machines", "machine_weapons", "
          "items", "character", "modding"]
 
 
+# sections that are turned off for now: not imported, so their pages aren't built and nothing links to them
+DISABLED = {"modding"}
+
+
 def section_modules():
     import sections
-    found = [m.name for m in pkgutil.iter_modules(sections.__path__) if not m.name.startswith("_")]
+    found = [m.name for m in pkgutil.iter_modules(sections.__path__)
+             if not m.name.startswith("_") and m.name not in DISABLED]
     return sorted(found, key=lambda n: (ORDER.index(n) if n in ORDER else len(ORDER), n))
 
 

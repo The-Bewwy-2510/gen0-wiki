@@ -1,0 +1,299 @@
+{
+ "_about": "Machine pictures from the Generation Zero Wiki on Fandom (generation-zero.fandom.com), CC BY-SA; game images belong to Systemic Reaction / Avalanche Studios Group. Replace with renders from the Machine 3D Extractor when available.",
+ "images": {
+  "Firebird": {
+   "Scout": {
+    "path": "img/machines/firebird_scout.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Screenshot_2022.11.04_-_21.37.36.96_Thumbnail.png",
+    "size": [
+     480,
+     270
+    ]
+   },
+   "Soldier": {
+    "path": "img/machines/firebird_soldier.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:SoldierFirebird.webp",
+    "size": [
+     480,
+     270
+    ]
+   },
+   "Spetsnaz": {
+    "path": "img/machines/firebird_spetsnaz.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:SpetsnazFirebird.webp",
+    "size": [
+     480,
+     270
+    ]
+   }
+  },
+  "Harvester": {
+   "Prototype": {
+    "path": "img/machines/harvester_prototype.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Harvester.png",
+    "size": [
+     330,
+     330
+    ]
+   },
+   "Military": {
+    "path": "img/machines/harvester_military.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_harvester_army.png",
+    "size": [
+     444,
+     480
+    ]
+   },
+   "FNIX": {
+    "path": "img/machines/harvester_fnix.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Harvester_FNIX.png",
+    "size": [
+     452,
+     480
+    ]
+   },
+   "Apocalypse": {
+    "path": "img/machines/harvester_apocalypse.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:APOC_HARVESTER.png",
+    "size": [
+     424,
+     400
+    ]
+   }
+  },
+  "Hunter": {
+   "Prototype": {
+    "path": "img/machines/hunter_prototype.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Hunter.png",
+    "size": [
+     330,
+     330
+    ]
+   },
+   "Military": {
+    "path": "img/machines/hunter_military.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Hunter_army.jpg",
+    "size": [
+     435,
+     480
+    ]
+   },
+   "FNIX": {
+    "path": "img/machines/hunter_fnix.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Hunter_fnix.jpg",
+    "size": [
+     480,
+     479
+    ]
+   },
+   "Apocalypse": {
+    "path": "img/machines/hunter_apocalypse.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Apoc_hunter_bp.jpg",
+    "size": [
+     377,
+     480
+    ]
+   }
+  },
+  "Lynx": {
+   "Scout": {
+    "path": "img/machines/lynx_scout.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140545.png",
+    "size": [
+     411,
+     338
+    ]
+   },
+   "Soldier": {
+    "path": "img/machines/lynx_soldier.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140735.png",
+    "size": [
+     371,
+     301
+    ]
+   },
+   "Spetsnaz": {
+    "path": "img/machines/lynx_spetsnaz.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140236.png",
+    "size": [
+     480,
+     361
+    ]
+   }
+  },
+  "Reaper": {
+   "Rival": {
+    "path": "img/machines/reaper_rival.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Reaper.jpg",
+    "size": [
+     480,
+     480
+    ]
+   }
+  },
+  "Runner": {
+   "Prototype": {
+    "path": "img/machines/runner_prototype.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_runner.png",
+    "size": [
+     330,
+     330
+    ]
+   },
+   "Military": {
+    "path": "img/machines/runner_military.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Runner_army.png",
+    "size": [
+     444,
+     480
+    ]
+   },
+   "FNIX": {
+    "path": "img/machines/runner_fnix.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Runner_fnix.png",
+    "size": [
+     456,
+     480
+    ]
+   },
+   "Apocalypse": {
+    "path": "img/machines/runner_apocalypse.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Apocalypse_Runner.jpg",
+    "size": [
+     404,
+     349
+    ]
+   }
+  },
+  "Seeker": {
+   "Prototype": {
+    "path": "img/machines/seeker_prototype.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_seeker.png",
+    "size": [
+     330,
+     330
+    ]
+   },
+   "Military": {
+    "path": "img/machines/seeker_military.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_seeker_army.png",
+    "size": [
+     480,
+     440
+    ]
+   },
+   "FNIX": {
+    "path": "img/machines/seeker_fnix.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Seeker_fnix.png",
+    "size": [
+     480,
+     461
+    ]
+   }
+  },
+  "Tank": {
+   "Prototype": {
+    "path": "img/machines/tank_prototype.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank.png",
+    "size": [
+     330,
+     330
+    ]
+   },
+   "Military": {
+    "path": "img/machines/tank_military.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank_army.png",
+    "size": [
+     413,
+     480
+    ]
+   },
+   "FNIX": {
+    "path": "img/machines/tank_fnix.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank_fnix.png",
+    "size": [
+     347,
+     480
+    ]
+   },
+   "Apocalypse": {
+    "path": "img/machines/tank_apocalypse.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Tank_Apoc.png",
+    "size": [
+     480,
+     397
+    ]
+   }
+  },
+  "Tick": {
+   "Prototype": {
+    "path": "img/machines/tick_prototype.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick.png",
+    "size": [
+     330,
+     300
+    ]
+   },
+   "Military": {
+    "path": "img/machines/tick_military.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick_army.png",
+    "size": [
+     480,
+     451
+    ]
+   },
+   "FNIX": {
+    "path": "img/machines/tick_fnix.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick_fnix.png",
+    "size": [
+     480,
+     442
+    ]
+   },
+   "Apocalypse": {
+    "path": "img/machines/tick_apocalypse.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Tick-Apocalypse.png",
+    "size": [
+     463,
+     480
+    ]
+   }
+  },
+  "Vulture": {
+   "Rival": {
+    "path": "img/machines/vulture_rival.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Vulture.png",
+    "size": [
+     480,
+     279
+    ]
+   }
+  },
+  "Wolf": {
+   "Scout": {
+    "path": "img/machines/wolf_scout.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Scout_Wolf_Rival.jpg",
+    "size": [
+     480,
+     270
+    ]
+   },
+   "Soldier": {
+    "path": "img/machines/wolf_soldier.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Soldier_Class_Wolf_Rival.jpg",
+    "size": [
+     480,
+     270
+    ]
+   },
+   "Spetsnaz": {
+    "path": "img/machines/wolf_spetsnaz.webp",
+    "source": "https://generation-zero.fandom.com/wiki/File:Spetsnaz_Class_Wolf_Rival.jpg",
+    "size": [
+     480,
+     270
+    ]
+   }
+  }
+ }
+}

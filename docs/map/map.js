@@ -14,9 +14,26 @@
       try { const v = localStorage.getItem("gen0map." + k); return v == null ? d : JSON.parse(v); } catch (_) { return d; }
     },
     set(k, v) {
+      if (!persist && /^map(Enabled|Regions|Advanced)$/.test(k)) return;   // a linked view: keep the saved filters
       try { localStorage.setItem("gen0map." + k, JSON.stringify(v)); } catch (_) { /* storage unavailable */ }
     },
   };
+
+  // ------------------------------------------------------------------ links into the map
+  // index.html?show=gnomes,loc_church&region=forest&at=X,Z&zoom=0.6&focus=Name opens the map with only those
+  // categories (map/markers.json sub keys, loc_<kind> for locations, loot_* for placed loot) and regions ticked,
+  // centred on world coordinates X,Z, and with the popup of the marker called Name open. Pages like the Gen0 Wiki
+  // link here. A linked view doesn't overwrite the filters you saved, until you change one yourself.
+  const LINK = (() => {
+    const q = new URLSearchParams(location.search), list = (k) => (q.get(k) || "").split(",").map((x) => x.trim()).filter(Boolean);
+    const at = list("at").map(Number);
+    const L = { show: list("show"), region: list("region"), focus: q.get("focus") || "",
+      at: at.length === 2 && at.every(Number.isFinite) ? at : null, zoom: Number(q.get("zoom")) || 0 };
+    L.any = !!(L.show.length || L.region.length || L.at || L.focus);
+    L.loot = L.show.some((k) => k.startsWith("loot_"));
+    return L;
+  })();
+  let persist = !LINK.any;            // false while a linked view is shown: then the filters aren't saved
 
   // ------------------------------------------------------------------ map
   const MapView = (() => {
@@ -74,22 +91,54 @@
       (D.regions || []).forEach((r) => { regions[r.key] = r; regionOn[r.key] = savedR && r.key in savedR ? !!savedR[r.key] : true; });
       // every category starts closed except the regions (remembered once changed)
       collapsed = store.get("mapCollapsed2", null) || Object.fromEntries(D.mains.map((m) => [m.key, true]));
+      if (LINK.any) applyLinkFilters();
       setPanel(store.get("mapPanel", true) !== false);
       sizeIx = Math.max(0, Math.min(SIZES.length - 1, Number.isFinite(+store.get("mapIconSize2", 1)) ? +store.get("mapIconSize2", 1) : 1));
-      adv = store.get("mapAdvanced", false) === true;
+      adv = LINK.loot || store.get("mapAdvanced", false) === true;   // a link to placed loot turns Extra Locations on
       applySize(); applyAdv();
       bindPanel();
       buildPanel();
       if (adv) loadLoot();
       measure();
       fitContent();
+      if (LINK.at) centerOn(LINK.at[0], LINK.at[1], LINK.zoom || 0.6);
       bindEvents();
+      // the user changing a filter makes the view theirs: from then on it is saved as usual
+      qs("#mapPanel").addEventListener("pointerdown", () => { persist = true; }, true);
+      if (LINK.focus) (LINK.loot ? loadLoot() || Promise.resolve() : Promise.resolve()).then(() => setTimeout(focusLinked, 60));
       new ResizeObserver(() => {
         if (!stage.clientWidth || !stage.clientHeight) return;
         const ow = W, oh = H; measure();
         tx += (W - ow) / 2; ty += (H - oh) / 2; clamp(); schedule();
       }).observe(stage);
       schedule();
+    }
+
+    // ---------------- linked view (see LINK) ----------------
+    function applyLinkFilters() {
+      if (LINK.show.length) {
+        D.subs.forEach((sb) => { enabled[sb.key] = LINK.show.includes(sb.key); });
+        // open the categories that have a ticked entry, so the panel shows what is on
+        D.subs.forEach((sb) => { if (enabled[sb.key]) collapsed[sb.main] = false; });
+      }
+      if (LINK.region.length) (D.regions || []).forEach((r) => { regionOn[r.key] = LINK.region.includes(r.key); });
+    }
+    function centerOn(x, z, scale) {
+      s = Math.min(maxS, Math.max(minS, scale));
+      tx = W / 2 - (L3 / 2 + x * toL3) * s; ty = H / 2 - (L3 / 2 + z * toL3) * s;
+      clamp(); needCluster = true; schedule();
+    }
+    function focusLinked() {
+      const want = LINK.focus.toLowerCase();
+      let best = null, bd = Infinity;
+      for (const it of items) {
+        if (!isVis(it) || String(it.n).toLowerCase() !== want) continue;
+        const d = LINK.at ? Math.hypot(it.x - LINK.at[0], it.z - LINK.at[1]) : 0;
+        if (d < bd) { bd = d; best = it; }
+      }
+      if (!best) return;
+      if (!LINK.at) centerOn(best.x, best.z, LINK.zoom || 0.6);
+      render(); openPopup(best);
     }
 
     // The map locations (map/locations.json): one category right under the regions,
@@ -659,7 +708,8 @@
         D.subs = [...D.subs, ...subsL];
         subsL.forEach((sb) => {
           subs[sb.key] = sb; (subsOf[sb.main] = subsOf[sb.main] || []).push(sb);
-          enabled[sb.key] = sb.key in saved ? !!saved[sb.key] : false;
+          enabled[sb.key] = LINK.show.length ? LINK.show.includes(sb.key) : sb.key in saved ? !!saved[sb.key] : false;
+          if (enabled[sb.key] && LINK.show.length) collapsed[sb.main] = false;
         });
         mainsL.forEach((m) => { if (!(m.key in collapsed)) collapsed[m.key] = true; });
         const base = items.length;

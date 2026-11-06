@@ -27,7 +27,18 @@ img { display: block; }
 .brand { flex: none; height: 100%; padding: 0 18px; display: flex; align-items: center; gap: 10px; opacity: .95; }
 .brand img { height: 19px; width: auto; }
 .brand span { font-size: 10px; letter-spacing: .32em; font-weight: 600; opacity: .85; margin-top: 2px; }
+.topright { flex: none; height: 100%; display: flex; align-items: center; padding-right: 16px; min-width: 0; }
 .mapcoords { padding: 0 20px; font-size: 15px; color: rgba(255, 255, 255, .8); font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* link to the Gen0 Wiki, a button in the same outline style as the panel buttons */
+.toplink {
+  display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 14px;
+  border: 1px solid rgba(255, 255, 255, .5); background: rgba(0, 0, 0, .18);
+  color: rgba(255, 255, 255, .92); font-size: 13px; font-weight: 600; letter-spacing: .14em; text-decoration: none; white-space: nowrap;
+}
+.toplink svg { width: 16px; height: 16px; fill: currentColor; flex: none; }
+.toplink:hover { background: rgba(255, 255, 255, .12); border-color: #fff; color: #fff; }
+.toplink:active { transform: translateY(1px); }
+.toplink:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 
 .btn {
   background: rgba(0,0,0,.45); border: 1px solid rgba(255,255,255,.55);
@@ -224,7 +235,7 @@ img { display: block; }
 .madvcats > .msep:first-child { display: none; }
 
 /* ---------- motion: short, quiet transitions; none for people who ask for reduced motion ---------- */
-.btn, .mappanelbtn, .maptools button, .mcat-h, .msub {
+.btn, .toplink, .mappanelbtn, .maptools button, .mcat-h, .msub {
   transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, opacity .15s, filter .15s, transform .12s;
 }
 .maptools button svg { transition: fill .15s; }
@@ -236,6 +247,8 @@ img { display: block; }
 @media (max-width: 760px) {
   .topbar { height: 48px; }
   .mapcoords { display: none; }
+  .topright { padding-right: 12px; }
+  .toplink { height: 30px; padding: 0 12px; }
   .hintbar { display: none; }
   .mapview, .mapview.pclosed { grid-template-columns: 1fr; position: relative; }
   .mappanel { position: absolute; top: 0; right: 0; bottom: 0; width: min(330px, 86vw); z-index: 8; background: #05070a; transition: transform .18s ease; }

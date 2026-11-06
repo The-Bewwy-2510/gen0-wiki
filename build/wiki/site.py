@@ -36,7 +36,7 @@ NAV = [
     {"id": "home", "label": "Home", "color": "#1c5777", "path": "index.html", "subs": [
         {"id": "home", "label": "Main page", "path": "index.html"},
         {"id": "basics", "label": "Game basics", "path": "basics.html"},
-        {"id": "dlc", "label": "DLC & updates", "path": "dlc.html"},
+        {"id": "dlc", "label": "DLC", "path": "dlc.html"},
         {"id": "about", "label": "About this wiki", "path": "about.html"},
     ]},
     {"id": "weapons", "label": "Weapons", "color": "#2f4d5e", "path": "weapons/index.html", "subs": [
@@ -45,7 +45,7 @@ NAV = [
         {"id": "attachments", "label": "Attachments", "path": "weapons/attachments.html"},
         {"id": "augments", "label": "Augments & research", "path": "weapons/augments.html"},
         {"id": "skins", "label": "Weapon skins", "path": "weapons/skins.html"},
-        {"id": "quality", "label": "Quality & experimental", "path": "weapons/quality.html"},
+        {"id": "experimental", "label": "Experimental", "path": "weapons/experimental.html"},
     ]},
     {"id": "machines", "label": "Machines", "color": "#7a2a26", "path": "machines/index.html", "subs": [
         {"id": "machines", "label": "All machines", "path": "machines/index.html"},
@@ -64,8 +64,14 @@ NAV = [
         {"id": "map", "label": "Interactive map", "path": "map/index.html"},
     ]},
     {"id": "missions", "label": "Missions", "color": "#1d4039", "path": "missions/index.html", "subs": [
-        {"id": "missions", "label": "All missions", "path": "missions/index.html"},
+        {"id": "missions", "label": "Overview", "path": "missions/index.html"},
+        {"id": "arcs", "label": "Warboard arcs", "path": "missions/arcs.html"},
+        {"id": "base", "label": "Base game", "path": "missions/base-game.html"},
+        {"id": "alpine", "label": "Alpine Unrest", "path": "missions/alpine-unrest.html"},
+        {"id": "fnix", "label": "FNIX Rising", "path": "missions/fnix-rising.html"},
+        {"id": "unreleased", "label": "Unreleased", "path": "missions/unreleased.html"},
         {"id": "challenges", "label": "Challenges", "path": "missions/challenges.html"},
+        {"id": "achievements", "label": "Achievements", "path": "missions/achievements.html"},
     ]},
     {"id": "items", "label": "Items & crafting", "color": "#4d4a2c", "path": "items/index.html", "subs": [
         {"id": "items", "label": "Equipment", "path": "items/index.html"},
@@ -76,10 +82,11 @@ NAV = [
     {"id": "character", "label": "Character", "color": "#47545a", "path": "character/skills.html", "subs": [
         {"id": "skills", "label": "Skills", "path": "character/skills.html"},
         {"id": "apparel", "label": "Apparel", "path": "character/apparel.html"},
-        {"id": "vanity", "label": "Emotes, vehicles & more", "path": "character/vanity.html"},
-        {"id": "packs", "label": "Item packs", "path": "character/packs.html"},
+        {"id": "emotes", "label": "Emotes & face paint", "path": "character/emotes.html"},
+        {"id": "vehicles", "label": "Vehicles", "path": "character/vehicles.html"},
     ]},
-    {"id": "modding", "label": "Modding", "color": "#33393f", "path": "modding/index.html", "subs": [
+    # turned off for now (not in the menus and not built: build.py DISABLED); the module stays in build/sections
+    {"id": "modding", "label": "Modding", "color": "#33393f", "path": "modding/index.html", "hidden": True, "subs": [
         {"id": "modding", "label": "Overview", "path": "modding/index.html"},
         {"id": "tools", "label": "Gen0 tools", "path": "modding/tools.html"},
         {"id": "console", "label": "Console & VR mod", "path": "modding/console.html"},
@@ -207,6 +214,51 @@ def bar(title, right="", id=None, level=2):
     return f'<h{level} class="wbar"{i}><span>{esc(title)}</span>{f"<small>{right}</small>" if right else ""}</h{level}>'
 
 
+def fold(title, body, open=False, right="", id=None, level=2, cls=""):
+    """A collapsible section: the white bar (level 2, listed in the contents bar) or a smaller sub bar (level 3)
+    that opens and closes the body. Closed by default. A contents-bar link or a #link to it opens it."""
+    i = esc(id or slug(title))
+    head = (f'<h2 class="wbar" id="{i}"><span>{esc(title)}</span>{f"<small>{right}</small>" if right else ""}</h2>'
+            if level == 2 else
+            f'<h3 class="wbar3" id="{i}"><span>{esc(title)}</span>{f"<small>{right}</small>" if right else ""}</h3>')
+    return (f'<details class="fold l{level} {cls}"{" open" if open else ""}><summary>{head}</summary>'
+            f'<div class="foldbody">{body}</div></details>')
+
+
+def panel(title, body, cls=""):
+    """A box for the right-hand column, under the infobox (site.page(side=[...]))."""
+    return f'<section class="sidepanel {cls}"><div class="ibh">{esc(title)}</div><div class="spb">{body}</div></section>'
+
+
+def switcher(views, cls="", extra=""):
+    """Picture (or any HTML) you can switch between with buttons: views = [(label, html)]; extra = HTML added to the
+    button row (e.g. a disabled 3D viewer button)."""
+    panes = "".join(f'<div class="swpane{" on" if i == 0 else ""}">{h}</div>' for i, (l, h) in enumerate(views))
+    btns = "".join(f'<button type="button" class="{"on" if i == 0 else ""}">{esc(l)}</button>'
+                   for i, (l, h) in enumerate(views))
+    return f'<div class="switcher {cls}"><div class="swpanes">{panes}</div><div class="swbtns">{btns}{extra}</div></div>'
+
+
+def maplink(show=(), region=(), at=None, zoom=None, focus=None):
+    """URL of the interactive map showing only these categories / regions, centred on at=(x, z), with the popup
+    of the marker named focus open. show: markers.json sub keys ('gnomes', 'sch_ammo', 'playersafehouses',
+    'controlpoints', 'relaybeacons' ...), 'loc_<kind>' for locations ('loc_church'), loot.json sub keys
+    ('loot_w_q5' ...). region: region keys."""
+    from urllib.parse import quote
+    q = []
+    if show:
+        q.append("show=" + ",".join(show))
+    if region:
+        q.append("region=" + ",".join(region))
+    if at:
+        q.append(f"at={round(at[0], 1)},{round(at[1], 1)}")
+    if zoom:
+        q.append(f"zoom={zoom}")
+    if focus:
+        q.append("focus=" + quote(str(focus)))
+    return "~/map/index.html" + ("?" + "&amp;".join(q) if q else "")
+
+
 def note(html_text, kind="info", title=None):
     """Callout. kind: info | warn | fix (a correction of outdated info) | data (about where numbers come from)."""
     t = {"info": "Note", "warn": "Heads up", "fix": "Corrected", "data": "From the game files"}.get(kind, kind)
@@ -233,13 +285,25 @@ def kv(rows):
     return '<dl class="kv">' + "".join(f"<dt>{esc(k)}</dt><dd>{v}</dd>" for k, v in rows if v not in (None, "")) + "</dl>"
 
 
-def minimap(x, z, label="", zoom=3, height=260, markers=None):
+def minimap(x, z, label="", zoom=3, height=260, markers=None, show=(), region=(), focus=None, small=False,
+            text="", map_zoom=None):
     """A small piece of the world map centred on world coordinates x, z (the same units as the interactive map and
-    the game's own coordinates). markers: optional extra [(x, z, label)]. Drawn by wiki.js from docs/map tiles."""
+    the game's own coordinates). markers: optional extra [(x, z, label)]. Drawn by wiki.js from docs/map tiles.
+    show / region / focus: the filters the 'Open the full map' button applies (see maplink()), so the full map
+    shows the same markers. small=True: a compact square map with `text` (HTML) to its right - for a map that is
+    only an overview, placed at the end of a page."""
     pts = [(x, z, label)] + list(markers or [])
     data = esc(json.dumps([[round(a, 1), round(b, 1), c] for a, b, c in pts]))
+    one = not markers
+    href = maplink(show, region, at=(x, z) if one else None, zoom=map_zoom or (0.6 if one else None),
+                   focus=focus if focus is not None else (label if one and show else None))
+    if small:
+        size = min(height, 240)
+        return (f'<div class="mmrow"><div class="minimap small" data-pts="{data}" data-zoom="{zoom}" '
+                f'style="height:{size}px;width:{size}px"><a class="mmopen" href="{href}">Full map</a></div>'
+                f'<div class="mmtext">{text}</div></div>')
     return (f'<div class="minimap" data-pts="{data}" data-zoom="{zoom}" style="height:{height}px">'
-            f'<a class="mmopen" href="~/map/index.html">Open the full map</a></div>')
+            f'<a class="mmopen" href="{href}">Open the full map</a></div>')
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -324,7 +388,7 @@ class Site:
 
     # ---------------------------------------------------------------- pages
     def page(self, path, title, body, section, sub=None, crumbs=None, desc="", infobox_html="", toc=True,
-             kind=None, search=None, wide=False, head_extra="", lead=""):
+             kind=None, search=None, wide=False, head_extra="", lead="", side=None):
         """Write one page.
 
         path      file path relative to the site root, e.g. 'weapons/n9-handgun.html'
@@ -339,7 +403,10 @@ class Site:
         search    False to keep the page out of the search index (pages registered with site.register are
                   already in it); or a dict(k=kind, w=keywords) to add it
         wide      no max width for the text column (big tables)
-        lead      intro paragraph(s) shown under the title, above the infobox
+        lead      intro paragraph(s) shown under the title
+        side      HTML (or a list of HTML blocks, e.g. panel()) for the right-hand column, under the infobox.
+                  The contents bar (every h2 bar and level-2 fold of the body) sits at the bottom of that column
+                  and stays on screen while you scroll.
         """
         nav = NAV_BY_ID[section]
         if sub is None:
@@ -348,15 +415,19 @@ class Site:
         root = "../" * depth
         heads = re.findall(r'<h2 class="wbar" id="([^"]+)"><span>(.*?)</span>', body)
         toc_html = ""
-        if toc and len(heads) >= 3:
-            toc_html = '<nav class="toc"><div class="toch">Contents</div>' + "".join(
+        if toc and len(heads) >= 2:
+            toc_html = '<nav class="toc" aria-label="Contents"><div class="toch">Contents</div>' + "".join(
                 f'<a href="#{i}">{t}</a>' for i, t in heads) + "</nav>"
+        if isinstance(side, (list, tuple)):
+            side = "".join(x for x in side if x)
+        side = side or ""
+        has_rail = bool(infobox_html or side or toc_html)
         crumbs = [(nav["label"], "~/" + nav["path"])] + list(crumbs or [])
         crumb_html = '<div class="crumbs">' + " <span>/</span> ".join(
             f'<a href="{esc(u)}">{esc(l)}</a>' for l, u in crumbs) + "</div>"
         tabs = "".join(
             f'<a class="tab{" on" if n["id"] == section else ""}" href="~/{n["path"]}">{esc(n["label"])}</a>'
-            for n in NAV)
+            for n in NAV if not n.get("hidden"))
         subs = "".join(
             f'<a class="stab{" on" if s["id"] == sub else ""}" href="~/{s["path"]}">{esc(s["label"])}</a>'
             for s in nav["subs"])
@@ -364,8 +435,8 @@ class Site:
         doc = TEMPLATE.format(
             title=esc(title), site=SITE_NAME, desc=esc(desc or f"{title} - {GAME} wiki"), color=nav["color"],
             tabs=tabs, subs=subs, crumbs=crumb_html, kind=kind_html, h1=esc(title), lead=lead,
-            infobox=infobox_html, toc=toc_html, body=body, wide=" wide" if wide else "",
-            hasbox=" hasbox" if infobox_html else "", head_extra=head_extra, section=section)
+            infobox=infobox_html, side=side, toc=toc_html, body=body, wide=" wide" if wide else "",
+            hasbox=" hasrail" if has_rail else "", head_extra=head_extra, section=section)
         doc = re.sub(r'(href|src|data-src|data-root|action)="~/', lambda m: f'{m.group(1)}="{root}', doc)
         doc = doc.replace("url(~/", f"url({root}")
         dst = os.path.join(self.out, path)
@@ -433,7 +504,7 @@ TEMPLATE = """<!doctype html>
 <link rel="icon" href="~/assets/app.ico">
 <link rel="preload" href="~/assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="~/assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="~/assets/wiki.css?v=1">
+<link rel="stylesheet" href="~/assets/wiki.css?v=2">
 {head_extra}
 </head>
 <body data-section="{section}" style="--bar:{color}" data-root="~/">
@@ -446,20 +517,19 @@ TEMPLATE = """<!doctype html>
 </header>
 <nav class="subbar">{subs}</nav>
 <main class="content{wide}{hasbox}">
-  {crumbs}
+  <div class="head">{crumbs}
   {kind}<h1>{h1}</h1>
-  {infobox}
-  <div class="lead">{lead}</div>
-  {toc}
+  <div class="lead">{lead}</div></div>
+  <aside class="rail"><div class="railtop">{infobox}{side}</div>{toc}</aside>
   <article class="body">
 {body}
   </article>
 </main>
 <footer class="hintbar">
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
-  <span class="fine">Fan-made. Data read from the game files with the <a href="https://github.com/The-Bewwy-2510/gen0-tools">Gen0 tools</a>. Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
+  <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="~/about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="~/assets/wiki.js?v=1"></script>
+<script src="~/assets/wiki.js?v=2"></script>
 </body>
 </html>
 """

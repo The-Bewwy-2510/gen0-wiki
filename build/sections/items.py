@@ -1,20 +1,28 @@
 """Items & crafting tab: equipment, crafting materials, the schematic trees and the machine companion.
 
 Pages
-    items/index.html        stock.json group 'items' (equipment) by sub group, with the schematic that crafts each
-                            item, the game's own description of it and how many lie placed in the world
-    items/materials.html    stock.json group 'materials': which schematics use each one and where it lies placed
-    items/schematics.html   schematics.json: every tree laid out in paths like the game's SCHEMATICS menu, with
-                            the currency of each tree (gamedata.json 'schematics') and a full table per tree
-    items/companion.html    the machine companion: its stock items, the companion armor tree and the companion
-                            cosmetics of vanity.json (paint jobs, light kits, voice boxes, modules, weapons, tricks)
+    items/index.html        stock.json group 'items' (equipment), one collapsed fold per inventory group, with the
+                            schematic that crafts each item, the game's own description of it and how many lie placed
+                            in the world (linked to the map with that item's loot filter). Keys and quest items are
+                            left to world/keys.html (collectibles section), companion gear to items/companion.html.
+    items/materials.html    stock.json group 'materials': one overview table (group, stack, how many schematics use
+                            it and how much), tips, the placed pickups per region and a small map of them, last.
+    items/schematics.html   schematics.json: every tree laid out in paths like the game's SCHEMATICS menu, with the
+                            currency of each tree (gamedata.json 'schematics'); the full table of each group sits in a
+                            collapsed 'Details' fold under its paths. The schematic point pickups and their map last.
+    items/companion.html    the machine companion: getting it, its gear (side panel), the companion armor tree (one
+                            fold per kind; the schematics page shows only its paths and links here), the companion cosmetics of vanity.json (one fold per type), tricks, packs.
+
+Layout v2 (build/SECTIONS.md): no internal names or hashes are printed; they stay search aliases of the registry.
 
 Kinds registered
     item        key = stock.json name (a second item with the same name is registered by internal name);
-                aliases = internal name, item hash
+                aliases = internal name, item hash. Keys and quest items point at their entry on the keys page of
+                the collectibles section (kind 'key'), when it has one.
     material    key = stock.json name; aliases = internal name, item hash
     schematic   key = schematic name (the lowest rank when several ranks share a name, the others by internal
-                name); aliases = hash, internal name 'k', '<name> (rank N)'. The tree keys ('apparel', 'ammo', ...)
+                name), pointing at items/schematics.html#s-..., the companion armor at items/companion.html#c-...;
+                aliases = hash, internal name 'k', '<name> (rank N)'. The tree keys ('apparel', 'ammo', ...)
                 are registered too, as anchors of the trees.
 
 Data
@@ -33,9 +41,10 @@ Data
 import collections
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, bar, note, qbadge, tag, REGIONS
+from wiki.site import (esc, slug, norm, fmt, table, bar, fold, panel, note, qbadge, tag, infobox, maplink, minimap,
+                       REGIONS)
 
-CSS = '<link rel="stylesheet" href="~/assets/items.css">'
+HEAD = '<link rel="stylesheet" href="~/assets/items.css"><script src="~/assets/items.js" defer></script>'
 REGION_NAME = dict(REGIONS)
 REGION_KEYS = [k for k, _ in REGIONS]
 REGION_SHORT = {k: n.split(" (")[0] for k, n in REGIONS}
@@ -55,55 +64,43 @@ EQUIP_GROUPS = [
     ("Other", "other", "The two items the game files don't put in any of the groups above."),
 ]
 KEYS_GROUP = "Keys and quest items"
-# Developer test entries of the item list (not obtainable in the game; key_testkey_01 is left out of the editor's
-# add menu, 'add': 0).
-TEST_ITEMS = {"key_testkey_01"}
 COMPANION_GROUP = "Companion"
 
 MAT_GROUPS = [
     ("Raw materials", "raw", "Basic metals, wood and phosphorus, picked up in the world or salvaged from machines."),
     ("Fabricated", "fab", "Processed materials such as adhesive, textile and explosive."),
-    ("Alloys", "alloy", "Steel and the three refined alloys. The refined alloys are what the higher ranks of the "
-                        "apparel tree, the experimental ammo and some companion armor ask for."),
+    ("Alloys", "alloy", "Steel and the three refined alloys."),
     ("Components", "comp", "Ultracapacitors and weapon parts."),
 ]
 
-# Short descriptions of items that no schematic describes. Only plain facts: the names, the internal names and the
-# group the game files put them in. Everything else on the equipment page is the game's own schematic text.
+# Short descriptions of items that no schematic describes. Only plain facts: the names and the group the game files
+# put them in. Everything else on the equipment page is the game's own schematic text.
 MANUAL_DESC = {
     "equipment_apple": "Listed with the medical items. It shares its icon with the Semla.",
-    "equipment_consumable_food_semla_01": "A Swedish cream bun (the icon file is named after <i>Fettisdagen</i>, "
-                                          "Shrove Tuesday). The game files list it with the medical items.",
+    "equipment_consumable_food_semla_01": "A Swedish cream bun (its icon is named after <i>Fettisdagen</i>, Shrove "
+                                          "Tuesday). The game files list it with the medical items.",
     "equipment_grenade_holy_01": "The name suggests a joke grenade, a nod to Monty Python's Holy Hand Grenade. A "
                                  "stack holds only one.",
     "equipment_snowball_03": "A snowball to throw.",
-    "snowball_dispenser_01_held": "A pile of snow to carry (internal name <code>snowball_dispenser_01_held</code>: "
-                                  "the held version of a snowball dispenser).",
-    "equipment_distraction_firework_box_01": "The game files list it with the lures and distractions (internal name "
-                                             "<code>distraction_firework_box</code>).",
-    "equipment_distraction_firework_box_02": "The internal name makes it a second version of the Firework Box "
-                                             "(<code>firework_box_02</code>), named for Lunar New Year.",
-    "equipment_lure_commarray_01": "The internal name <code>lure_commarray_01</code> suggests a lure built from a "
-                                   "communication array; Light is the first of three sizes.",
-    "equipment_lure_commarray_02": "The internal name <code>lure_commarray_02</code> suggests a lure built from a "
-                                   "communication array; Medium is the second of three sizes.",
-    "equipment_lure_commarray_03": "The internal name <code>lure_commarray_03</code> suggests a lure built from a "
-                                   "communication array; Heavy is the third of three sizes.",
-    "equipment_emp_batterypack_small_01": "Its internal name (<code>emp_batterypack</code>) puts it in the same "
-                                          "family as the Car Battery EMP.",
-    "equipment_emp_batterypack_medium_01": "Its internal name (<code>emp_batterypack</code>) puts it in the same "
-                                           "family as the Car Battery EMP.",
-    "equipment_emp_batterypack_large_01": "Its internal name (<code>emp_batterypack</code>) puts it in the same "
-                                          "family as the Car Battery EMP.",
+    "snowball_dispenser_01_held": "A pile of snow to carry: the held version of a snowball dispenser.",
+    "equipment_distraction_firework_box_01": "The game files list it with the lures and distractions.",
+    "equipment_distraction_firework_box_02": "A second version of the Firework Box, named for Lunar New Year.",
+    "equipment_lure_commarray_01": "Going by the game files, a lure built from a communication array; Light is the "
+                                   "first of three sizes.",
+    "equipment_lure_commarray_02": "Going by the game files, a lure built from a communication array; Medium is the "
+                                   "second of three sizes.",
+    "equipment_lure_commarray_03": "Going by the game files, a lure built from a communication array; Heavy is the "
+                                   "third of three sizes.",
+    "equipment_emp_batterypack_small_01": "The game files put it in the same family as the Car Battery EMP.",
+    "equipment_emp_batterypack_medium_01": "The game files put it in the same family as the Car Battery EMP.",
+    "equipment_emp_batterypack_large_01": "The game files put it in the same family as the Car Battery EMP.",
     "equipment_optics_binoculars_01": "Binoculars (8× magnification, 42 mm lenses, as the name says).",
     "equipment_optics_rangefinder_binoculars_01": "Binoculars with a rangefinder (7×42).",
     "equipment_optics_rangefinder_01": "A rangefinder (5×30).",
-    "equipment_optics_camera_01": "A camera; its internal name (<code>optics_camera</code>) puts it in the optics "
-                                  "family with the binoculars.",
+    "equipment_optics_camera_01": "A camera; the game files put it in the optics family with the binoculars.",
     "equipment_flashlight_01": "A hand-held light.",
-    "equipment_pest_01": "The icon file calls it a <i>friendly pest</i>, which suggests a pod with a Tick on your "
-                         "side.",
-    "equipment_gnome_pest_01": "The icon file calls it a <i>friendly gnome pest</i>; going by that, a garden-gnome "
+    "equipment_pest_01": "The icon calls it a <i>friendly pest</i>, which suggests a pod with a Tick on your side.",
+    "equipment_gnome_pest_01": "The icon calls it a <i>friendly gnome pest</i>; going by that, a garden-gnome "
                                "variant of the Tick Pod.",
     "equipment_comp_armor_repairpack": "Repairs your companion's armor.",
     "equipment_vision_module_nv": "Low-light (night) vision.",
@@ -113,7 +110,7 @@ MANUAL_DESC = {
     "equipment_vision_module_hv_xr": "Infrared and object-penetrating vision in one module.",
     "equipment_vision_module_nv_xr": "Low-light and object-penetrating vision in one module.",
     "equipment_vision_module_hv_nv_xr": "All three vision modes in one module.",
-    "comp_spawner": "The item behind your machine companion. See the companion page.",
+    "comp_spawner": "The item behind your machine companion.",
     "equipment_comp_repairgun_ammo": "Ammo for the repair tool that mends your companion; the game files list it "
                                      "with the ammo.",
 }
@@ -152,7 +149,6 @@ LOCK_FLAG = {  # vanity.json 'l' -> (label, css class, explanation)
     "UD": ("DLC", "dlc", "comes with a content pack (DLC)"),
     "LD": ("DLC · locked", "dlc", "from a content pack (DLC), and locked until earned"),
 }
-ARMOR_TYPES = ["runner", "stealth", "aggro", "ballistic", "concussive", "retardant"]
 # What each armor kind is for, going by its name and how it plays (the game files hold no protection values).
 ARMOR_DESC = {
     "runner": "The basic all-round armor plate.",
@@ -163,6 +159,15 @@ ARMOR_DESC = {
     "retardant": "Resists fire.",
 }
 TREE_ICON = "img/currencies/{}.png"
+
+
+def _alloc(used, base):
+    """A page-unique anchor id: base, base-2, base-3 ..."""
+    a, i = base, 2
+    while a in used:
+        a, i = f"{base}-{i}", i + 1
+    used.add(a)
+    return a
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -197,10 +202,51 @@ class Model:
             for amount, name, ref in self.recipes[s["h"]]:
                 if ref and ref[0] in ("material", "item"):
                     self.uses[ref[1]["raw"]].append((s, amount))
-        self.loot = self._loot()
+        self.loot, self.loot_keys, self.loot_pts = self._loot()
         self.dlc_packs = self._dlc_packs()                              # schematic hash -> [DLC pack names]
         self.vanity = site.data("vanity")
-        self.anchor = {}                                                 # stock raw -> path#anchor (registered)
+        self._anchors()
+
+    # ---------------------------------------------------------------- readable anchors (no internal names)
+    def _anchors(self):
+        """Page anchors from the names: items/index.html#i-<name>, items/companion.html#c-<name>,
+        items/materials.html#m-<name>, items/schematics.html#s-<name>[-<rank>]."""
+        self.anchor = {}            # stock raw -> path#anchor
+        self.sch_id = {}            # schematic hash -> anchor id on the schematics page
+        used = collections.defaultdict(set)
+        for t in self.trees:
+            for s in self.tree_items(t):
+                base = "s-" + slug(s["n"]) + (f"-{s['q']}" if s["t"] == "apparel" else "")
+                self.sch_id[s["h"]] = _alloc(used["s"], base)
+        for s in self.schem:        # schematics outside every tree (none today)
+            if s["h"] not in self.sch_id:
+                self.sch_id[s["h"]] = _alloc(used["s"], "s-" + slug(s["n"]))
+        for e in sorted(self.items, key=lambda e: (e["name"].lower(), e["raw"])):
+            if e["sub"] == KEYS_GROUP:
+                continue
+            if e["sub"] == COMPANION_GROUP:
+                sc = self.schem_for_raw.get(e["raw"])     # the armor items share one name per kind: use the schematic's
+                name = sc["n"] if sc and sc["t"] == "companion" else e["name"]
+                self.anchor[e["raw"]] = "items/companion.html#" + _alloc(used["c"], "c-" + slug(name))
+            else:
+                self.anchor[e["raw"]] = "items/index.html#" + _alloc(used["i"], "i-" + slug(e["name"]))
+        juice = self.by_raw.get("equipment_comp_repairgun_ammo")
+        if juice:
+            self.anchor[juice["raw"]] = "items/companion.html#" + _alloc(used["c"], "c-" + slug(juice["name"]))
+        for e in sorted(self.materials, key=lambda e: e["name"]):
+            self.anchor[e["raw"]] = "items/materials.html#" + _alloc(used["m"], "m-" + slug(e["name"]))
+
+    def sch_url(self, s):
+        """Where a schematic is shown (path#id): the companion armor on the Companion page, the rest on the
+        Schematics page."""
+        p = self.product.get(s["h"])
+        if s["t"] == "companion" and p and self.anchor.get(p["raw"], "").startswith("items/companion.html#"):
+            return self.anchor[p["raw"]]
+        return "items/schematics.html#" + self.sch_id[s["h"]]
+
+    def aid(self, raw):
+        """The anchor id (without the page) of a stock entry."""
+        return self.anchor[raw].split("#", 1)[1]
 
     # ---------------------------------------------------------------- schematics
     def _product(self, s):
@@ -288,11 +334,14 @@ class Model:
 
     # ---------------------------------------------------------------- placed loot
     def _loot(self):
-        """stock raw -> Counter(region -> placed pickups) for the loot_items / loot_materials subs of loot.json.
-        A sub is matched to the stock item by its name (the 'Radio' sub carries the Field Radio's internal name
-        in the data, but its name and count are those of the plain Radio)."""
+        """For the loot_items / loot_materials subs of loot.json: stock raw -> Counter(region -> placed pickups),
+        stock raw -> [loot.json sub keys] (the map filters) and stock raw -> [(x, z)]. A sub is matched to the stock
+        item by its name (the 'Radio' sub carries the Field Radio's internal name in the data, but its name and
+        count are those of the plain Radio)."""
         lo = self.site.data("loot")
         out = collections.defaultdict(collections.Counter)
+        keys = collections.defaultdict(list)
+        pts = collections.defaultdict(list)
         sub_item = {}
         for i, sb in enumerate(lo["subs"]):
             if sb["main"] not in ("loot_items", "loot_materials"):
@@ -301,12 +350,14 @@ class Model:
             e = hits[0] if hits else self.by_raw.get(sb.get("item"))
             if e:
                 sub_item[i] = e["raw"]
+                keys[e["raw"]].append(sb["key"])
         for row in lo["items"]:
             raw = sub_item.get(row[0])
             if raw:
                 y = row[5] if len(row) > 5 else None
                 out[raw][lo["regions"][row[4]]] += len(y) if isinstance(y, list) else 1
-        return out
+                pts[raw].append((row[1], row[2]))
+        return out, keys, pts
 
     def placed(self, raw):
         return sum(self.loot.get(raw, {}).values())
@@ -332,6 +383,7 @@ def plural(n, one, many=None):
 
 def and_list(parts):
     """['a', 'b', 'c'] -> 'a, b and c'."""
+    parts = list(parts)
     return ", ".join(parts[:-1]) + " and " + parts[-1] if len(parts) > 1 else "".join(parts)
 
 
@@ -349,20 +401,12 @@ def dlc_tags(site, m, s):
     return " ".join(out)
 
 
+def icon_path(e):
+    return e["icon"].replace("assets/", "img/", 1) if e and e.get("icon") else ""
+
+
 def stock_icon(site, e, cls="ii"):
-    return site.img(e["icon"].replace("assets/", "img/", 1), alt="", cls=cls) if e and e.get("icon") else ""
-
-
-def sch_anchor(s):
-    return "s-" + slug(s["k"])
-
-
-def item_anchor(e):
-    return "i-" + slug(e["raw"])
-
-
-def mat_anchor(e):
-    return "m-" + slug(e["raw"])
+    return site.img(icon_path(e), alt="", cls=cls) if e and e.get("icon") else ""
 
 
 def sch_link(site, s, text=None):
@@ -399,7 +443,7 @@ def recipe_html(site, m, s):
 def game_text(d):
     """A schematic description as the item's description: 'Item crafting schematic that makes simple first aid
     kits that ...' -> 'Simple first aid kits that ...'. 'PROPERTIES: - X: ...' gets a line of its own."""
-    t = re.sub(r"^Apparel crafting schematic that makes ", "Makes ", d.strip())     # 'Makes pants more ...'
+    t = re.sub(r"^Apparel crafting schematic that ", "", d.strip())     # 'makes pants more ...', 'reduces ...'
     t = re.sub(r"^(Experimental )?(Item|Ammo)( crafting)? schematic that makes (an? )?", "", t)
     t = t[:1].upper() + t[1:]
     t = esc(t)
@@ -429,12 +473,12 @@ def pack_link(site, p):
         return f'<a href="~/{esc(e["path"])}">{esc(e["title"])}</a>'
     site.url("pack", str(p))   # records the missing target in the build report
     base = site.data("vanity")["base_pack"]
-    return "Base game" if p == base else f"Content pack <code>{p}</code>"
+    return "Base game" if p == base else "A content pack"
 
 
-def row_table(headers, rows, attrs, cls="", num=None):
+def row_table(headers, rows, attrs, cls="", num=None, sortable=True):
     """table() with attributes on each <tr> (anchors, filter tags): attrs[i] is the attribute string of row i."""
-    html = table(headers, rows, cls=cls, num=num)
+    html = table(headers, rows, cls=cls, num=num, sortable=sortable)
     # a cell that starts with '<!--v:N-->' sorts by N (a number followed by more text)
     html = re.sub(r'<td class="n"><!--v:(-?[\d.]+)-->', r'<td class="n" data-v="\1">', html)
     head, body = html.split("<tbody>", 1)
@@ -442,9 +486,34 @@ def row_table(headers, rows, attrs, cls="", num=None):
     return head + "<tbody>" + parts[0] + "".join(f"<tr{attrs[i]}>" + p for i, p in enumerate(parts[1:]))
 
 
-def region_counts(c):
-    """'Forest 67 · Himfjäll 57 · ...' (biggest first)."""
-    return " · ".join(f"{esc(REGION_SHORT.get(r, r))} {n}" for r, n in c.most_common())
+def region_counts(c, keys=None):
+    """'Forest 67 · Himfjäll 57 · ...' (biggest first); with keys (loot.json sub keys) each number opens the map
+    with that loot in that region."""
+    out = []
+    for r, n in c.most_common():
+        num = f'<a href="{maplink(show=keys, region=[r])}" title="Show on the map">{n}</a>' if keys else str(n)
+        out.append(f'<span class="rc">{esc(REGION_SHORT.get(r, r))} {num}</span>')
+    return " · ".join(out)
+
+
+def keys_page(site, m):
+    """URL of the keys page of the collectibles section (found through any key it registers), or None."""
+    for e in m.items:
+        if e["sub"] == KEYS_GROUP:
+            k = site.find("key", e["raw"])
+            if k:
+                return "~/" + k["path"].split("#")[0]
+    return None
+
+
+def see_also(site, links):
+    """Side panel of related pages: links = [(html link, one-line note)]."""
+    lis = "".join(f"<li>{a}<span class=\"dim\"> · {t}</span></li>" for a, t in links if a)
+    return panel("See also", f'<ul class="seealso">{lis}</ul>')
+
+
+def a(url, text):
+    return f'<a href="{esc(url)}">{esc(text)}</a>' if url else esc(text)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -453,32 +522,29 @@ def region_counts(c):
 def collect(site):
     m = model(site)
     for e in sorted(m.items, key=lambda e: e["raw"]):
-        if e["sub"] == COMPANION_GROUP:
-            path = "items/companion.html#c-" + slug(e["raw"])
-        else:
-            path = "items/index.html#" + item_anchor(e)
-        m.anchor[e["raw"]] = path
         key = e["name"]
         if site.find("item", key):   # a second item with the same name (armor qualities, 'Storage Key')
             key = e["raw"]
+        if e["sub"] == KEYS_GROUP:
+            # keys and quest items live on the keys page of the collectibles section
+            k = site.find("key", e["raw"])
+            if k:
+                site.register("item", key, k["path"], e["name"], icon=icon_path(e), aliases=[e["raw"], str(e["h"])],
+                              search=False)
+            continue
         s = m.schem_for_raw.get(e["raw"])
         desc = f"{e['sub']} · stack {e['stack']}" + (f" · crafted with the {s['n']} schematic" if s else "")
-        site.register("item", key, path, e["name"], icon=e["icon"].replace("assets/", "img/", 1), desc=desc,
+        site.register("item", key, m.anchor[e["raw"]], e["name"], icon=icon_path(e), desc=desc,
                       aliases=[e["raw"], str(e["h"])], keywords=f"item equipment {e['raw']} {e['sub']}",
                       search=key == e["name"])
     juice = m.by_raw.get("equipment_comp_repairgun_ammo")   # ammo in the item list, but companion gear
     if juice:
-        path = "items/companion.html#c-" + slug(juice["raw"])
-        m.anchor[juice["raw"]] = path
-        site.register("item", juice["name"], path, juice["name"], icon=juice["icon"].replace("assets/", "img/", 1),
+        site.register("item", juice["name"], m.anchor[juice["raw"]], juice["name"], icon=icon_path(juice),
                       desc=f"Companion repair tool ammo · stack {juice['stack']}",
-                      aliases=[juice["raw"], str(juice["h"])],
-                      keywords=f"item companion repair {juice['raw']}")
+                      aliases=[juice["raw"], str(juice["h"])], keywords=f"item companion repair {juice['raw']}")
     for e in m.materials:
-        path = "items/materials.html#" + mat_anchor(e)
-        m.anchor[e["raw"]] = path
         n_use = len(m.uses.get(e["raw"], []))
-        site.register("material", e["name"], path, e["name"], icon=e["icon"].replace("assets/", "img/", 1),
+        site.register("material", e["name"], m.anchor[e["raw"]], e["name"], icon=icon_path(e),
                       desc=f"Crafting material ({e['sub']}) · used by {n_use} schematics · stack {e['stack']}",
                       aliases=[e["raw"], str(e["h"])], keywords=f"material crafting {e['raw']} {e['sub']}")
     for t in m.trees:
@@ -488,7 +554,7 @@ def collect(site):
         key = s["n"] if not site.find("schematic", s["n"]) else s["k"]
         aliases = [str(s["h"]), s["k"]] + ([f"{s['n']} (rank {s['q']})"] if s["t"] == "apparel" else [])
         title = s["n"] + (f" (rank {s['q']})" if s["t"] == "apparel" else "")
-        site.register("schematic", key, f"items/schematics.html#{sch_anchor(s)}", title,
+        site.register("schematic", key, m.sch_url(s), title,
                       icon="img/schematics/" + s["i"], aliases=aliases,
                       desc=f"{m.tree_of(s)['name']} schematic · {s['c']} points · {s['r']}",
                       keywords=f"schematic crafting recipe {s['k']}", search=key == s["n"])
@@ -505,12 +571,21 @@ def build(site):
 # ---------------------------------------------------------------------------------------------------------------
 # items/index.html: equipment
 # ---------------------------------------------------------------------------------------------------------------
+def placed_cell(site, m, raw):
+    """Placed count linked to the map with only this item's loot on, and the per-region numbers under it."""
+    n = m.placed(raw)
+    if not n:
+        return None
+    keys = m.loot_keys.get(raw) or []
+    num = f'<a href="{maplink(show=keys)}" title="Show on the map">{fmt(n)}</a>' if keys else fmt(n)
+    return f'<!--v:{n}-->{num}<span class="small dim regs">{region_counts(m.loot[raw], keys)}</span>'
+
+
 def equipment_row(site, m, e):
-    """Cells of one equipment row: icon, name, stack, schematic, what it does, placed, internal name."""
+    """Cells of one equipment row: icon, name, stack, schematic, what it does, placed."""
     s = m.schem_for_raw.get(e["raw"])
     name = f"<b>{esc(e['name'])}</b>"
-    w = site.find("weapon", e["name"])
-    if w:
+    if site.find("weapon", e["name"]):
         name += f'<br><span class="small">{site.link("weapon", e["name"], text="Damage & weapon page")}</span>'
     if s and s.get("dlc"):
         name += " " + dlc_tags(site, m, s)
@@ -528,11 +603,9 @@ def equipment_row(site, m, e):
     else:
         sch = '<span class="dim">–</span>'
         what = MANUAL_DESC.get(e["raw"], '<span class="dim">–</span>')
-    placed = m.placed(e["raw"])
-    regs = f'<span class="small dim regs">{region_counts(m.loot[e["raw"]])}</span>'
-    placed_html = f'<!--v:{placed}-->{fmt(placed)}{regs}' if placed else None   # sorts by the count
-    return [stock_icon(site, e), name, e["stack"], sch, what, placed_html,
-            f"<code>{esc(e['raw'])}</code><br><code class=\"dim\">{e['h']}</code>"]
+        if e["raw"] == "comp_spawner":
+            what += ' See the <a href="~/items/companion.html">Companion</a> page.'
+    return [stock_icon(site, e), name, e["stack"], sch, what, placed_cell(site, m, e["raw"])]
 
 
 def build_equipment(site, m):
@@ -541,51 +614,61 @@ def build_equipment(site, m):
         by_sub[e["sub"]].append(e)
     n_equip = sum(len(by_sub[g]) for g, _, _ in EQUIP_GROUPS)
     n_craft = sum(1 for g, _, _ in EQUIP_GROUPS for e in by_sub[g] if e["raw"] in m.schem_for_raw)
-    body = []
-    body.append(bar("How to read the tables", id="reading"))
-    body.append(
-        "<p>One table per group of the inventory. <b>Stack</b> is how many fit in one inventory slot. "
-        "<b>Schematic</b> is the crafting schematic that makes the item, with the tree it sits in, what it costs to "
-        "unlock and the materials one craft takes. <b>What it does</b> is the game's own schematic text where there "
-        "is a schematic (marked with a bar on the left), and a short plain description otherwise (also for the "
-        "DLC gadgets, whose schematic text only repeats their name). "
-        "<b>Placed</b> is how many of the item lie at fixed spots in the world files, with the regions under the "
-        "number (random loot from crates, bodies and machines comes on top). The internal name and item hash are "
-        "what save editors and mods use.</p>")
-    chips = "".join(f'<button class="chip" data-g="g" data-f="{k}">{esc(g)}</button>' for g, k, _ in EQUIP_GROUPS)
-    body.append(f'<div class="filterbar" data-for="equip"><input placeholder="Filter equipment..." '
-                f'aria-label="Filter equipment"><button class="chip on" data-g="g" data-f="*">All</button>{chips}'
-                f'<button class="chip" data-g="d" data-f="craft">Craftable</button>'
-                f'<button class="chip" data-g="d" data-f="dlc">DLC</button><span class="count"></span></div>')
-    body.append('<div id="equip">')
-    headers = ["", "Item", "Stack", "Schematic", "What it does", "Placed", "Internal name / hash"]
+    n_placed = sum(m.placed(e["raw"]) for g, _, _ in EQUIP_GROUPS for e in by_sub[g])
+    kp = keys_page(site, m)
+    body = [
+        "<p>One fold per group of the inventory. <b>Stack</b> is how many fit in one inventory slot. "
+        "<b>Schematic</b> is the crafting schematic that makes the item, with its tree, its cost and what one craft "
+        "takes. <b>What it does</b> is the game's own schematic text where there is one (with a bar on the left), "
+        "otherwise a short plain description. <b>Placed</b> is how many lie at fixed spots in the world files "
+        "(click it for the map); random loot from crates, bodies and machines comes on top.</p>",
+        '<div class="filterbar" data-for="equip"><input placeholder="Filter equipment..." '
+        'aria-label="Filter equipment"><button class="chip on" data-g="d" data-f="*">All</button>'
+        '<button class="chip" data-g="d" data-f="craft">Craftable</button>'
+        '<button class="chip" data-g="d" data-f="dlc">DLC</button>'
+        '<button class="chip" data-g="d" data-f="placed">Placed in the world</button><span class="count"></span></div>',
+        '<div class="foldall" data-for="equip"></div>', '<div id="equip">']
+    headers = ["", "Item", "Stack", "Schematic", "What it does", "Placed"]
     for g, k, intro in EQUIP_GROUPS:
         items = sorted(by_sub[g], key=lambda e: e["name"].lower())
-        body.append(bar(g, f"{len(items)} items", id=k))
-        body.append(f"<p>{intro}</p>")
         rows, attrs = [], []
         for e in items:
             s = m.schem_for_raw.get(e["raw"])
-            f = [k] + (["craft"] if s else []) + (["dlc"] if s and s.get("dlc") else [])
+            f = ([k] + (["craft"] if s else []) + (["dlc"] if s and s.get("dlc") else [])
+                 + (["placed"] if m.placed(e["raw"]) else []))
             rows.append(equipment_row(site, m, e))
-            attrs.append(f' id="{item_anchor(e)}" data-f="{" ".join(f)}" data-w="{esc(e["raw"])} {e["h"]}"')
-        body.append(row_table(headers, rows, attrs, cls="equip", num={2, 5}))
+            attrs.append(f' id="{m.aid(e["raw"])}" data-f="{" ".join(f)}"')
+        inner = f"<p>{intro}</p>" + row_table(headers, rows, attrs, cls="equip", num={2, 5})
         if k == "lure":
-            body.append(radio_note(site, m))
+            inner += radio_note(site, m)
+        body.append(fold(g, inner, id=k, right=plural(len(items), "item")))
     body.append("</div>")
-    body.extend(equipment_extras(site, m, by_sub))
-    lead = (f"<p>Every piece of equipment in the game's item list: {n_equip} items in {len(EQUIP_GROUPS)} groups, "
-            f"{n_craft} of which you can craft once you have unlocked their schematic. Each row has the stack size, "
-            f"the schematic with its recipe, what the item does, how many are placed in the world and the internal "
-            f"name. Keys and quest items and the companion's gear are on their own pages.</p>")
-    site.page("items/index.html", "Equipment", "".join(body), "items", lead=lead, head_extra=CSS, wide=True,
+    body.extend(equipment_tips(site, m, by_sub))
+
+    ib = infobox("Equipment", [(g, f'<a href="#{k}">{len(by_sub[g])}</a>') for g, k, _ in EQUIP_GROUPS] + [
+        (None, "In all"), ("Items", fmt(n_equip)), ("Craftable", fmt(n_craft)),
+        ("Placed in the world", fmt(n_placed))])
+    comp = m.by_raw.get("comp_spawner")
+    side = [see_also(site, [
+        (a(kp, "Keys & barcodes"), f"the {len(by_sub[KEYS_GROUP])} keys, barcodes and quest items"),
+        ('<a href="~/items/companion.html">Companion</a>',
+         f"its {len(by_sub[COMPANION_GROUP])} armor and cosmetic items"),
+        ('<a href="~/items/materials.html">Materials</a>', "what you craft with"),
+        (site.link("schematic", "equipment", "Equipment schematic tree"), "the crafting paths"),
+    ])]
+    lead = (f"<p>Equipment is everything in your backpack that isn't a weapon, ammo or a crafting material: "
+            f"{n_equip} items in {len(EQUIP_GROUPS)} groups, {n_craft} of which you can craft once you have "
+            f"unlocked their schematic. Keys and quest items have their own {a(kp, 'Keys & barcodes')} page, and the "
+            f"companion's gear is on the <a href=\"~/items/companion.html\">Companion</a> page.</p>")
+    site.page("items/index.html", "Equipment", "".join(body), "items", lead=lead, head_extra=HEAD,
+              infobox_html=ib, side=side,
               desc="Every Generation Zero equipment item: stack sizes, crafting schematics and recipes, what each "
-                   "item does, placed loot counts and internal names.",
+                   "item does and where it lies placed in the world.",
               search={"k": "Items", "w": "equipment items consumables throwables lures gadgets"})
 
 
 def radio_note(site, m):
-    """The world files' 'Radio' pickups carry the Field Radio's internal name; say how they are counted."""
+    """The world files' 'Radio' pickups are stored under the Field Radio's item; say how they are counted."""
     lo = site.data("loot")
     sub = next((sb for sb in lo["subs"] if sb["key"] == "loot_i_radio"), None)
     field = next((sb for sb in lo["subs"] if sb["key"] == "loot_i_field_radio_01"), None)
@@ -593,68 +676,36 @@ def radio_note(site, m):
         return ""
     radio, fr = m.by_raw.get("lure_radio_equipment"), m.by_raw.get("field_radio_01")
     extra = f", and the {item_link(site, fr)}'s own {fmt(field['count'])} are separate" if field and fr else ""
-    return note(f"The world files' <i>Radio</i> pickups ({fmt(sub['count'])}) carry the Field Radio's internal name "
-                f"(<code>field_radio_01</code>). They are counted as the plain "
-                f"{item_link(site, radio) if radio else 'Radio'} here{extra}.", "data")
+    return note(f"The world files' <i>Radio</i> pickups ({fmt(sub['count'])}) are stored as Field Radios. They are "
+                f"counted as the plain {item_link(site, radio) if radio else 'Radio'} here{extra}.", "data")
 
 
-def equipment_extras(site, m, by_sub):
-    """Tips from the numbers, the keys summary and the pointer to the companion page."""
-    out = [bar("Tips from the numbers", id="tips")]
+def equipment_tips(site, m, by_sub):
+    """Tips from the numbers."""
     placed = sorted(((m.placed(e["raw"]), e) for g, _, _ in EQUIP_GROUPS for e in by_sub[g] if m.placed(e["raw"])),
                     key=lambda x: -x[0])
     top = ", ".join(f"{item_link(site, e)} ({n})" for n, e in placed[:5])
     tips = [f"The items lying around most often at fixed spots are {top}."]
     rare = [(n, e) for n, e in placed if n <= 2]
-    rare_craft = ", ".join(f"{item_link(site, e)} ({n})" for n, e in rare if e["raw"] in m.schem_for_raw)
-    rare_loot = ", ".join(f"{item_link(site, e)} ({n})" for n, e in rare if e["raw"] not in m.schem_for_raw)
+    rare_craft = and_list([f"{item_link(site, e)} ({n})" for n, e in rare if e["raw"] in m.schem_for_raw])
+    rare_loot = and_list([f"{item_link(site, e)} ({n})" for n, e in rare if e["raw"] not in m.schem_for_raw])
     if rare_craft:
         tips.append(f"Some are almost never placed by hand: {rare_craft}. Craft those instead of hoping to find "
                     f"them.")
     if rare_loot:
-        tips.append(f"{rare_loot} {'are' if ',' in rare_loot else 'is'} just as rarely placed and "
-                    f"{'have' if ',' in rare_loot else 'has'} no schematic either, so random loot is the main "
-                    f"way to get {'them' if ',' in rare_loot else 'it'}.")
+        many = sum(1 for n, e in rare if e["raw"] not in m.schem_for_raw) > 1
+        tips.append(f"{rare_loot} {'are' if many else 'is'} just as rarely placed and {'have' if many else 'has'} "
+                    f"no schematic either, so random loot is the main way to get {'them' if many else 'it'}.")
     adr = m.schem_for_raw.get("equipment_consumable_adrenaline_01")
     if adr:
         tips.append(f"The {sch_link(site, adr)} is the last schematic of the equipment tree: it costs "
                     f"{adr['c']} points by itself and {m.path_cost(adr)} points with everything before it.")
-    stacks = collections.Counter(e["stack"] for g, _, _ in EQUIP_GROUPS for e in by_sub[g])
     gas = m.by_raw.get("equipment_consumable_fuelcan_01")
     if gas:
         tips.append(f"{item_link(site, gas)} stacks to {gas['stack']}, more than anything else here; the "
                     f"{sch_link(site, m.schem_for_raw.get(gas['raw']))} recipe makes it from accelerant and lead, and "
                     f"the Explosive Gas Tank recipe takes 100 of it.")
-    out.append("<ul>" + "".join(f"<li>{t}</li>" for t in tips) + "</ul>")
-    out.append(f"<p class=\"small dim\">Stack sizes in this list: "
-               + ", ".join(f"{k} ({plural(v, 'item')})" for k, v in sorted(stacks.items())) + "."
-               + (" The stack of 0 is the Machine Companion, which you never carry as an item." if 0 in stacks else "")
-               + "</p>")
-
-    keys = sorted(by_sub[KEYS_GROUP], key=lambda e: e["name"].lower())
-    out.append(bar(KEYS_GROUP, f"{len(keys)} items", id="keys"))
-    keys_url = site.url("key", keys[0]["raw"]) if keys else None
-    page = f'<a href="{esc(keys_url.split("#")[0])}">Keys &amp; barcodes page</a>' if keys_url else "Keys & barcodes page"
-    out.append(f"<p>{len(keys)} items in the game's list are keys, bunker barcodes, keycards and things a mission "
-               f"hands you. They have their own {page} with what each one opens, its content pack and the missions "
-               f"that use it. Here they are at a glance; most tiles link to their entry there.</p>")
-    tiles = []
-    in_keys = {k["r"] for k in site.data("keys")["items"]}   # a few are only in the item list, not in keys.json
-    for e in keys:
-        u = site.url("key", e["raw"]) if e["raw"] in in_keys else None
-        test = tag("Test item", "unreleased") if e["raw"] in TEST_ITEMS else ""
-        inner = (f'{stock_icon(site, e, "")}<span>{esc(e["name"])}</span>{test}'
-                 f'<span class="dim"><code>{esc(e["raw"])}</code></span>')
-        tiles.append(f'<a class="icon" id="{item_anchor(e)}" href="{esc(u)}">{inner}</a>' if u else
-                     f'<div class="icon" id="{item_anchor(e)}">{inner}</div>')
-    out.append('<div class="icongrid keygrid">' + "".join(tiles) + "</div>")
-
-    comp = by_sub[COMPANION_GROUP]
-    out.append(bar("Companion items", f"{len(comp)} items", id="companion"))
-    out.append(f"<p>{len(comp)} more items belong to the machine companion: its armor, paint jobs, light kits, voice "
-               f"boxes, modules and weapons. They are on the <a href=\"~/items/companion.html\">Companion page</a>, "
-               f"with the companion armor schematics and the packs the cosmetics come from.</p>")
-    return out
+    return [bar("Tips", id="tips"), "<ul>" + "".join(f"<li>{t}</li>" for t in tips) + "</ul>"]
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -671,45 +722,48 @@ def build_materials(site, m):
     for e in m.materials:
         by_sub[e["sub"]].append(e)
     body = [bar("All materials", f"{len(m.materials)} materials", id="all")]
-    body.append("<p>The overview. <b>Schematics</b> counts the schematics whose recipe asks for the material, and "
-                "<b>Total for one of each</b> adds up what crafting every one of those schematics once would take "
-                "(the apparel ranks count once each). <b>Placed</b> is how many pickups of it lie at fixed spots in "
-                "the world files; most materials come from crates, bodies and destroyed machines instead, which "
-                "are random. Click a name for the full list of schematics.</p>")
+    body.append("<p><b>Schematics</b> counts the schematics whose recipe asks for the material, and <b>Total for one "
+                "of each</b> adds up what crafting every one of them once would take (each apparel rank counts "
+                "once). Every recipe, with its amounts, is on the <a href=\"~/items/schematics.html\">Schematics</a> "
+                "page.</p>")
     chips = "".join(f'<button class="chip" data-g="g" data-f="{k}">{esc(g)}</button>' for g, k, _ in MAT_GROUPS)
     body.append(f'<div class="filterbar" data-for="mats"><input placeholder="Filter materials..." '
                 f'aria-label="Filter materials"><button class="chip on" data-g="g" data-f="*">All</button>{chips}'
                 f'<span class="count"></span></div>')
     rows, attrs = [], []
-    gkey = {g: k for g, k, _ in MAT_GROUPS}
     for g, k, _ in MAT_GROUPS:
         for e in sorted(by_sub[g], key=lambda e: e["name"]):
             n, total = material_need(m, e)
-            rows.append([stock_icon(site, e), f'<a href="#{mat_anchor(e)}">{esc(e["name"])}</a>', esc(g),
-                         e["stack"], n if n else None, total if total else None, m.placed(e["raw"]) or None,
-                         f"<code>{esc(e['raw'])}</code>"])
-            attrs.append(f' data-f="{gkey[g]}"')
-    body.append('<div id="mats">' + row_table(["", "Material", "Group", "Stack", "Schematics", "Total for one of each",
-                                               "Placed", "Internal name"], rows, attrs, cls="compact",
-                                              num={3, 4, 5, 6}) + "</div>")
+            rows.append([stock_icon(site, e), f"<b>{esc(e['name'])}</b>", esc(g), e["stack"], n or None,
+                         total or None])
+            attrs.append(f' id="{m.aid(e["raw"])}" data-f="{k}"')
+    body.append('<div id="mats">' + row_table(["", "Material", "Group", "Stack", "Schematics", "Total for one of each"],
+                                              rows, attrs, cls="compact mats", num={3, 4, 5}) + "</div>")
+    body.append('<dl class="kv matgroups">' + "".join(f"<dt>{esc(g)}</dt><dd>{esc(intro)}</dd>"
+                                                      for g, _, intro in MAT_GROUPS) + "</dl>")
     body.extend(material_tips(site, m))
-    for g, k, intro in MAT_GROUPS:
-        body.append(bar(g, f"{len(by_sub[g])} materials", id=k))
-        body.append(f"<p>{intro}</p>")
-        for e in sorted(by_sub[g], key=lambda e: e["name"]):
-            body.append(material_block(site, m, e))
     body.extend(material_loot(site, m))
-    lead = (f"<p>The {len(m.materials)} crafting materials of the game, in the four groups of the inventory. For each "
-            f"one: its stack size, every schematic that uses it and how much, and where it lies placed in the world. "
-            f"The numbers are read from the schematic recipes and the world files.</p>")
-    site.page("items/materials.html", "Materials", "".join(body), "items", lead=lead, head_extra=CSS,
-              desc="Generation Zero crafting materials: which schematics use each material and how much, stack "
-                   "sizes, internal names and placed pickups per region.",
+
+    need = sorted(m.materials, key=lambda e: -material_need(m, e)[1])
+    ib = infobox("Materials", [(g, len(by_sub[g])) for g, _, _ in MAT_GROUPS] + [
+        (None, "In all"), ("Materials", len(m.materials)),
+        ("Most wanted", item_link(site, need[0]) if need else None),
+        ("Placed in the world", f'<a href="#placed">{fmt(sum(m.placed(e["raw"]) for e in m.materials))}</a>')])
+    side = [see_also(site, [
+        ('<a href="~/items/schematics.html">Schematics</a>', "every recipe"),
+        ('<a href="~/items/index.html">Equipment</a>', "what you craft"),
+    ])]
+    lead = (f"<p>Crafting materials are what schematics turn into ammo, equipment, apparel upgrades and companion "
+            f"armor. The game has {len(m.materials)} of them in four groups. You find them in crates, on bodies and "
+            f"in destroyed machines, and a few lie at fixed spots in the world.</p>")
+    site.page("items/materials.html", "Materials", "".join(body), "items", lead=lead, head_extra=HEAD,
+              infobox_html=ib, side=side,
+              desc="Generation Zero crafting materials: how many schematics use each material and how much, stack "
+                   "sizes and placed pickups per region.",
               search={"k": "Items", "w": "materials crafting resources alloys"})
 
 
 def material_tips(site, m):
-    out = [bar("Tips from the numbers", id="tips")]
     need = sorted(((material_need(m, e), e) for e in m.materials), key=lambda x: -x[0][1])
     top = ", ".join(f"{item_link(site, e)} ({fmt(t)} in {n} schematics)" for (n, t), e in need[:4])
     unused = [e for (n, t), e in need if n == 0]
@@ -720,7 +774,7 @@ def material_tips(site, m):
             f"{item_link(site, top_e)} is in the most recipes ({top_n}), {in_apparel} of them apparel upgrades."]
     if unused:
         tips.append("No schematic in the current game files asks for "
-                    + ", ".join(item_link(site, e) for e in unused) + ".")
+                    + and_list(item_link(site, e) for e in unused) + ".")
     for e in m.materials:   # where the refined alloys are needed
         if not e["raw"].startswith("refined_"):
             continue
@@ -730,66 +784,42 @@ def material_tips(site, m):
             where[label] = where.get(label, 0) + 1
         tips.append(f"{item_link(site, e)} is only asked for by "
                     + ", ".join(f"{esc(k)} ({v} schematic{'s' if v != 1 else ''})" for k, v in where.items()) + ".")
-    out.append("<ul>" + "".join(f"<li>{t}</li>" for t in tips) + "</ul>")
-    return out
-
-
-def material_block(site, m, e):
-    """One material: icon, facts and the schematics that use it, by tree."""
-    uses = m.uses.get(e["raw"], [])
-    n, total = material_need(m, e)
-    placed = m.placed(e["raw"])
-    facts = [("Group", esc(e["sub"])), ("Stack", fmt(e["stack"])), ("Internal name", f"<code>{esc(e['raw'])}</code>"),
-             ("Hash", f"<code>{e['h']}</code>"),
-             ("Used by", f"{n} schematics, {fmt(total)} for one of each" if n else "no schematic"),
-             ("Placed", f"{placed}: {region_counts(m.loot[e['raw']])}" if placed else "none at fixed spots")]
-    facts_html = "".join(f'<span><i>{esc(k)}</i> {v}</span>' for k, v in facts)
-    out = [f'<div class="matblock" id="{mat_anchor(e)}"><div class="mathead">{stock_icon(site, e, "mati")}'
-           f'<h3>{esc(e["name"])}</h3></div><div class="facts">{facts_html}</div>']
-    if uses:
-        by_tree = collections.OrderedDict((t["key"], []) for t in m.trees)
-        for s, a in uses:
-            by_tree[s["t"]].append((s, a))
-        parts = []
-        for t in m.trees:
-            lst = by_tree[t["key"]]
-            if not lst:
-                continue
-            items = "".join(f'<li>{sch_link(site, s)} <span class="dim">×</span> <b>{a}</b></li>' for s, a in lst)
-            parts.append(f'<div class="usetree"><h4>{site.img(TREE_ICON.format(t["key"]), cls="cur")}{esc(t["name"])} '
-                         f'<span class="dim">{len(lst)} · {fmt(sum(a for _, a in lst))} total</span></h4>'
-                         f'<ul class="uselist">{items}</ul></div>')
-        op = " open" if n <= 16 else ""
-        out.append(f'<details{op}><summary>Schematics that use {esc(e["name"])} ({n})</summary>'
-                   f'<div class="usetrees">{"".join(parts)}</div></details>')
-    out.append("</div>")
-    return "".join(out)
+    return [bar("Tips", id="tips"), "<ul>" + "".join(f"<li>{t}</li>" for t in tips) + "</ul>"]
 
 
 def material_loot(site, m):
-    out = [bar("Placed materials by region", id="placed")]
     regs = [r for r in REGION_KEYS if any(m.loot[e["raw"]].get(r) for e in m.materials)]
     rows = []
-    for e in sorted(m.materials, key=lambda e: -m.placed(e["raw"])):
-        if not m.placed(e["raw"]):
-            continue
-        c = m.loot[e["raw"]]
-        rows.append([f'{stock_icon(site, e)} <a href="#{mat_anchor(e)}">{esc(e["name"])}</a>']
-                    + [c.get(r) or None for r in regs] + [m.placed(e["raw"])])
-    out.append(f"<p>Material pickups at fixed spots in the world files, per region. Only {len(rows)} of the "
-               f"{len(m.materials)} materials are placed by hand at all, and in small numbers: the bulk of your "
-               f"materials comes from random loot in crates, on bodies and from destroyed machines. The interactive "
-               f"map shows every one of these spots with <i>Additional Locations</i> on.</p>")
-    out.append(table(["Material"] + [REGION_SHORT[r] for r in regs] + ["Total"], rows, cls="compact",
+    placed = [e for e in sorted(m.materials, key=lambda e: -m.placed(e["raw"])) if m.placed(e["raw"])]
+    for e in placed:
+        c, keys = m.loot[e["raw"]], m.loot_keys.get(e["raw"]) or []
+        cells = [(f'<a href="{maplink(show=keys, region=[r])}" title="Show on the map">{c[r]}</a>', c[r])
+                 if c.get(r) else None for r in regs]
+        rows.append([f'<span class="nw">{stock_icon(site, e, "ingi")}{item_link(site, e)}</span>'] + cells
+                    + [(f'<a href="{maplink(show=keys)}" title="Show on the map">{m.placed(e["raw"])}</a>',
+                        m.placed(e["raw"]))])
+    total = sum(m.placed(e["raw"]) for e in placed)
+    inner = (f"<p>Material pickups at fixed spots in the world files, per region; click a number for the map. Only "
+             f"{len(rows)} of the {len(m.materials)} materials are placed by hand at all, and in small numbers.</p>"
+             + table(["Material"] + [REGION_SHORT[r] for r in regs] + ["Total"], rows, cls="compact",
                      num=set(range(1, len(regs) + 2))))
     slag = m.by_raw.get("slag")
     if slag:
-        out.append(note(f"{item_link(site, slag)} (<code>slag</code>, stack {slag['stack']}) looks like a material "
-                        f"but the game files list it under <i>Other</i> items, and no schematic uses it.", "data"))
+        inner += note(f"{item_link(site, slag)} (stack {slag['stack']}) looks like a material, but the game files "
+                      f"list it under <i>Other</i> items, and no schematic uses it.", "data")
     gold = m.by_raw.get("gold")
     if gold and "uranium" in gold["icon"]:
-        out.append(note("The game's item list gives Gold the Uranium icon, so the two look the same in the "
-                        "inventory.", "data"))
+        inner += note("The game's item list gives Gold the Uranium icon, so the two look the same in the "
+                      "inventory.", "data")
+    out = [fold("Placed materials by region", inner, id="placed", right=plural(total, "pickup"))]
+    pts = [p for e in placed for p in m.loot_pts.get(e["raw"], [])]
+    keys = [k for e in placed for k in m.loot_keys.get(e["raw"], [])]
+    if pts:
+        text = (f"<p><b>Placed materials on the map.</b> The {fmt(total)} material pickups of the world files. "
+                f"<a href=\"{maplink(show=keys)}\">The full map</a> shows each one, with only the materials "
+                f"ticked.</p>")
+        out.append(minimap(pts[0][0], pts[0][1], "", markers=[(x, z, "") for x, z in pts[1:]], show=keys,
+                           small=True, text=text, zoom=1))
     return out
 
 
@@ -799,9 +829,8 @@ def material_loot(site, m):
 def build_schematics(site, m):
     body = [bar("The six trees", id="trees")]
     body.append("<p>Schematics are bought with schematic points. Each tree has its own kind of points, earned in its "
-                "own way; within a path you unlock from left to right, each schematic needing the one before it. "
-                "Once unlocked, a schematic can be crafted as often as you have materials for it. <b>Free</b> "
-                "schematics are unlocked from the start.</p>")
+                "own way; within a path you unlock from left to right. Once unlocked, a schematic can be crafted as "
+                "often as you have materials for it. <b>Free</b> schematics are unlocked from the start.</p>")
     rows = []
     for t in m.trees:
         its = m.tree_items(t)
@@ -809,42 +838,57 @@ def build_schematics(site, m):
         rows.append([f'{site.img(TREE_ICON.format(t["key"]), cls="cur")}<a href="#tree-{t["key"]}">{esc(t["name"])}</a>',
                      esc(cur.get("name", "–")), esc(cur.get("earn", "–")), len(its),
                      sum(1 for s in its if s.get("free")) or None, sum(1 for s in its if s.get("dlc")) or None,
-                     sum(s["c"] for s in its), max(s["c"] for s in its)])
-    body.append(table(["Tree", "Currency", "How you earn it (game text)", "Schematics", "Free", "DLC", "Total points",
-                       "Most expensive"], rows, cls="trees", num={3, 4, 5, 6, 7}))
-    body.append(f"<p>All {len(m.schem)} schematics together cost {fmt(sum(s['c'] for s in m.schem))} points of the "
-                f"six currencies.</p>")
-    body.extend(schematic_pickups(site, m))
+                     sum(s["c"] for s in its)])
+    body.append(table(["Tree", "Currency", "How you earn it (game text)", "Schematics", "Free", "DLC", "Total points"],
+                      rows, cls="trees", num={3, 4, 5, 6}))
     for t in m.trees:
         body.extend(tree_section(site, m, t))
-    lead = (f"<p>All {len(m.schem)} crafting schematics of the game, laid out like the SCHEMATICS menu: six trees, "
-            f"each with its own currency, and inside each tree the paths you unlock from left to right. Below the "
-            f"paths of each tree is a full table with every schematic's quality, cost, recipe, prerequisites, what it "
-            f"makes and its internal name.</p>")
-    site.page("items/schematics.html", "Schematics", "".join(body), "items", lead=lead, head_extra=CSS, wide=True,
+    body.extend(schematic_pickups(site, m))
+
+    ib = infobox("Schematics", [(None, "Trees")] + [
+        (t["name"], f'{site.img(TREE_ICON.format(t["key"]), cls="cur")}<a href="#tree-{t["key"]}">'
+                    f'{len(m.tree_items(t))}</a>') for t in m.trees] + [
+        (None, "In all"), ("Schematics", len(m.schem)), ("Free", sum(1 for s in m.schem if s.get("free"))),
+        ("DLC", sum(1 for s in m.schem if s.get("dlc"))), ("Points for all", fmt(sum(s["c"] for s in m.schem)))])
+    side = [see_also(site, [
+        ('<a href="~/items/materials.html">Materials</a>', "what the recipes take"),
+        ('<a href="~/items/index.html">Equipment</a>', "what the equipment schematics make"),
+        ('<a href="~/items/companion.html">Companion</a>', "the companion armor"),
+    ])]
+    lead = (f"<p>Schematics let you craft ammo, equipment, apparel upgrades and companion armor from "
+            f"<a href=\"~/items/materials.html\">materials</a>. The game has {len(m.schem)} of them in six trees, laid "
+            f"out here like the SCHEMATICS menu: each tree has its own points, and inside a tree you unlock the "
+            f"paths from left to right. Open <i>Details</i> under a tree's paths for the full list with recipes.</p>")
+    site.page("items/schematics.html", "Schematics", "".join(body), "items", lead=lead, head_extra=HEAD,
+              infobox_html=ib, side=side,
               desc="Every Generation Zero crafting schematic: the six schematic trees and their currencies, costs, "
-                   "recipes, prerequisites and internal names.",
+                   "recipes and prerequisites.",
               search={"k": "Items", "w": "schematics crafting recipes trees points"})
 
 
 def schematic_pickups(site, m):
-    """The schematic point pickups of markers.json, per region."""
+    """The schematic point pickups of markers.json, per region, with a small map last."""
     mk = site.data("markers")
     subs = [s for s in mk["subs"] if s["main"] == "schematics"]
     if not subs:
         return []
-    counts = {s["key"]: collections.Counter(i["r"] for i in mk["items"] if i["s"] == s["key"]) for s in subs}
+    items = {s["key"]: [i for i in mk["items"] if i["s"] == s["key"]] for s in subs}
+    counts = {k: collections.Counter(i["r"] for i in lst) for k, lst in items.items()}
     regs = [r for r in REGION_KEYS if any(c.get(r) for c in counts.values())]
-    out = [bar("Schematic points on the map", id="pickups")]
-    out.append("<p>Besides the ways the game names, some schematic points lie in the world as pickups (a schematic "
-               "magazine). Each pickup gives points of one currency; it doesn't unlock a particular schematic. The "
-               "collectibles pages have a map and a list of every spot.</p>")
+    totals = {k: sum(c.values()) for k, c in counts.items()}
+    keys = [s["key"] for s in subs]
+    out = [bar("Schematic points on the map", f"{sum(totals.values())} pickups", id="pickups")]
+    out.append("<p>Besides the ways the game names, some schematic points lie in the world as pickups. Each pickup "
+               "gives points of one currency; it doesn't unlock a particular schematic. Click a number for the map; "
+               "the collectibles pages list every spot.</p>")
     rows = []
     for s in subs:
         c = counts[s["key"]]
-        rows.append([site.link("collectible-type", s["key"], text=s["name"])] + [c.get(r) or None for r in regs]
-                    + [sum(c.values())])
-    totals = {k: sum(c.values()) for k, c in counts.items()}
+        cells = [(f'<a href="{maplink(show=[s["key"]], region=[r])}" title="Show on the map">{c[r]}</a>', c[r])
+                 if c.get(r) else None for r in regs]
+        rows.append([site.link("collectible-type", s["key"], text=s["name"])] + cells
+                    + [(f'<a href="{maplink(show=[s["key"]])}" title="Show on the map">{totals[s["key"]]}</a>',
+                        totals[s["key"]])])
     out.append(note("Older guides list schematic pickups that unlock one particular schematic. In the current game "
                     "files each pickup gives points of one currency ("
                     + and_list([f"{fmt(totals[sb['key']])} {esc(re.sub(r' schematics?$', '', sb['name'].lower()))}"
@@ -853,9 +897,18 @@ def schematic_pickups(site, m):
     out.append(table(["Pickup"] + [REGION_SHORT[r] for r in regs] + ["Total"], rows, cls="compact",
                      num=set(range(1, len(regs) + 2))))
     app = m.currency.get(next((t["cur"] for t in m.trees if t["key"] == "apparel"), None), {})
-    if "Rival" in app.get("earn", "") and counts.get("sch_apparel"):
+    if "Rival" in app.get("earn", "") and totals.get("sch_apparel"):
         out.append(note(f"The game's text says Apparel Schematic Points are found as loot on Rivals; the world files "
-                        f"also place {sum(counts['sch_apparel'].values())} apparel schematic point pickups.", "data"))
+                        f"also place {totals['sch_apparel']} apparel schematic point pickups.", "data"))
+    pts = [(i["x"], i["z"]) for k in keys for i in items[k]]
+    if pts:
+        text = ("<p><b>Schematic point pickups.</b> " + and_list(
+            f'{fmt(totals[sb["key"]])} <a href="{maplink(show=[sb["key"]])}">'
+            f'{esc(re.sub(r" schematics?$", "", sb["name"].lower()))}</a>'
+            for sb in subs) + f' schematic point pickups. <a href="{maplink(show=keys)}">The full map</a> shows all of them with the '
+                              f'place each one lies in.</p>')
+        out.append(minimap(pts[0][0], pts[0][1], "", markers=[(x, z, "") for x, z in pts[1:]], show=keys,
+                           small=True, text=text, zoom=1))
     return out
 
 
@@ -866,14 +919,18 @@ def tree_section(site, m, t):
     out = [bar(f"{t['name']} tree", f"{len(its)} schematics · {fmt(total)} points", id=f"tree-{t['key']}")]
     out.append(f'<div class="curbox">{site.img(TREE_ICON.format(t["key"]), alt="", cls="curbig")}<div>'
                f'<b>{esc(cur.get("name", t["name"]))}</b><p>{esc(cur.get("earn", ""))}</p>'
-               f'<span class="small dim">Currency hash <code>{t["cur"]}</code> · unlocking the whole tree costs '
-               f'{fmt(total)} points</span></div></div>')
+               f'<span class="small dim">Unlocking the whole tree costs {fmt(total)} points</span></div></div>')
     out.append(TREE_NOTES.get(t["key"], lambda site, m, t: "")(site, m, t))
     for g in t["groups"]:
-        if len(t["groups"]) > 1 or g["name"] not in (f"{t['name']} schematic tree",):
-            out.append(f'<h3 id="tree-{t["key"]}-{slug(g["name"])}">{esc(g["name"])}</h3>')
+        n = sum(len(r["nodes"]) for r in g["rows"])
+        named = len(t["groups"]) > 1 or g["name"] != f"{t['name']} schematic tree"
+        if named:
+            out.append(f'<h3 class="sgroup" id="tree-{t["key"]}-{slug(g["name"])}">{esc(g["name"])}</h3>')
         out.append(path_grid(site, m, g))
-        out.append(schematic_table(site, m, t, g))
+        if t["key"] == "companion":   # the Companion page has every armor piece with cost and recipe
+            continue
+        out.append(fold("Details" + (f": {g['name']}" if named else ""), schematic_table(site, m, t, g), level=3,
+                        id=f"details-{t['key']}-{slug(g['name'])}", right=plural(n, "schematic")))
     return out
 
 
@@ -886,13 +943,24 @@ def path_grid(site, m, g):
         for i, s in enumerate(nodes):
             cost = "free" if s.get("free") and s["c"] == 0 else f"{s['c']} pt{'s' if s['c'] != 1 else ''}"
             dlc = '<i class="ndlc">DLC</i>' if s.get("dlc") else ""
-            cells.append(f'{"<i class=sparr>›</i>" if i else ""}<a class="snode q{s["q"]}" href="#{sch_anchor(s)}" '
+            cells.append(f'{"<i class=sparr>›</i>" if i else ""}<a class="snode q{s["q"]}" href="{esc(sch_href(m, s))}" '
                          f'title="{esc(s["n"])}: {esc(s["r"])}">{site.img("img/schematics/" + s["i"], cls="sni")}'
-                         f'<span><b>{esc(s["n"])}</b><small>{qbadge(s["q"], short=True)} {cost}{dlc}</small></span></a>')
+                         f'<span><b>{esc(s["n"])}</b><small>{rank_badge(s["q"]) if s["t"] == "apparel" else qbadge(s["q"], short=True)} {cost}{dlc}</small></span></a>')
         out.append(f'<div class="sprow"><div class="splabel">{esc(r["name"])}{path_dlc(site, m, nodes)}<small>{len(nodes)} · '
                    f'{plural(sum(s["c"] for s in nodes), "pt")}</small></div><div class="spnodes">{"".join(cells)}</div></div>')
     out.append("</div>")
     return "".join(out)
+
+
+def sch_href(m, s):
+    """In-page link to a schematic, or the Companion page for the companion armor."""
+    u = m.sch_url(s)
+    return "#" + u.split("#", 1)[1] if u.startswith("items/schematics.html#") else "~/" + u
+
+
+def rank_badge(q):
+    """Apparel rank badge, coloured like the quality badges ('R1' .. 'R5')."""
+    return f'<span class="qb q{int(q)}" title="Rank {int(q)}">R{int(q)}</span>'
 
 
 def path_dlc(site, m, nodes):
@@ -905,28 +973,44 @@ def makes_html(site, m, s):
     p = m.product[s["h"]]
     if p:
         return f"{stock_icon(site, p, 'ingi')}{item_link(site, p)}"
-    if s["t"] == "apparel":
-        return f'<span class="dim">Clothing, rank {s["q"]}</span>'
     return "–"
 
 
 def schematic_table(site, m, t, g):
+    """The full list of one group. Apparel: no path, prerequisite or product columns (the name says what it is, and
+    every rank needs the rank before it: see the note of the tree)."""
+    apparel = t["key"] == "apparel"
     rows, attrs = [], []
     for r in g["rows"]:
+        last = None
         for h in r["nodes"]:
             s = m.sch_by_hash[h]
-            pre = ", ".join(sch_link(site, m.sch_by_hash[p]) for p in s["pre"]) or '<span class="dim">–</span>'
+            p = m.product[s["h"]]
             desc = game_text(s["d"])
             if says_nothing(desc, s["n"]):    # 'Makes .32 ACP Hollow-Point Ammo.' says nothing new
-                p = m.product[s["h"]]
                 desc = GADGET_DESC.get(p["raw"], "") if p else ""
-            name = f'<b>{esc(s["n"])}</b> {flags_html(site, m, s)}' + (f'<div class="small dim sdesc">{desc}</div>' if desc else "")
-            rows.append([site.img("img/schematics/" + s["i"], cls="ii"), name, esc(r["name"]),
-                         qbadge(s["q"], short=True), s["c"], m.path_cost(s), recipe_html(site, m, s), pre,
-                         makes_html(site, m, s), f"<code>{esc(s['k'])}</code><br><code class=\"dim\">{s['h']}</code>"])
-            attrs.append(f' id="{sch_anchor(s)}"')
-    headers = ["", "Schematic", "Path", "Q", "Cost", "With prereqs", "Recipe (one craft)", "Needs first", "Makes",
-               "Internal name / hash"]
+            shown = desc if desc != last else ""   # the ranks of an apparel row share one text: show it once
+            last = desc
+            name = f'<b>{esc(s["n"])}</b> {flags_html(site, m, s)}'
+            if p and norm(p["name"]) != norm(s["n"]):
+                name += f'<div class="small smakes">Makes {makes_html(site, m, s)}</div>'
+            elif p:
+                name += f'<div class="small smakes">{item_link(site, p, text="Item details")}</div>' \
+                    if p["g"] != "ammo" else f'<div class="small smakes">{item_link(site, p, text="Ammo details")}</div>'
+            if shown:
+                name += f'<div class="small dim sdesc">{shown}</div>'
+            icon = site.img("img/schematics/" + s["i"], cls="ii")
+            if apparel:
+                rows.append([icon, name, rank_badge(s["q"]), s["c"], m.path_cost(s), recipe_html(site, m, s)])
+            else:
+                pre = ", ".join(sch_link(site, m.sch_by_hash[x]) for x in s["pre"]) or '<span class="dim">–</span>'
+                rows.append([icon, name, esc(r["name"]), qbadge(s["q"], short=True), s["c"], m.path_cost(s),
+                             recipe_html(site, m, s), pre])
+            attrs.append(f' id="{m.sch_id[h]}"')
+    if apparel:
+        return row_table(["", "Schematic", "Rank", "Cost", "With prereqs", "Recipe (one craft)"], rows, attrs,
+                         cls="schtab apparel", num={3, 4})
+    headers = ["", "Schematic", "Path", "Q", "Cost", "With prereqs", "Recipe (one craft)", "Needs first"]
     return row_table(headers, rows, attrs, cls="schtab", num={4, 5})
 
 
@@ -937,11 +1021,19 @@ def _apparel_note(site, m, t):
     first_row = t["groups"][0]["rows"][0]["nodes"]
     per_row = sum(m.sch_by_hash[h]["c"] for h in first_row)
     rows = sum(len(g["rows"]) for g in t["groups"])
+    # rank 1 of a row needs rank 1 of the row above it (checked against the data, so the note stays true)
+    chained = all(
+        m.sch_by_hash[g["rows"][i]["nodes"][0]]["pre"] == [g["rows"][i - 1]["nodes"][0]]
+        for g in t["groups"] for i in range(1, len(g["rows"])))
+    rank1 = (" Rank 1 of a row needs rank 1 of the row above it (Stealthy needs Bullet-Resistant, and so on), so "
+             "the rows open from top to bottom." if chained else "")
     return (f"<p>Every apparel row has five ranks costing {', '.join(map(str, ranks))} points ({per_row} for a full "
             f"row; {rows} rows in all). An apparel schematic doesn't make a new garment, it improves one you have: "
-            f"rank 1 adds the property, and the recipe of each higher rank takes a garment that already has the "
-            f"rank below (listed as <i>1 … (rank N)</i>). Pants and shoes have an Athletic row and shoes a "
-            f"Padded row; shirts and jackets don't.</p>")
+            f"rank 1 adds the property, and each higher rank upgrades a garment that already has the rank below. "
+            f"Pants and shoes have an Athletic row and shoes a Padded row; shirts and jackets don't.</p>"
+            + note("Each rank requires the previous rank of the same apparel: you unlock the ranks in order, and the "
+                   "recipe takes the garment with the rank below (<i>1× … with rank N</i>)." + rank1,
+                   title="Requires previous rank apparel"))
 
 
 def _experimental_note(site, m, t):
@@ -949,15 +1041,15 @@ def _experimental_note(site, m, t):
     alloy = sum(1 for sc in its if any(ref and ref[1]["raw"].startswith("refined_")
                                        for _, _, ref in m.recipes[sc["h"]]))
     return ("<p>Experimental schematics make the quality-6 ammo and first aid kits with special properties "
-            "(corrosion, tar, shock, HEAT, proximity explosives, medicine, radioactivity), described under each "
-            f"schematic below. {alloy} of the {len(its)} recipes need a refined alloy per craft, so stock up on "
-            "those before you spend your points.</p>")
+            "(corrosion, tar, shock, HEAT, proximity explosives, medicine, radioactivity), described in the details "
+            f"below. {alloy} of the {len(its)} recipes need a refined alloy per craft, so stock up on those before "
+            "you spend your points.</p>")
 
 
 def _companion_note(site, m, t):
     return ("<p>The companion tree makes armor for your machine companion: six kinds of armor in four qualities. "
-            "Standard Runner Armor is free. The <a href=\"~/items/companion.html\">Companion page</a> has the armor "
-            "together with everything else about the companion.</p>")
+            "Standard Runner Armor is free. Costs and recipes of every piece are under "
+            "<a href=\"~/items/companion.html#armor\">Armor</a> on the Companion page; click a piece to go there.</p>")
 
 
 def _dlc_note(site, m, t):
@@ -965,9 +1057,9 @@ def _dlc_note(site, m, t):
     unknown = [r["name"] for r in rows if not any(m.dlc_packs.get(h) for h in r["nodes"])]
     multi = [r["name"] for r in rows if any(len(m.dlc_packs.get(h, [])) > 1 for h in r["nodes"])]
     out = ("<p>The DLC tree holds the schematics for the gear of the paid packs. The first schematic of every path is "
-           "free, so owning the pack is all it takes to start; DLC points come from crafting DLC items.</p>"
-           "<p>The schematics themselves don't name their pack. The pack shown on a path is the one the weapon data "
-           "gives for the weapon or the ammo in that path (the Molotov Cocktail, or the weapons that fire the ammo).")
+           "free, so owning the pack is all it takes to start; DLC points come from crafting DLC items. The pack shown "
+           "on a path is the one the weapon data gives for the weapon or the ammo in that path (the schematics "
+           "themselves don't name it).")
     if multi:
         out += f" The ammo of {' and '.join(multi)} is fired by weapons of two packs, so it shows both."
     if unknown:
@@ -990,61 +1082,67 @@ TREE_NOTES = {"apparel": _apparel_note, "experimental": _experimental_note, "com
 def build_companion(site, m):
     comp_items = [e for e in m.items if e["sub"] == COMPANION_GROUP]
     van = [v for v in m.vanity["items"] if v["g"] == "companion"]
+    cos = [v for v in van if v["s"] != "armor"]
     tricks = [v for v in m.vanity["items"] if v["g"] == "emotes" and v["s"] == "companion"]
     tree = next(t for t in m.trees if t["key"] == "companion")
     cur = m.currency.get(tree["cur"], {})
+    mis = next((x for x in site.data("missions")["missions"] if x["name"] == "Making Friends"), None)
     body = []
-    body.extend(companion_intro(site, m, tree, cur))
+    body.extend(companion_mission(site, mis))
     body.extend(companion_armor(site, m, tree, cur))
-    body.extend(companion_cosmetics(site, m, van))
+    body.extend(companion_cosmetics(site, m, cos))
     body.extend(companion_tricks(site, m, tricks))
     body.extend(companion_packs(site, m, van + tricks))
-    n_cos = sum(1 for v in van if v["s"] != "armor")
-    lead = (f"<p>Everything about the machine companion, the Runner that travels with you: the "
-            f"{len(m.tree_items(tree))} armor schematics of the companion tree and what they cost in "
-            f"{esc(cur.get('name', 'companion points'))}, the {len(comp_items)} companion items in the game's item "
-            f"list, and the {n_cos} paint jobs, light kits, voice boxes, modules and weapons that change its looks "
-            f"and kit, with the packs they come from.</p>")
-    site.page("items/companion.html", "Companion", "".join(body), "items", lead=lead, head_extra=CSS,
-              desc="The Generation Zero machine companion: armor schematics and costs, paint jobs, light kits, voice "
-                   "boxes, modules, weapons, tricks, internal names and packs.",
+
+    spawner = m.by_raw.get("comp_spawner")
+    img = icon_path(spawner)
+    reg = mis.get("region", "") if mis else ""
+    ib = infobox("Machine Companion", [
+        ("Machine", site.link("machine", "Runner")),
+        ("Built in", site.link("mission", mis["name"]) if mis else None),
+        ("Region", site.link("region", reg, text=REGION_SHORT.get(reg, reg)) if reg else None),
+        ("Points", f'{site.img(TREE_ICON.format("companion"), cls="cur")}{esc(cur.get("name", ""))}'),
+        (None, "Unlocks"),
+        ("Armor", f'<a href="#armor">{len(m.tree_items(tree))} schematics</a>'),
+        ("Cosmetics", f'<a href="#cosmetics">{len(cos)}</a>'),
+        ("Tricks", f'<a href="#tricks">{len(tricks)}</a>' if tricks else None),
+    ], image="~/" + img if img and site.has_file(img) else None, image_alt="Machine Companion")
+    side = [companion_gear(site, m)]
+    lead = (f"<p>The machine companion is a {site.link('machine', 'Runner')} rebuilt to fight on your side. It "
+            f"travels with you, carries some of your gear, can wear armor and does tricks. Its "
+            f"{len(m.tree_items(tree))} armor schematics are bought with "
+            f"{esc(cur.get('name', 'companion points'))}, and {len(cos)} paint jobs, light kits, voice boxes, modules "
+            f"and weapons change its looks and kit ({len(comp_items)} companion items in all).</p>")
+    site.page("items/companion.html", "Companion", "".join(body), "items", lead=lead, head_extra=HEAD,
+              infobox_html=ib, side=side,
+              desc="The Generation Zero machine companion: how to get it, armor schematics and costs, paint jobs, "
+                   "light kits, voice boxes, modules, weapons, tricks and packs.",
               search={"k": "Items", "w": "companion runner pet dog armor paint voice light module"})
 
 
-def companion_intro(site, m, tree, cur):
-    out = [bar("The companion", id="companion")]
-    out.append(f"<p>The companion is a {site.link('machine', 'Runner')} machine rebuilt to fight on your side. It "
-               f"travels with you, carries some of your gear, can wear armor and does tricks.</p>")
-    out.extend(companion_mission(site))
-    spawner = m.by_raw.get("comp_spawner")
-    repair = m.by_raw.get("equipment_comp_armor_repairpack")
-    juice = m.by_raw.get("equipment_comp_repairgun_ammo")
-    rows = []
-    for e in (spawner, repair, juice):
+def companion_gear(site, m):
+    """Side panel: the item behind the companion, its armor repair pack and the Repair Juice."""
+    out = []
+    for raw in ("comp_spawner", "equipment_comp_armor_repairpack", "equipment_comp_repairgun_ammo"):
+        e = m.by_raw.get(raw)
         if not e:
             continue
-        s = m.schem_for_raw.get(e["raw"])
-        what = MANUAL_DESC.get(e["raw"], "").replace(" See the companion page.", "")
+        s = m.schem_for_raw.get(raw)
+        what = MANUAL_DESC.get(raw, "")
         if e["g"] == "ammo":
-            what += f" Details on its {site.link('ammo', e['name'], text='ammo entry')}."
-        rows.append([stock_icon(site, e), f'<b>{esc(e["name"])}</b>', e["stack"], esc(e["sub"]), what,
-                     sch_link(site, s) if s else None,
-                     f"<code>{esc(e['raw'])}</code><br><code class=\"dim\">{e['h']}</code>"])
-    out.append("<p>The game's item list has the item behind the companion, a repair pack for its armor and the "
-               "Repair Juice that the repair tool uses:</p>")
-    attrs = [f' id="c-{slug(e["raw"])}"' for e in (spawner, repair, juice) if e]
-    out.append(row_table(["", "Item", "Stack", "Group", "What it is", "Schematic", "Internal name / hash"], rows,
-                         attrs, cls="compact", num={2}))
-    out.append(f'<div class="curbox">{site.img(TREE_ICON.format("companion"), alt="", cls="curbig")}<div>'
-               f'<b>{esc(cur.get("name", "Companion Schematic Points"))}</b><p>{esc(cur.get("earn", ""))}</p>'
-               f'<span class="small dim">Currency hash <code>{tree["cur"]}</code></span></div></div>')
-    return out
+            what += f" More on its {site.link('ammo', e['name'], text='ammo entry')}."
+        elif raw in m.anchor and not m.anchor[raw].startswith("items/companion.html"):
+            what += f" {site.link('item', raw, text='In the equipment list')}."
+        facts = " · ".join(([f"Stack {e['stack']}"] if e["stack"] else []) + ([sch_link(site, s, "schematic")] if s else []))
+        fact_html = f'<span class="small dim">{facts}</span>' if facts else ""
+        aid = f' id="{m.aid(raw)}"' if m.anchor.get(raw, "").startswith("items/companion.html") else ""
+        out.append(f'<div class="gear"{aid}>{stock_icon(site, e, "mati")}<div><b>{esc(e["name"])}</b>'
+                   f'<p>{what}</p>{fact_html}</div></div>')
+    return panel("Companion gear", "".join(out)) if out else ""
 
 
-def companion_mission(site):
+def companion_mission(site, mis):
     """'Getting the companion': the main mission that builds it, with the three places listed in its description."""
-    ms = site.data("missions")["missions"]
-    mis = next((x for x in ms if x["name"] == "Making Friends"), None)
     if not mis:
         return []
     places = re.findall(r"^- (.+)$", mis.get("description", ""), re.M)
@@ -1059,15 +1157,16 @@ def companion_mission(site):
     where = (" Then you " + esc(station[0].lower() + station[1:]) + ", assemble it there and deploy it."
              if station else "")
     reg = mis.get("region", "")
-    return [f"<h3 id=\"getting\">Getting the companion</h3><p>You build it in the main mission "
-            f"{site.link('mission', mis['name'])} ({site.link('region', reg, text=REGION_SHORT.get(reg, reg))}"
-            f", story arc <i>{esc(mis.get('arc', ''))}</i>).{found}{where} The last steps of the mission have you "
-            f"check its inventory, let it do a trick and build armor for it.</p>"]
+    return [bar("Getting the companion", id="getting"),
+            f"<p>You build it in the main mission {site.link('mission', mis['name'])} "
+            f"({site.link('region', reg, text=REGION_SHORT.get(reg, reg))}, story arc "
+            f"<i>{esc(mis.get('arc', ''))}</i>).{found}{where} The last steps of the mission have you check its "
+            f"inventory, let it do a trick and build armor for it.</p>"]
 
 
 def armor_type(raw):
-    m = re.match(r"equipment_comp_armor_([a-z]+)_q(\d)$", raw)
-    return (m.group(1), int(m.group(2))) if m else (None, None)
+    mt = re.match(r"equipment_comp_armor_([a-z]+)_q(\d)$", raw)
+    return (mt.group(1), int(mt.group(2))) if mt else (None, None)
 
 
 def companion_armor(site, m, tree, cur):
@@ -1075,35 +1174,35 @@ def companion_armor(site, m, tree, cur):
     total = sum(s["c"] for s in its)
     out = [bar("Armor", f"{len(its)} schematics · {fmt(total)} CSP", id="armor")]
     out.append("<p>Companion armor is crafted from the schematics of the companion tree: six kinds, each in four "
-               "qualities (Standard, Improved, Superior, Exceptional; the armor items themselves carry the name "
-               "without the quality word and stack to 2). Each row is one quality: the schematic, what it costs, "
-               "the points for the whole row up to it, the materials for one piece and the item it makes. The line "
-               "under each kind says what it is for, going by its name and how it plays: the game files don't hold "
-               "the armor's protection values, only its name.</p>")
+               "qualities (Standard, Improved, Superior, Exceptional). The armor items carry the name without the "
+               "quality word and stack to 2. What each kind is for goes by its name and how it plays: the game files "
+               "don't hold the armor's protection values.</p>")
+    out.extend(armor_tips(site, m, tree))
+    out.append('<div class="foldall" data-for="armorkinds"></div><div id="armorkinds">')
     for g in tree["groups"]:
         for r in g["rows"]:
             nodes = [m.sch_by_hash[h] for h in r["nodes"]]
             item = m.product[nodes[0]["h"]]
-            dlc = " " + tag("DLC", "dlc") if any(s.get("dlc") for s in nodes) else ""
             vi = next((v for v in m.vanity["items"] if item and v["r"] == item["raw"]), None)
-            pk = f' · Pack: {pack_link(site, vi["p"])}' if vi else ""
-            out.append(f'<h3 id="armor-{slug(r["name"])}">{stock_icon(site, item, "mati")}{esc(r["name"])}{dlc}</h3>')
             kind, _ = armor_type(item["raw"]) if item else (None, None)
+            inner = []
             if ARMOR_DESC.get(kind):
-                out.append(f"<p>{ARMOR_DESC[kind]}</p>")
-            out.append(f'<p class="small dim">{len(nodes)} qualities · {fmt(sum(s["c"] for s in nodes))} CSP for all '
-                       f'of them{pk}</p>')
+                inner.append(f"<p>{stock_icon(site, item, 'mati')}{ARMOR_DESC[kind]}"
+                             + (f' <span class="dim">Pack: {pack_link(site, vi["p"])}.</span>' if vi else "")
+                             + "</p>")
             rows, attrs = [], []
             for s in nodes:
                 p = m.product[s["h"]]
                 rows.append([site.img("img/schematics/" + s["i"], cls="ii"),
-                             sch_link(site, s, s["n"]) + " " + flags_html(site, m, s),
-                             qbadge(s["q"], short=True), s["c"], m.path_cost(s), recipe_html(site, m, s),
-                             f"<code>{esc(p['raw'])}</code><br><code class=\"dim\">{p['h']}</code>" if p else "–"])
-                attrs.append(f' id="c-{slug(p["raw"])}"' if p else "")
-            out.append(row_table(["", "Schematic", "Q", "CSP", "With prereqs", "Recipe (one piece)", "Item / hash"],
-                                 rows, attrs, cls="compact", num={3, 4}))
-    out.extend(armor_tips(site, m, tree))
+                             f'<b>{esc(s["n"])}</b> {flags_html(site, m, s)}',
+                             qbadge(s["q"], short=True), s["c"], m.path_cost(s), recipe_html(site, m, s)])
+                attrs.append(f' id="{m.aid(p["raw"])}"' if p and p["raw"] in m.anchor else "")
+            inner.append(row_table(["", "Schematic", "Q", "CSP", "With prereqs", "Recipe (one piece)"],
+                                   rows, attrs, cls="compact", num={3, 4}))
+            dlc = " · DLC" if any(s.get("dlc") for s in nodes) else ""
+            out.append(fold(r["name"], "".join(inner), level=3, id=f"armor-{slug(r['name'])}",
+                            right=f"{len(nodes)} qualities · {fmt(sum(s['c'] for s in nodes))} CSP{dlc}"))
+    out.append("</div>")
     return out
 
 
@@ -1124,13 +1223,13 @@ def armor_tips(site, m, tree):
     return ["<ul>" + "".join(f"<li>{t}</li>" for t in tips) + "</ul>"]
 
 
-def vanity_tile(site, v, anchor=True):
+def vanity_tile(site, m, v):
     label, cls, _ = LOCK_FLAG.get(v["l"], (v["l"], "base", ""))
     img = site.img("img/vanity/" + v["i"], alt="") if v.get("i") else ""
-    aid = f' id="c-{slug(v["r"])}"' if anchor else ""
-    return (f'<div class="icon ctile fitem"{aid} data-f="{v["s"]} {"dlc" if "D" in v["l"] else "nodlc"}" '
-            f'data-w="{esc(v["r"])} {v["h"]}">{img}<span>{esc(v["n"])}</span>{tag(label, cls)}'
-            f'<span class="dim small">{pack_link(site, v["p"])}</span><code class="small">{esc(v["r"])}</code></div>')
+    aid = f' id="{m.aid(v["r"])}"' if m.anchor.get(v["r"], "").startswith("items/companion.html") else ""
+    return (f'<div class="icon ctile fitem"{aid} data-f="{v["s"]} {"dlc" if "D" in v["l"] else "nodlc"}">'
+            f'{img}<span>{esc(v["n"])}</span>{tag(label, cls)}'
+            f'<span class="dim small">{pack_link(site, v["p"])}</span></div>')
 
 
 def unlocked_phrase(n, total):
@@ -1142,62 +1241,43 @@ def unlocked_phrase(n, total):
     return f"{n} of the {total} {'is' if n == 1 else 'are'} unlocked from the start."
 
 
-def companion_cosmetics(site, m, van):
-    out = [bar("Paint, lights, voice, modules and weapons", f"{sum(1 for v in van if v['s'] != 'armor')} items",
-               id="cosmetics")]
+def companion_cosmetics(site, m, cos):
+    out = [bar("Paint, lights, voice, modules and weapons", f"{len(cos)} items", id="cosmetics")]
     out.append("<p>These are unlocks of the vanity list, shared by all characters of a profile. Each tile shows the "
                "lock flag of the game's vanity table: <b>Default</b> items are unlocked from the start, <b>Locked</b> "
-               "items are locked until you find or earn them, and <b>DLC</b> items come with a content pack. Under it "
-               "is the pack the item belongs to, then its internal name.</p>")
+               "items are locked until you find or earn them, and <b>DLC</b> items come with a content pack, named "
+               "under it. Which mission, challenge or crate gives a locked item isn't part of that table.</p>")
     chips = "".join(f'<button class="chip" data-g="s" data-f="{k}">{esc(t)}</button>' for k, t, _ in COMP_SUBS)
     out.append(f'<div class="filterbar" data-for="cosm"><input placeholder="Filter companion items..." '
                f'aria-label="Filter companion items"><button class="chip on" data-g="s" data-f="*">All</button>{chips}'
                f'<button class="chip" data-g="d" data-f="dlc">DLC</button><span class="count"></span></div>')
-    out.append('<div id="cosm">')
+    out.append('<div class="foldall" data-for="cosm"></div><div id="cosm">')
     for key, title, intro in COMP_SUBS:
-        lst = sorted((v for v in van if v["s"] == key), key=lambda v: v["n"])
+        lst = sorted((v for v in cos if v["s"] == key), key=lambda v: v["n"])
         if not lst:
             continue
         nd = sum(1 for v in lst if v["l"] == "U")
-        out.append(f'<h3 id="{key}">{esc(title)} <span class="dim">{len(lst)}</span></h3>')
-        out.append(f"<p>{intro} {unlocked_phrase(nd, len(lst))}</p>")
-        out.append('<div class="icongrid cgrid">' + "".join(vanity_tile(site, v) for v in lst) + "</div>")
+        ndlc = sum(1 for v in lst if "D" in v["l"])
+        inner = (f"<p>{intro} {unlocked_phrase(nd, len(lst))}</p>"
+                 + '<div class="icongrid cgrid">' + "".join(vanity_tile(site, m, v) for v in lst) + "</div>")
+        out.append(fold(title, inner, level=3, id=key,
+                        right=f"{len(lst)}" + (f" · {ndlc} DLC" if ndlc else "")))
     out.append("</div>")
-    out.append(bar("Companion items table", id="table"))
-    out.append("<p>All companion items of the vanity list in one sortable table, with the item hash save editors use. "
-               "Stack sizes come from the game's item list.</p>")
-    sub_name = {k: t for k, t, _ in COMP_SUBS}
-    sub_name["armor"] = "Armor"
-    rows = []
-    for v in sorted(van, key=lambda v: (v["s"], v["n"], v["r"])):
-        e = m.by_raw.get(v["r"])
-        label, cls, _ = LOCK_FLAG.get(v["l"], (v["l"], "base", ""))
-        rows.append([site.img("img/vanity/" + v["i"], cls="ii") if v.get("i") else "",
-                     f'<a href="#c-{slug(v["r"])}">{esc(v["n"])}</a>', esc(sub_name.get(v["s"], v["s"])),
-                     tag(label, cls), pack_link(site, v["p"]), e["stack"] if e else None,
-                     f"<code>{esc(v['r'])}</code>", f"<code>{v['h']}</code>"])
-    out.append(table(["", "Item", "Type", "Lock flag", "Pack", "Stack", "Internal name", "Hash"], rows, cls="compact",
-                     num={5}))
-    out.append(note("The lock flag is the one the game's vanity table carries for each item (U, L, UD or LD); "
-                    "“Default” is U, “Locked” is L, “DLC” is UD and “DLC · locked” is LD. Which mission, challenge "
-                    "or crate gives a locked "
-                    "item isn't part of this table.", "data"))
     return out
 
 
 def companion_tricks(site, m, tricks):
     if not tricks:
         return []
-    out = [bar("Companion tricks", f"{len(tricks)} emotes", id="tricks")]
+    out = [bar("Tricks", f"{len(tricks)} emotes", id="tricks")]
     out.append("<p>Three emotes make the companion do a trick. They sit in the emote list with the gestures and "
                "dances.</p>")
     rows = []
     for v in sorted(tricks, key=lambda v: v["n"]):
         label, cls, _ = LOCK_FLAG.get(v["l"], (v["l"], "base", ""))
         rows.append([site.img("img/vanity/" + v["i"], cls="ii") if v.get("i") else "",
-                     site.link("vanity", v["n"]), tag(label, cls), pack_link(site, v["p"]),
-                     f"<code>{esc(v['r'])}</code>", f"<code>{v['h']}</code>"])
-    out.append(table(["", "Emote", "Lock flag", "Pack", "Internal name", "Hash"], rows, cls="compact"))
+                     site.link("vanity", v["n"]), tag(label, cls), pack_link(site, v["p"])])
+    out.append(table(["", "Emote", "Lock flag", "Pack"], rows, cls="compact"))
     return out
 
 
@@ -1206,14 +1286,14 @@ def companion_packs(site, m, items):
     by_pack = collections.defaultdict(list)
     for v in items:
         by_pack[v["p"]].append(v)
-    out.append("<p>The content packs the companion items belong to, with how many companion items each one "
+    out.append("<p>The content packs the companion items come from, with how many companion items each one "
                "holds.</p>")
+    label = {"paint": ("paint job", None), "light": ("light kit", None), "voice": ("voice box", "voice boxes"),
+             "module": ("module", None), "weapon": ("weapon", None), "armor": ("armor item", None),
+             "companion": ("trick", None)}
     rows = []
     for p, lst in sorted(by_pack.items(), key=lambda x: -len(x[1])):
         kinds = collections.Counter(v["s"] for v in lst)
-        label = {"paint": ("paint job", None), "light": ("light kit", None), "voice": ("voice box", "voice boxes"),
-                 "module": ("module", None), "weapon": ("weapon", None), "armor": ("armor item", None),
-                 "companion": ("trick", None)}
         rows.append([pack_link(site, p), len(lst),
                      ", ".join(plural(n, *label.get(k, (k, k))) for k, n in kinds.most_common()),
                      tag("DLC", "dlc") if any("D" in v["l"] for v in lst) else tag("Not DLC", "base")])

@@ -1,0 +1,273 @@
+{
+ "_about": "From the Steam store (store.steampowered.com/api/appdetails), read 2026-11-06. Prices are left out because they change.",
+ "game": {
+  "appid": 704270,
+  "name": "Generation Zero",
+  "date": "Mar 26, 2019",
+  "free": false,
+  "short": "Generation Zero is a stealth-action shooter where you wage guerilla warfare against lethal mechanical enemies. Explore a vast open world map inspired by the Swedish Cold War era, take part in the resistance alone or with up to three friends in seamless co-op.",
+  "about": "Generation Zero is set in the familiar but hostile open world of Östertörn, Sweden. Your once peaceful home has now been overrun by mysterious, deadly machine enemies. You must choose your battles wisely as you engage in adrenaline-pumping guerilla combat against the mechanical forces.\nExplore a Hostile Open World\nExplore a huge map inspired by the Swedish Cold War era where danger lurks on every street, in every patch of forest and deep inside every bunker.\nWage Guerilla Warfare\nEngage in tense battles against sophisticated and deadly machines. Take them on solo or together with up to three friends. Can you outsmart a relentless enemy designed to hunt you down?\nGrow Stronger\nGrow stronger as you gain experience fighting back against the machines. Scavenge parts from your fallen enemies and use them to craft equipment, weapons and ammunition. Build and fortify your own bases across the island and start taking back your home!\nUncover the Mystery Behind the Machines\nDiscover the truth behind what really happened to the region of Östertörn.",
+  "image": "img/dlc/704270.jpg",
+  "url": "https://store.steampowered.com/app/704270/",
+  "developers": [
+   "Systemic Reaction™"
+  ],
+  "publishers": [
+   "Avalanche Studios"
+  ],
+  "genres": [
+   "Action",
+   "Adventure"
+  ],
+  "categories": [
+   "Single-player",
+   "Multi-player",
+   "Co-op",
+   "Online Co-op",
+   "Steam Achievements",
+   "Steam Trading Cards",
+   "Partial Controller Support",
+   "Steam Cloud",
+   "Family Sharing"
+  ],
+  "platforms": {
+   "windows": true,
+   "mac": false,
+   "linux": false
+  },
+  "metacritic": null,
+  "supported_languages": "English*, French, German, Spanish - Spain, Russian, Simplified Chinese, Japanese, Polish\n*languages with full audio support"
+ },
+ "dlc": [
+  {
+   "appid": 1062400,
+   "name": "Tubular Vanity Pack",
+   "date": "Jun 11, 2019",
+   "free": true,
+   "short": "Time to adorn some colourful retro outfits to celebrate spring in true 80s fashion! With four new sets that you can mix and match as you see fit, these outfit combinations consist of new hairstyles, clothing, accessories and more. On top of that you will get 6 ace new emotes.",
+   "about": "Time to adorn some colourful retro outfits to celebrate spring in true 80s fashion! With four new sets that you can mix and match as you see fit, these outfit combinations consist of new hairstyles, clothing, accessories and more. On top of that you will get 6 ace new emotes, which let you dance in the fresh spring sun like a true Swede.\nTimeless Set:\nGo back to the past with the Timeless set, giving you with all the clothes needed to look like a truly fly guerilla fighter. Grab your stylish vest, put enough hairspray in your hair to bring out its true voluminous potential and grab a weapon. Because if you’re forced to fight off the machines, why not do it with style.\nSwedish Easter Set:\nA sign of spring in Sweden is children running around dressed as Easter witches asking for candy. That shouldn’t stop us from dressing the same way to get into the spring spirit, even if society as we know it is gone. Make your cheeks red and rosy, add some fake freckles, put on a feathered hat or scarf and dress up as something straight from old Swedish folklore.\nWorkout Set:\nExercising is essential to a balanced life, and no one knew how to train in more spectacular fashion than the people of the 80s. So what if the population has gone missing and you are already running away from hostile machines on a regular basis? Put on your leg warmers, grab that tennis bandana, slap on those bracelets and break into a sweat looking like a true champion with the Workout set.\nRainproof Set:\nFor locals, Sweden is oftentimes a dreary and rainy place, requiring you to dress for the weather. That doesn’t mean you can’t add a bit of color to cheer you up, even if it means that you might stick out from your surroundings. Grab your yellow rain jacket, put on your boots and prepare to fight the machines regardless of the weather.\nSix New Emotes:\nGrab a boombox and embrace the spring weather with these 6 whacky emotes. Give yourself a pair of bunny ears, cheer to the season, and then begin grooving down to the sick beats using the Rickroll, Chicken Dance, Skip Pop, or Aerobics dance moves.",
+   "image": "img/dlc/1062400.jpg",
+   "url": "https://store.steampowered.com/app/1062400/"
+  },
+  {
+   "appid": 1103830,
+   "name": "Bikes",
+   "date": "Jun 25, 2019",
+   "free": true,
+   "short": "You can now traverse the streets, forests, and coasts of Östertörn with a sparkling new bicycle, dodging machines as you go.",
+   "about": "You can now traverse the streets, forests, and coasts of Östertörn with a sparkling new bicycle, dodging machines as you go. Not only will you be able to cross greater distances more efficiently, but you will also be able to utilize these handy bikes as strategic tools to lure machines to your ambush location. Just remember, you are not immune to the spray of bullets or rockets that head your way once an enemy spots you.Cykel Bicycle:\nThe Cykel is a jack-of-all-trades bicycle of Swedish make. Allowing you to gain a great deal of speed on flatter surfaces, the bike makes it faster and easier to discover more safe houses and secrets that the world holds, while also providing a means of gaining distance between you and any machines that might spot you along the way. To get your very own bike, all you need to do is to find a vehicle station at your local safe house. A basic version can be spawned at any time and additional variations can be acquired by defeating powerful machines.\nVariations:\nAvailable in six different colors, the Cykel that you will receive at the start will be the Sky Blue, with the Emerald Green, Ruby Red, Butter Yellow, Amethyst Purple, and Flamingo Pink made available upon killing certain machine types.\nTactical Advantage:\nWhether you use it to maneuver around the battlefield, flee from a hopeless battle, or ring the bell to draw the attention of nearby machines, the bike can be used to gain the upper hand. But don't forget that you are not invincible on the Cykel, even if it might feel that way sometimes. A well-timed rocket can and will send you flying!",
+   "image": "img/dlc/1103830.jpg",
+   "url": "https://store.steampowered.com/app/1103830/"
+  },
+  {
+   "appid": 1062420,
+   "name": "Schweet Vanity Pack",
+   "date": "Jul 2, 2019",
+   "free": false,
+   "short": "The summer warmth has finally reached Sweden, and it’s time to celebrate Midsummer with some schweet new outfits from the 1980s. Mix between the various articles from four stylish new sets, each with a unique combination of accessories, clothing and hairstyles.",
+   "about": "The summer warmth has finally reached Sweden, and it’s time to celebrate Midsummer with some schweet new outfits from the 1980s. Mix between the various articles from four stylish new sets, each with a unique combination of accessories, clothing and hairstyles. Express your excitement with 5 stellar new emotes, and start dancing around the maypole. Adventurer Set:\nThe Adventurer Set is the perfect outfit to tread through snow and sand alike. Looking like something straight out of a movie with your fedora, necktie, whip and an extra length of rope, you are ready to take on whatever the wilderness throws at you. While there thankfully aren’t any snake pits to fall into, hostile machines are definitely a’plenty.Miami Set:\nFighting machines has never looked cooler with the Miami Set. Beaches and bag guys have been replaced with forests and bullets, but the attire is still as snazzy as ever. With those sunglasses, brightly patterned shirts and tailored suits, your targets don’t stand a chance.Midsummer Set:\nSummer in Sweden means midsummer celebrations, and midsummer celebrations aren’t complete without authentic Swedish folk attire and jumping around a maypole like a frog. So put on your floral hair wreath, tie your pants off at the knees and grab a dance partner. Just because the countryside is overrun with deadly machines doesn’t mean you can’t celebrate the arrival of summer in true midsummer style.Tourist Set:\nFlash goes the camera as you  manage to capture a perfect moment in time. So what if it’s rockets being shot your way by a Tank? This is your vacation and you are definitely going to make the most of it, fanny pack and all. Let the missing local population know you’re visiting with this flashy Tourist Set, and make sure to put on socks with those sandals, for the woods of Sweden await your exploration and your loud charm.Five New Emotes:\nDance in the summer with style with these 5 choice emotes. Jump around the maypole with the Midsummer Dance, or just rock out to old 80s tunes with the Hustle and the Prep. Or simply get into your groove by jamming on your air guitar. The choice is yours.",
+   "image": "img/dlc/1062420.jpg",
+   "url": "https://store.steampowered.com/app/1062420/"
+  },
+  {
+   "appid": 1099600,
+   "name": "Blockbuster Vanity Pack",
+   "date": "Sep 24, 2019",
+   "free": true,
+   "short": "Everyone knows that the summer season is a perfect time to sit back with an action-packed blockbuster and let the movie magic happen. And few decades had such excellent ones as the 1980s, so in tribute to some of those, you can now mix and match between 4 iconic new outfits as well as express your love for them using 6 emotes.",
+   "about": "Everyone loves to sit back with an action-packed blockbuster and let the movie magic wash over them. And few decades had such excellent ones as the 1980s, so in tribute to some of those, you can now mix and match between 4 iconic new outfits as well as express your love for them using 6 emotes.Interceptor Set:\nThe sands of the desert may have been replaced by the dark foliage of the woodlands but that doesn’t make it any less unforgiving. With the Interceptor Set, you can wear a dashing leather outfit and goggles as you take the fight to your enemies. For it is a most glorious day and even if you don’t have a battle plan in place, you need to survive no matter what.Ecto-Scientist Set:\nIt might be hard to know who you are going to call in the case of hostile machines roaming the countryside, but when wearing the Ecto-Scientist Set you aren't afraid of no machines. Put on your jumpsuit, grab a pair of high-tech goggles, and grab your favorite gun. You may not have to worry about crossing any streams but you can still arrive to the action, observe the scene, and kick the machines in the posterior.Xeno-Specialist Set:\nWith the population gone, no one can hear you scream for help. So channel your inner hero through the Xeno-Specialist Set, with a wild hairdo, ammo straps, and highrise shoes. For the machines are not only incredibly hostile but also structurally perfect. That doesn't mean a few well-placed bullets won’t take them down though.Annihilator Set:\nYou become the ultimate killing machine when donning the Annihilator Set, perhaps not in combat but most definitely in looks. With a studded jacket, colorful t-shirt, and boots you will look absolutely deadly as you lay your ambushes, line up your shots, and slowly walk away from exploding cars.Six New Emotes:\nDance to those summer blockbuster beats with these 6 choice emotes. From the Pop Princess and One Step, to the Bump and Running Man, your moves will be smooth as butter. Or show your respect to a comrade by doing the Salute or Air Punch.",
+   "image": "img/dlc/1099600.jpg",
+   "url": "https://store.steampowered.com/app/1099600/"
+  },
+  {
+   "appid": 1173930,
+   "name": "Rivals & Experimental Weapons",
+   "date": "Oct 28, 2019",
+   "free": true,
+   "short": "Taking on enemy machines has reached a whole new level with the introduction of the Rival System and Experimental Weapons.",
+   "about": "Taking on enemy machines has reached a whole new level with the introduction of the Rival System and Experimental Weapons. While certain enemies will now be shaped and hardened through your interactions with the world, your new tier of weapons will provide you with enough firepower to hold your own against this new generation of machines.Bitter Rivals\nAs you combat and take down large numbers of enemies within a certain region, the enemy will begin to regard you as a serious threat and rapidly adapt to aggressively fight back and crush your resistance once and for all. As a result, a machine will evolve, dealing a lot more damage and becoming more resistant to your attacks. These are referred to as Regional Rivals, and upon evolving into a Rival, they will gain a name and a unique title that hints at their past exploits in the war against humans.\nSometimes engaging an enemy won’t go as planned and you or one of your friends will be defeated at the hands of a machine. The enemy that gained the upper hand will evolve into a stronger machine, emboldened by your failure to take it out, and keep on roaming the world - and in many ways it becomes your rival. These are known as Personal Rivals, and will be a harsh reminder of the outcome of your past encounters with them.Experimental Weaponry:\nThe fight against the machines just got a lot more ruthless. Yet luck has been on your side, as a storage of experimental weapons developed by a secret division of the Swedish army has been discovered. They seem to be a mash-up of weapons we recognize and the technology used by the machines. Each has its own unique and satisfying approach to taking down the enemy. These weapons include:\n•  Experimental Klaucke 17 - Has a chance to trigger a small EMP explosion\n•  Experimental AG 4 - Can set machine components on fire due to heated bullets\n•  Experimental Pvg 90 - Adds a railgun upgrade that increases muzzle velocity and penetration, allowing you to hit multiple enemies with one shot\n•  Experimental 12G Pump-Action - Features flechette rounds that will explode when armed\n•  Experimental M/46 \"Kpist\" SMG - Includes an overdrive function that dramatically increases the fire rate\n•  Experimental Grg m/49 - Launches 2 grenades in the same burst",
+   "image": "img/dlc/1173930.jpg",
+   "url": "https://store.steampowered.com/app/1173930/"
+  },
+  {
+   "appid": 1157550,
+   "name": "Alpine Unrest",
+   "date": "Nov 26, 2019",
+   "free": false,
+   "short": "It’s December of 1989, in the desolate forests and hills of the Swedish countryside. A month has passed since the population vanished overnight, and you have spent this time exploring the grim open world alone and with friends, sticking to the shadows to scavenge for equipment and weapons in your attempt to stay alive.",
+   "about": "It’s December of 1989, in the desolate forests and hills of the Swedish countryside. A month has passed since the population vanished overnight, and you have spent this time exploring the grim open world alone and with friends, sticking to the shadows to scavenge for equipment and weapons in your attempt to stay alive. All the while, you’ve identified the mastermind behind the events leading up to the attack and it has now led you to Himfjäll. This unexplored island off the east coast might hold more answers, and perhaps something even more valuable - other survivors.EXPANSION PACK FEATURES\nHIMFJÄLL ISLAND\nDusted from coast to coast in snow, this formerly popular ski resort now stands abandoned to the winds and the enemies roaming the area. There is much to discover though, from the cafés and shops of the small towns that pepper Himfjäll, to the ski slopes, trailer park campsites and thick pine forests that cover the island. Additionally, Björntunet stands as a key landmark, this once pleasant ski hotel now being used as a hideout.  As long as you stay aware of your surroundings, who knows what you might uncover.\nYOU’RE NOT ALONE\nHimfjäll might be unexplored and highly dangerous, but there are also clear signs that more information about the machines and the whole situation can be found there. But above simple answers, you have found something infinitely better - a group of survivors who have through the skin of their teeth managed to survive against the machines. These are the first people you have come face to face with since that fateful day, and with each other’s help you might yet survive this invasion.\nMORE ACHIEVEMENTS & COLLECTIBLES\nThe new area is covered in collectibles for you to find, from lost dictaphone journal entries to character biographies. Additionally, there are a whole new batch of achievements for you to try and complete.ADDITIONAL GAME FEATURES\nAPOCALYPSE CLASS MACHINES\nIf you are not vigilant when making your way across the new island, you will sooner or later cross paths with what appears to be a new tier of machines. They bear clear resemblance to their lighter-armed counterparts, but are deadlier on a level previously unseen. Specifically designed by FNIX to hunt down any survivors and overpower any human that would try to fight back, the machines wield weapons so vile, they would be banned under the Geneva convention. From Hunters wielding flamethrowers to runners equipped with biochemical machine guns, you’ll need to rethink and rework your tactics to take these new enemies down. Be warned that Östertörn might no longer safe either, as these Apocalypse Class machines may have found their way to the mainland.\nEXPANDED ARSENAL\nYour quest for survival  will require extensive exploration, and if luck is on your side, you might even stumble upon some new weapons for your arsenal. The KVM 89 Squad Automatic Weapon and KVM 59 Machine Gun can be found while searching around the island, so keep your eyes peeled. With the movement of the Apocalypse Class machines, there is also a potential chance of finding them on Östertörn as well.",
+   "image": "img/dlc/1157550.jpg",
+   "url": "https://store.steampowered.com/app/1157550/"
+  },
+  {
+   "appid": 1252740,
+   "name": "Apparel Crafting",
+   "date": "Mar 23, 2020",
+   "free": true,
+   "short": "It’s time to turn your ultimate 80s outfits into battle worthy garments with the addition of the Apparel Crafting in this latest update.",
+   "about": "It’s time to turn your ultimate 80s outfits into battle worthy garments with the addition of the Apparel Crafting in this latest update. By exploring and scavenging in Östertörn and Himfjäll, you will be able to find crafting materials or objects you can strip down for parts. Use these resources to enhance your clothing, making them as strong as they are fashionable.Apparel Enhancements:\nAs you explore the world of Generation Zero, completing missions, looting chests, and wandering around the countryside, you will now have a chance to stumble upon schematics that can be used to enhance your apparel. Simply take the clothing of your choice that utilized the same item slot as your schematic, combine it with the right crafting materials and watch your stats go up. Mix and match what enhancements you have to become an even more resilient fighter in the continued conflict against the hostile machines. At the point of the update’s release, there will be over 20 different schematics available to you.Crafting Materials:\nWhether you decide to scavenge the abandoned towns and defeated enemies for materials, or recycle equipment and items that are no longer of use to you, you will be able to utilize 6 different crafting resources to boost your character.\nThe crafting materials you should keep an eye out for in this update are:\nAdhesive, Thread, Steel, Rubber, Cloth, and Plastic.\nEach schematic is connected to a specific stat, and it is up to you how you best optimize your character to survive potential confrontations with the enemy. You might add visibility reduction to be able to sneak better, or bullet resistance to be able to take more hits before being downed by an overwhelming foe. Whatever combination you chose, your outfit will help you survive longer.",
+   "image": "img/dlc/1252740.jpg",
+   "url": "https://store.steampowered.com/app/1252740/"
+  },
+  {
+   "appid": 1301740,
+   "name": "FNIX Rising",
+   "date": "Jun 23, 2020",
+   "free": false,
+   "short": "Strange structures have started to appear along the Southern Coast of Östertörn and they definitely aren't man-made. Perhaps some of the survivors calling themselves \"the Resistance\" will know more…",
+   "about": "The struggle for survival continues as the year 1989 draws to a close. Hope for finding the missing population has started to dwindle, as you and your friends continue to do your best to stay away from the invading machines and scour abandoned buildings for weapons and equipment. However, recent scouting missions that you have conducted on your own and with friends have yielded some unexpected results - structures that appear to be made by the FNIX machines have started appearing along the Southern Coast of mainland Östertörn. Thankfully it seems that there are also survivors, scattered across both the Southern Coast, the Archipelago and Farmland regions, putting up resistance against the invaders.EXPANSION PACK FEATURES\nALTERED LANDSCAPES\nAs your path leads you back to this previously explored area of Östertörn, you discover that the machines have been busy repurposing the landscape to fit their needs. Massive walls that make up fortifications, ominously glowing generators and the looming cable network are but a few of the structures you have sighted while sneaking through the area. Nearby towns are left in ruins as Harvesters gather up any resource that can be of use, leaving only the shells of buildings that once stood there. It’s unclear what FNIX is planning, but whatever it is can’t be good.\nTHE RESISTANCE GROWS\nYour return to the Archipelago and Farmlands regions has also offered you a glimmer of hope, as you bump into clear signs of human resistance. Where once you associated this region mostly for the clear signs of the struggle between the military and the machines in the early days of the invasion, with towns left in ruins and destruction and death everywhere you looked, you are now finding individuals who have managed to survive despite the odds. Pockets of survivors have managed to bunker down in key locations, utilizing strategic positions to stay safe and maximize damage towards the hostile machines. However, their hold is always tentative at best and the enemies are ruthless in their attacks.\nMORE TO DISCOVER\nThere has been more than just a change to the scenery on the Southern Coast and the Farmland regions, so as you explore make sure to keep your eyes open for new collectibles and clothing, as well as new achievements for you to unlock.ADDITIONAL GAME FEATURES\nMELEE WEAPONS\nIn the thick of battle, you never want to discover that you are out of ammo. One stroke of bad luck could be what breaks your team up or leaves you dodging bullets, desperately trying to get out of a bad situation. As such, keep your eyes open around the countryside of Östertörn for brännboll bats and sledgehammers. These more rudimentary weapons are perfect for stunning an unprepared Hunter or simply smashing a lunging Tick into tiny pieces.\nAPOCALYPSE CLASS HARVESTER\nIt seems that FNIX has been busy building more than just structures on the Southern Coast. Sightings of Apocalypse Class Harvesters have confirmed your fears, and while they seem to primarily be focused on gathering resources around the new buildings, they have been known to tread to other parts of the mainland as well. Usually accompanied by other Apocalypse tier machines, they are formidable on their own as well, known to utilize Biological Aerosol or even Dirty Missiles if you attempt to ambush them.",
+   "image": "img/dlc/1301740.jpg",
+   "url": "https://store.steampowered.com/app/1301740/"
+  },
+  {
+   "appid": 1450340,
+   "name": "US Weapons Pack",
+   "date": "Dec 17, 2020",
+   "free": false,
+   "short": "The Resistance has gotten access to 3 US weapons, meant to help them survive against the machines. Which weapon will you wield - the N9 Handgun, the N16 Assault Rifle, or the N60 machine Gun?",
+   "about": "Since the fateful day of the \"Cataclysm\", NATO and the USSR have each been closely monitoring the situation in Sweden, raising their preparedness levels and weighing options.\nWhen proof was obtained that there were survivors hiding in multiple locations in Östertörn, resolution \"Reaction: Phase 1\" was passed at NATO, as an urgent, temporary solution: large quantities of standard-issue weapons used in the American military were to be dropped all over Östertörn, in order to offer immediate assistance and support to the various groups of survivors.\nMid-tier versions of these three US weapons will now be available in any PLUNDRA storage box on Östertörn; if you are new to the game, you will find them in the storage box at the Iboholmen Church. Higher tier versions of the weapons can also be found by defeating and looting enemies. These weapons are:\nN9 Handgun - A proven, medium-power 9mm semi-automatic pistol. Standard-issue pistol for the US Army. Good for short-range encounters and as a last resort when your main weapon runs dry.\nN16 Assault Rifle - Standard-issue assault rifle for the US Army. Easy to handle and equipped with a burst fire. Excels at medium to long range encounters due to its accuracy, sight options and fire mode versatility.\nN60 Machine Gun - The N60 is a powerful and stable general-purpose machine gun used by the US Army since the late 1950s. Suitable for short to medium range encounters where accuracy is secondary to being able to sustain a high rate of fire without frequent reloads.\nWeapon attachments included:\n• N9 Extended Magazine\n• N16 Extended Magazine\n• N60 Extended Magazine",
+   "image": "img/dlc/1450340.jpg",
+   "url": "https://store.steampowered.com/app/1450340/"
+  },
+  {
+   "appid": 1580920,
+   "name": "Soviet Weapons Pack",
+   "date": "May 4, 2021",
+   "free": false,
+   "short": "The Resistance has found specialized USSR weapons where FNIX had attacked Soviet soldiers entering Östertörn. These 3 weapons are the Kotenok Sniper Rifle, the AT-WAD Assault Rifle, and the RLG-7 (Rocket Launcher). Which one will you wield?",
+   "about": "The Östertörn survivors are no longer the only ones fighting the war against FNIX. Soviet soldiers in small and specialized forces have been seen in the northern regions using moveable defenses to set up temporary camps. They seem to be fighting the machines, but does that make them allies, or do they have their own motives for entering Swedish territory?\nThe budding Resistance in Östertörn has come across several dead Soviet soldiers, armed with specialized USSR weapons that can be of great use to the Resistance as they learn to use them in the fight against FNIX.\nMid-tier versions of these three Soviet weapon models will be available in any PLUNDRA storage box in Östertörn. If you’re new to the game, you will find them in the storage box at the Iboholmen Church. For the higher-tiered versions, you will have to take the fight to the machines and loot the weapons from their wreckage. These weapons are:\n• Kotenok Sniper Rifle  - This iconic semi-automatic designated marksman rifle is one of the most common weapons in the USSR. Deployed in a similar way as a machine gun, it can suppress an area with accurate gunfire, keeping your enemies at bay.\n• AT-WAD Assault Rifle - Used by special forces such as the Spetsnaz, this silenced automatic rifle features an integrated suppressor, allowing you to shoot more shots before potentially being discovered by your enemy.\n• RLG-7 (Rocket Launcher) - One of the most recognizable and widespread rocket-propelled grenade systems ever produced, the RGP-7 is as Soviet as they come. Utilized to fight armoured and fortified positions in almost every conflict since its creation, it should be perfect for taking down robots as well.\nWeapon attachments included:\n• 2.7x RLG-7 Scope\n• Kotenok Extended Magazine\n• AT-WAD Extended Magazine\n• LG-7V High-Explosive Round (ammo for the RLG-7)\n• 9x39mm Full Metal Jacket Ammo\n• 9x39mm Armor-Piercing Ammo",
+   "image": "img/dlc/1580920.jpg",
+   "url": "https://store.steampowered.com/app/1580920/"
+  },
+  {
+   "appid": 1610720,
+   "name": "Base Defense Pack",
+   "date": "Feb 8, 2022",
+   "free": false,
+   "short": "Defending your base from the machines has paid off, and Resistance members have come up with new variations. Get access to their new defenses, including: grenade launcher pillboxes, spiked walls, spiked floors, explosive barrels, human decoys, and sandbag shooting positions.",
+   "about": "Your battles with countless machines have paid off - other Resistance members have become inspired by your successes and have designed new structures to help keep your base varied and ready for any kind of attack. This is only the beginning of how to expand on your base, and with the following structures you are ready for battle once more.\n• Resistance Grenade Launcher Pillbox - A repurposed tank machine weapon. Manned by a hidden Resistance fighter who fires at any hostile unit that comes within their field of view.\n• Resistance Spiked Wall Trap - A reinforced wall that is connected to a pressure plate system which can trigger makeshift spikes. Enemies that come in contact with any of the spikes receive moderate damage.\n• Resistance Spiked Floor Trap - A specially constructed floor that is connected to a pressure plate system which can trigger makeshift spikes. Enemies that come in contact with the activated spikes receive moderate damage.\n• Resistance Explosive Barrel - A red explosive barrel. It can be utilized as a trap to deal heavy damage to enemies caught within the blast radius.\n• Resistance Human Decoy - A decoy designed after a human. This is meant to distract machines from other helpful structures or allies. This decoy activates once a machine comes within view.\n• Resistance Sandbag Shooting Position - A sandbag focused, defensive shooting position which allows for good defense against an onslaught of bullets.",
+   "image": "img/dlc/1610720.jpg",
+   "url": "https://store.steampowered.com/app/1610720/"
+  },
+  {
+   "appid": 1610690,
+   "name": "US Weapons Pack 2",
+   "date": "Mar 8, 2022",
+   "free": false,
+   "short": "The Resistance has discovered new US weapons, dropped there with the intention of helping them fight the machines. Which weapon will you wield - the COM-10 SMG, the S21 or the G79 Grenade Launcher?",
+   "about": "While the survivors of Östertörn have already managed to scavenge some US and Soviet weapons, NATO has decided it’s time to broaden the arsenal even further, dropping another shipment of American weapons across the Resistance controlled territories. While this is still not enough to stave off the machine invasion, it should help the fighters tackle most situations and battles.\nMid-tier versions of these three new US weapon models can be found in the PLUNDRA storage box in Östertörn. If this is your first time playing the game, you will find them in the storage box at the Iboholmen Church. Higher tier versions of the weapons can also be found by taking the fight to the machines and looting the weapons from their wreckage. These weapons are:\n• COM-10 SMG  - The COM-10 is a high recoil yet very fast firing SMG that is sometimes used by the US army in special operations.\n• S21 - A sniper version of the classic S14 battle rifle with improved accuracy and adjustments to fit a scope mount.\n• G79 Grenade Launcher - The G79 was created by the US army to grant infantry an impressive mix of firepower, range and accuracy and at the same time achieve being more portable than a mortar.\nWeapon attachments included:\n• COM-10 Silencer - A unique silencer for the COM-10. Attaching this mod will significantly reduce the noise created by each shot.\n• COM-10 Extended Magazine - An extended magazine for the COM-10 SMG. Attaching this mod will increase the weapon's ammo capacity.\n• S21 Extended Magazine - An extended magazine for the S21. Attaching this mod will increase the weapon's ammo capacity.\n• G79 Smoke Grenade - A smoke-producing round that fits the G79 Grenade Launcher. This shell deals no damage but instead creates a smoke screen at the point of impact which hinders enemies' visual prowess.\n• G79 HE Grenade - A high-explosive round that fits the G79 Grenade Launcher. This low-velocity shell is capable of dealing moderate explosive damage to armored targets.\n• G79 EMP Grenade - A non-damaging, electromagnetic pulse round that fits the G79 Grenade Launcher. This shell, once detonated, is capable of knocking out all electronic devices within a short range for an extended period of time.\nCrafting schematics included:\n• G79 Smoke Grenade  - Ammo crafting schematic that makes G79 Smoke Grenades.\n• G79 HE Grenade - Ammo crafting schematic that makes G79 HE Grenades.\n• G79 EMP Grenade - Ammo crafting schematic that makes G79 EMP Grenades.",
+   "image": "img/dlc/1610690.jpg",
+   "url": "https://store.steampowered.com/app/1610690/"
+  },
+  {
+   "appid": 1850670,
+   "name": "Base Support Pack",
+   "date": "Apr 19, 2022",
+   "free": false,
+   "short": "As you continue to defend your base against machine attacks, the resistance members have once again come up with new ways to improve it. This pack includes: Sniper turrets, medical trailers, jukeboxes, high wall variations, FNIX machine trophies, and more.",
+   "about": "As you continue to successfully fend off countless machine attacks, the Resistance has once again been inspired to create new structures and decorations to upgrade your base with. Whether you decide to fortify your base or simply add a personal touch to it is up to you, but with this pack, you should be ready to face anything.\n• Resistance Sniper Tower - A protected tower housing a Resistance sharpshooter with a high-powered sniper rifle. The sharpshooter will use precision fire to pick off any hostile units that come into their field of view.\n• Medical Trailer - A makeshift medical station that heals anybody nearby. Stock it with healing consumables before a fight to allow it to function as the perfect one-stop healing spot in the heat of battle.\n• Classic Jukebox - Not only does it play various tunes to keep you motivated during the fight, but you can also use it as a lure to get enemy machines off you and other vital targets within the base.\n• Security Fences - Keep your enemies away from you without sacrificing your ability to see and shoot them! These chain-link fences are weaker than a regular defensive wall, and they won't protect you from bullets, but they are effective at stopping enemies in their tracks.\n• FNIX War Trophies (decorative) - Cherish past victories with these mounted trophies of fallen enemies. Comes in Tick, Runner, Hunter, and Tank variations.\n• Portable Spotlight (decorative) - A portable spotlight that you can position to light up strategic spots around their base, covering a 130-degree area.\n• Old Outhouse (decorative) - Everybody needs to go sometime, even in the thick of battle, so why not come prepared with an outhouse.",
+   "image": "img/dlc/1850670.jpg",
+   "url": "https://store.steampowered.com/app/1850670/"
+  },
+  {
+   "appid": 1771050,
+   "name": "Resistance Weapons Pack",
+   "date": "May 12, 2022",
+   "free": false,
+   "short": "The Resistance has started creating more makeshift weapons to ensure they can continue to fight the machines, even when more conventional ammo is hard to find. Which weapon will you wield - the Pitchfork, Heavy Bow or Flamethrower?",
+   "about": "When times get tough, tenacious Resistance fighters need to find more creative ways to keep their armory stocked with effective weapons. With less ammo around, the Resistance of Östertörn have started building their own weapons to keep fighting the machine invasion. Despite their more makeshift nature, these new weapons are proving to be both efficient and deadly.\nMid-tier versions of these three resistance weapons can be found in the PLUNDRA storage box in Östertörn. If this is your first time playing the game, you will find them in the storage box at the Iboholmen Church. Higher tier versions of the weapons can also be found by taking the fight to the machines and looting the weapons from their wreckage. These weapons are:\n• Resistance Pitchfork - At first glance it could be dismissed as a simple farmer’s tool, but this pitchfork has been reinforced and transformed into an effective Resistance weapon. The pitchfork has excellent reach, which is great for doing damage from a safer distance.\n• Resistance Heavy Bow - Built using scavenged machine parts, this heavy bow packs a powerful punch, but requires more skill to use. The enhanced power of the bow also allows it to fire heavy, modified arrows, making this a versatile tool.\n• Resistance Flamethrower - While it may look like an accident waiting to happen, the flamethrower's powerful napalm fuel causes massive damage to machines by sticking to them while it burns, quickly melting its vulnerable internal parts.\nSpecial weapon ammo and attachments include:\n• Resistance Standard Arrow - A regular arrow that does a lot of damage to components but is weak against armor.\n• Resistance Explosive Arrow - A special type of arrow that explodes on impact, dealing extra explosive damage to its target.\n• Resistance Flare Arrow - An arrow with an emergency flare attached. The lit flare will lure any enemy's attention and fire away from you and onto the flare, even if that flare is now pinned to another machine.\n• 3-Pin Makeshift Bow Sight - This 3-Pin Bow sight features three pins calibrated to hit at a certain distance, working best when the distance to the target is known.\n• Large Flamethrower Tank - A larger tank that can hold more fuel, letting you relentlessly melt enemy machines for longer without needing to refuel.",
+   "image": "img/dlc/1771050.jpg",
+   "url": "https://store.steampowered.com/app/1771050/"
+  },
+  {
+   "appid": 2009530,
+   "name": "Tactical Equipment Pack",
+   "date": "Jun 23, 2022",
+   "free": false,
+   "short": "The Resistance fighters have put together a handpicked equipment pack consisting of established and improvised items. These include Molotov cocktails, portable covers, sentry turrets, and explosives.",
+   "about": "The Resistance fighters have gotten craftier with their combat techniques, trying out both established and improvised equipment for battle purposes. This particular batch brings both explosive and defensive elements to the battle and can be crafted using materials collected across Östertörn. Additionally, a small amount has been put into your PLUNDRA storage box for experimentation purposes. So head out there and wreak some havoc!\n• Molotov Cocktail - A classic in warfare, this improvised incendiary weapon packs an explosive punch on impact\n• Remote-Controlled Explosive - Sticky explosive that can be detonated using a remote radio-link trigger\n• Portable Machine Gun Turret - A small sentry turret equipped with a machine gun that once deployed, automatically fires at nearby enemies.\n• Portable Cover - This bullet-resistant but destructible cover allows you to find shelter even in the most open of places, shielding you against oncoming bullets\n• Explosive Toy Lure - This cute toy dog attracts unsuspecting machines with loud sounds, and then explodes.",
+   "image": "img/dlc/2009530.jpg",
+   "url": "https://store.steampowered.com/app/2009530/"
+  },
+  {
+   "appid": 2144761,
+   "name": "Motorbikes Pack",
+   "date": "Oct 25, 2022",
+   "free": false,
+   "short": "You can now travel through Östertörn on new types of Motorbikes! It’s faster. It’s louder. It’s more exciting! You can ride on 3 different models: Dirt Bike, Military Motorcycle and Resistance Bike. Each of them has their own strengths and weaknesses.",
+   "about": "You can now travel through Östertörn on new types of Motorbikes! It’s faster. It’s louder. It’s more exciting! The motorbikes will get you places quicker, but they’ll need fuel to drive. Plan your travel strategically so you won't run out of gasoline unexpectedly, and be sure to check out abandoned cars and gas stations and find jerry cans to fuel up. Or craft the fuel by yourself! You can ride on 3 different models. Each of them has their own strengths and weaknesses:\nDirt Bike: Lets you go offroad! It’s powerful enough to drive through vegetation without much of an issue.\nMilitary Motorcycle: Big and clunky but very fast! Not the easiest one to drive but definitely not easy to destroy!\nResistance Bike: Truly resistant motorbike built by the Resistance! The armor around it is made with destroyed machine parts and scrap.\nEach motorbike comes with 6 color variations so you can choose the one that matches your 80s style.\nMotorbikes are loud, so they can attract enemies if you ride near them. Also remember that they might need repairing from time to time! You can scavenge repair kits or craft your own - the choice is yours.",
+   "image": "img/dlc/2144761.jpg",
+   "url": "https://store.steampowered.com/app/2144761/"
+  },
+  {
+   "appid": 2144760,
+   "name": "Camo Weapon Skins Pack",
+   "date": "Nov 15, 2022",
+   "free": false,
+   "short": "What is the best way to stand out from the Östertörn crowd? Add some color to your life (and rifle)! This DLC brings you 15 weapon skins specially designed to take that flair to the next level.",
+   "about": "What is the best way to stand out from the Östertörn crowd? Add some color to your life (and rifle)! This DLC brings you 15 weapon skins specially designed to take that flair to the next level.\nWith this DLC you can choose from 15 weapon skins specially designed for:\nKvm 89\nKvm 59 x2\nPansarvärnsgevär 90 (Pvg 90) x2\n\"Älgstudsare\" Hunting Rifle\nHP5\nKlaucke 17\nSjöqvist Semi-Auto\nAI-76 x2\nMeusser Hunting Rifle\nGranatgevär m/49\nAutomatgevär 5 (AG 5)\n12G Pump-Action\nApply a camo pattern to your gun by using the weapon skins to shoot machines with style!",
+   "image": "img/dlc/2144760.jpg",
+   "url": "https://store.steampowered.com/app/2144760/"
+  },
+  {
+   "appid": 2200740,
+   "name": "Eastern European Weapons Pack",
+   "date": "Dec 12, 2022",
+   "free": false,
+   "short": "The Östertörn weapons collection is now expanded with 4 new guns from eastern Europe! Use them to fight deadly machines and raise the resistance!",
+   "about": "The Östertörn weapons collection is now expanded with new guns from eastern Europe! Use them to fight deadly machines and raise the resistance!\nThis pack of Eastern European Weapons will bring you:\nThe Volkov Pistol - the most common handgun used throughout the Cold War era. Semi-automatic, light and easy to handle.\nVosa vz. 68 - Czechoslovakian machine pistol used by special forces units. More agile than traditional submachine guns but just as deadly!\nPM-71 Machine Gun - one of most popular machine guns in eastern Europe. Big fire, big range, big damage.\nVintovka 1891 - Classic bolt-action rifle designed in the 19th century. Still used by snipers in the 1980s. Best for precise shots!\nAnd remember: Living is winning!",
+   "image": "img/dlc/2200740.jpg",
+   "url": "https://store.steampowered.com/app/2200740/"
+  },
+  {
+   "appid": 2334430,
+   "name": "Tactical Equipment Pack 2",
+   "date": "May 25, 2023",
+   "free": false,
+   "short": "Take your guerilla operations to the next level with our second Tactical Equipment DLC! Using scavenged parts and tech, the Resistance have crafted five new items to distract, disrupt, hack, and blow up your enemies!",
+   "about": "The Resistance is getting more and more creative with their crafting skills!  Using scavenged parts and tech found across Östertörn, the Resistance have crafted a new batch of field equipment to help them in the fight against the machines!\nThe second Tactical Equipment Pack contains 5 new equipment items for players to use:\n• Toy Car Lure - A modified RC car with flares and a radio strapped to it. Once placed on the ground, this car will drive away at top speed, flares burning and radio at max volume. This lure is great for drawing enemies away from you in a sticky situation.\n• Sensory Jammer - The sensory jammer creates a specially tuned EM field when it is activated. This field interferes with the senses of machines, rendering players within it undetectable.\n• Hacking Dart - A lawn dart modified with a magnet and hacking device. The dart can be thrown quite far and accurately, allowing you to hit enemies from relative safety. Once attached to a machine, the device disrupts the friend-or-foe identification system, causing it to attack other machines. The effect lasts until the device's battery runs out.\n• Remote-Controlled Tick - This modified Tick has had its navigation system overridden, allowing it to be controlled via an RC car transmitter. For good measure, a homemade pipe-bomb has also been attached to it. This allows you to directly control the Tick, sending it into the midst of unsuspecting machines to scout them out and blow them up!\n• Portable Homing Turret - This portable turret is a potent weapon against ground and airborne targets alike. It fires compact, rocket-propelled grenades in salvos of 3. The grenades are self-guided and lock on to nearby targets. No machine is safe when one of these turrets are active.",
+   "image": "img/dlc/2334430.jpg",
+   "url": "https://store.steampowered.com/app/2334430/"
+  },
+  {
+   "appid": 2473770,
+   "name": "Companion Accessories Pack",
+   "date": "Jul 18, 2023",
+   "free": false,
+   "short": "Pack offers three strategic modules: Medic, Scavenger, and Spotter. Also, advanced armor such as Ballistic Plates, Concussive Plates, and Firebreak Insulation. Plus, enjoy 11 cosmetic options for your Companion.",
+   "about": "The Resistance has discovered a way to hack a Runner Machine and make it friendly. This Companion Accessories Pack gives you several new equipment and customization options for your new Machine Companion.\nThe Machine Companion can be equipped with one of three additional behavior modules that provide extra functionality in and out of combat:\n• Medic Module - Gives the Companion the ability to use medical supplies from its inventory to heal you when you’re wounded\n• Scavenger Module - Equips the Companion with the ability to collect items from defeated foes and store them in its inventory\n• Spotter Module - Allows the Companion to mark enemy machines, increasing the damage they take in combat\nAlso, you can research various advanced armor options to craft for your Machine Companion:\n• Ballistic Plates - Offers enhanced protection from bullet damage\n• Concussive Plates - Provides superior defense against explosions\n• Firebreak Insulation - Gives improved shielding from fire damage\nFinally, you get access to 11 new cosmetic enhancements to give your Companion a personal touch:\n• Five distinctive Paint Jobs - “Black Fire”, “Blue Thunder”, “Bubblegum”, “Grand Prix”, and “Mecha Monster”\n• Three Light Kits - “Toxic Glow”, “Hazed”, and “Neon”\n• Three Voice Boxes - “Digi-dog”, “Speak & Learn”, and “Astrid”",
+   "image": "img/dlc/2473770.jpg",
+   "url": "https://store.steampowered.com/app/2473770/"
+  },
+  {
+   "appid": 2591100,
+   "name": "Advanced Intelligence Cosmetics Pack",
+   "date": "Nov 7, 2023",
+   "free": false,
+   "short": "Pack offers ten new weapon skins in three themes: Prototype, Artificial Intelligence, and Apocalypse. New cosmetics for the Machine Companion: Apocalypse Class Companion Skin, Light Kit and Voice Box, and a Vocoder Voice Box.",
+   "about": "They say if you know your enemy well, you learn to wear his skin. As Resistance, you understand nothing better than the machines you fight day in, day out. That makes these new weapon skins, themed after the different FNIX machine classes, a fitting reward for your survival.\n- Three industrial orange Prototype skins for the AI-76 Assault Rifle, Möller PP, and M/46 \"Kpist\" SMG.\n- Four intimidating red and black Artificial Intelligence skins with light emissive maps for the Granatgevär m/49, .44 Magnus, Automatgevär 5, and Pansarvärnsgevär 90.\n- Three radioactive teal and yellow Apocalypse skins with light emissive maps for the Meusser Hunting Rifle, 12G Pump-Action, and Klaucke 17.\nYour hacked Machine Companion is proving a useful tactical asset. If you survive, this could be the start of a beautiful friendship. So why not customize your rusty sidekick? This pack includes the gritty cosmetics of Apocalypse class machines for your Machine Companion.\n- Apocalypse Class Companion Skin: The colors and patterns of the deadly Apocalypse class machines, including their emissive glow sections.\n- Apocalypse Companion Light Kit: A radioactive yellow light kit to match their new Apocalypse Class skin and voice box.\n- Apocalypse Voice Box: Sounds inspired by the Apocalypse class machines.\n- Vocoder Voice Box: Sounds like a sinister space robot you shouldn’t entrust with your safety.",
+   "image": "img/dlc/2591100.jpg",
+   "url": "https://store.steampowered.com/app/2591100/"
+  },
+  {
+   "appid": 2689180,
+   "name": "Reinforced Flakmoped Pack",
+   "date": "Dec 12, 2023",
+   "free": false,
+   "short": "Get the flakmoped fleet for more ways to fight machines and cover a lot of ground fast. Three-wheeled motorbikes modified to carry others on a shielded flatbed, go off road, or bring a mobile crafting station into the field.",
+   "about": "Cover more ground and do it faster with this fleet of flakmopeds. These three-wheel motorbikes make it quick to get where you need to be or escape the reach of hostile machines. Flakmopeds are light but durable and feature a front flatbed that can carry other Resistance fighters. With unique upgrades and modifications, this specialized fleet gives you new ways to battle the machines.\nMeet your fleet:\n- Stridsflak: Damage machines by crashing into them with this heavily fortified flakmoped. It's ready for the impact – the machines are not. Carry other players in the flatbed. There’s a front shield to protect them while they take aim. Stridsflak has extra hit points, too.\n- Terrängflak: Rugged terrain is no problem with this offroader. It's equipped with deep treads and robust suspension to get you and your flatbed passengers across uneven ground faster.\n- Bruksflak: In this world, you need to be ready for anything. That makes this utility flakmoped indispensable. It's got a workbench instead of a flatbed, giving you a Plundra storage box, a crafting station, and a recycling station in the field. Change weapons, craft ammo, store loot. Bruksflak gives you options when you need them.\nAll flakmopeds in the fleet are available in red, blue, green, yellow, pink, and purple.",
+   "image": "img/dlc/2689180.jpg",
+   "url": "https://store.steampowered.com/app/2689180/"
+  },
+  {
+   "appid": 2955520,
+   "name": "Heavy Weapons Pack",
+   "date": "Jun 25, 2024",
+   "free": false,
+   "short": "It’s time to wreak havoc across Östertörn! Unleash the action hero within you and take center stage with heavy weapons that really pack a punch.",
+   "about": "Become the Hollywood action hero that Östertörn deserves!\nGrab your bandana, rip off your sleeves, and unleash mayhem on your mechanical foes with four lethal high-caliber weapons that are sure to get your adrenaline pumping.\nThis pack contains:\n•  MGR-6 - This rugged and reliable grenade launcher was made for chaos. A sluggish reloading process pays off with explosive combat performance. Find yourself in a tight corner? Whip this baby out and unload six rounds of heavy-duty danger.\n•  N144 Minigun - This is one mean minigun. Often serving as weapon mounts on military helicopters, its rotary barrel design fills the air with a hurricane of lead to bring down even the toughest mechanical foes.\n•  Iron Condor - Give the machines a reason to hesitate. When the rust buckets see the majestic .44 caliber barrel on your hip, they’re sure to think twice.\n•  RACS-12 - If things get too close for comfort, turn up the heat. Take full advantage of this rapid-action, semi-auto combat shotgun as you clear the path with 8 rounds of high-speed lead shots.",
+   "image": "img/dlc/2955520.jpg",
+   "url": "https://store.steampowered.com/app/2955520/"
+  }
+ ]
+}

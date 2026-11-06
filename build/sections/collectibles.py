@@ -2,26 +2,31 @@
 
 Pages
     world/collectibles.html            every collectible type of markers.json (collectibles, schematic points,
-                                       house photos) with counts per region and the challenges that count them
-    world/collectibles/<sub key>.html  one page per type: a map of every pickup and a filterable table
+                                       house photos): cards per group, counts per region, the challenges
+    world/collectibles/<sub key>.html  one page per type: a map of every pickup and the list of pickups (per region
+                                       folds for the long lists); the challenge and the region split in the rail
     world/keys.html                    keys.json: command bunker barcodes, facility keycards, door keys and
-                                       mission items, with their content pack and the missions that use them
+                                       mission items, one collapsed section per kind, then the content packs and a
+                                       small map of the keys that lie loose in the world
 
 Kinds registered
     collectible-type   key = markers.json sub key ('gnomes'), aliases = display name
-    key                key = keys.json name, aliases = internal name and item hash
+    key                key = keys.json name, aliases = internal name and item hash (search only, never printed)
 
 Data: markers.json (subs + items: s = sub key, n = name, x/z = world position in metres, l = the game's internal
-scene / place name, r = map region, d = Alpine Unrest flag), map_locations.json (named locations, for "nearest"),
-gamedata.json (challenges, schematic point currencies, stats), schematics.json, keys.json, loot.json (the four keys
-that lie loose in the world), missions.json (to show which mission uses a key), vanity.json (dance emotes, gnome
-masks).
+scene name, r = map region), map_locations.json (named locations, for "nearest"), gamedata.json (challenges,
+schematic point currencies), schematics.json, keys.json, loot.json (the four keys that lie loose in the world),
+missions.json (to show which mission uses a key), vanity.json (dance emotes, gnome masks).
+
+Layout v2: no internal names / hashes / scene names on the pages. Map links carry the type's filter
+(show=<sub key>) and per-item links focus the marker by its exact name.
 """
 import collections
 import math
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, infobox, bar, note, cards, kv, tag, REGIONS
+from wiki.site import (esc, slug, norm, fmt, table, infobox, bar, fold, panel, maplink, minimap, note, cards, kv,
+                       tag, REGIONS)
 
 CSS = '<link rel="stylesheet" href="~/assets/collectibles.css">'
 REGION_NAME = dict(REGIONS)
@@ -37,6 +42,7 @@ PHOTO_AT = 50          # m: a house photo this close to a safehouse belongs to i
 COPY_LABEL = "Island01 Dialogue"    # audio log markers that are the dialogue copy of a log, not a pickup
 GLOBAL_LABEL = "Global"             # world location entries: placed in a global scene, not in the world
 SKIP_LOCATIONS = {"Unknown"}        # location names that are no use as "nearest location"
+FOLD_OVER = 40         # a type with more pickups than this lists them in one closed fold per region
 
 # What each type is. Plain facts only; the counts and regions are added from the data. The first sentence is also
 # the text of the type's card on the overview, so it should say something on its own.
@@ -69,9 +75,8 @@ BLURB = {
     "bottles": "Resistance bottles: the Messages in a Bottle that the DAWN challenge <i>Together in Loneliness</i> "
                "asks you to collect.",
     "newspapers": "Newspapers, all of them in the town of Östervik.",
-    "sovietdolls": "Soviet dolls, numbered <i>Soviet Doll 01</i> to <i>10</i>, all of them in the Marshlands. "
-                   "They lie in named locations (scenes <code>R6 N…</code>) and in the open world between them "
-                   "(<code>R6 W…</code>).",
+    "sovietdolls": "Soviet dolls, numbered <i>Soviet Doll 01</i> to <i>10</i>, all of them in the Marshlands, some "
+                   "inside named locations and some in the open country between them.",
     "toysoldiers": "Toy soldiers, all of them on the North Coast. They are numbered <i>Toy Soldier 01</i> to "
                    "<i>10</i>, but the files have two different pickups that are both called <i>Toy Soldier "
                    "08</i>.",
@@ -103,12 +108,12 @@ def compass(a, b):
     return ["N", "NE", "E", "SE", "S", "SW", "W", "NW"][int((ang + 22.5) // 45) % 8]
 
 
-def coords(p):
-    return f'<span class="mono" data-v="{p["x"]:.0f}">{p["x"]:.0f}, {p["z"]:.0f}</span>'
-
-
 def dlc_tag(region):
     return tag(REGION_DLC[region], "dlc") if region in REGION_DLC else ""
+
+
+def region_link(site, r, dlc=True):
+    return site.link("region", r, REGION_SHORT[r]) + (" " + dlc_tag(r) if dlc and r in REGION_DLC else "")
 
 
 def page_path(key):
@@ -126,13 +131,16 @@ def and_list(parts):
     return ", ".join(parts[:-1]) + " and " + parts[-1]
 
 
+def strip_tags(h):
+    return re.sub("<[^>]+>", "", h or "")
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # the data model, computed once
 # ---------------------------------------------------------------------------------------------------------------
 class Model:
     def __init__(self, site):
         mk = site.data("markers")
-        self.mains = {m["key"]: m["name"] for m in mk["mains"]}
         self.subs = [s for s in mk["subs"] if s["main"] in OWN_MAINS]
         self.sub = {s["key"]: s for s in self.subs}
         # 'Unknown' is a placeholder name some unnamed places carry; it is no help as a landmark
@@ -145,7 +153,6 @@ class Model:
                 self.items[m["s"]].append(self._item(m, len(self.items[m["s"]]) + 1))
         self.challenges = self._challenges(site.data("gamedata"))
         self.tree_dlc = {t["name"]: tree_dlc(site, t) for t in site.data("gamedata")["challenges"]}
-        self.scene_regions = self._scene_regions()
 
     def _item(self, m, num):
         it = dict(m, num=num, copy=m["l"] == COPY_LABEL, glob=m["l"] == GLOBAL_LABEL, loc=None, ld=None)
@@ -174,21 +181,14 @@ class Model:
     def region_counts(self, key, placed_only=False):
         return collections.Counter(i["r"] for i in (self.placed(key) if placed_only else self.pickups(key)))
 
+    def regions(self, key):
+        rc = self.region_counts(key)
+        return [r for r in REGION_KEYS if rc.get(r)]
+
     def dlc_trees(self, key):
         """[(challenge, expansion name)] for the challenges counting `key` that belong to an expansion's tree."""
         return [(ch, self.tree_dlc[tree["name"]]) for tree, ch in self.challenges.get(key, [])
                 if self.tree_dlc.get(tree["name"])]
-
-    def _scene_regions(self):
-        """[(code, region)] for the short scene codes (R1, R2 ... Island01) in the markers' place names: the region
-        most of the markers with that code lie in."""
-        seen = collections.defaultdict(collections.Counter)
-        for key in self.items:
-            for i in self.pickups(key):
-                for code in re.findall(r"\b(R\d+|Island\d+)\b", i["l"]):
-                    seen[code][i["r"]] += 1
-        order = lambda c: (c.startswith("Island"), int(re.sub(r"\D", "", c)))
-        return [(c, seen[c].most_common(1)[0][0]) for c in sorted(seen, key=order)]
 
     def _challenges(self, gd):
         """sub key -> [(tree, challenge)] for the challenges whose tiers name the collectible."""
@@ -200,6 +200,10 @@ class Model:
                     if phrase.lower() in text:
                         out[key].append((tree, ch))
         return out
+
+    def counted_by(self, ch):
+        """Every type a challenge counts."""
+        return [s["key"] for s in self.subs if any(c["key"] == ch["key"] for _, c in self.challenges.get(s["key"], []))]
 
 
 def tree_dlc(site, tree):
@@ -250,20 +254,26 @@ def collect(site):
         n = len(m.pickups(s["key"]))
         count = f"{n} entries (no map position)" if m.unplaced(s["key"]) else f"{n} on the map"
         site.register("collectible-type", s["key"], page_path(s["key"]), s["name"], icon="map/" + s["icon"],
-                      aliases=[s["name"]], desc=f"{GROUP_ONE[s['main']]} · {count}. "
-                      + re.sub("<[^>]+>", "", BLURB.get(s["key"], "")),
+                      aliases=[s["name"]], desc=f"{GROUP_ONE[s['main']]} · {count}. " + strip_tags(BLURB.get(s["key"], "")),
                       keywords=f"collectible collectable {s['key']} {s['main']} location map")
     k = site.data("keys")
+    anchors = key_anchors(k)
     for e in k["items"]:
         # "Storage key" and "Storage Key" are two different keys: the second one is registered by internal name
         key = e["n"] if not site.find("key", e["n"]) else e["r"]
-        site.register("key", key, f"world/keys.html#{key_anchor(e)}", e["n"], icon=f"img/keys/{e['i']}",
+        site.register("key", key, f"world/keys.html#{anchors[e['h']]}", e["n"], icon=f"img/keys/{e['i']}",
                       aliases=[e["r"], str(e["h"])], desc=f"{section_name(k, e['s'])} · {strip_desc(e['d'])}",
                       keywords=f"key {e['r']} {e['s']}")
 
 
-def key_anchor(e):
-    return "k-" + slug(e["r"])
+def key_anchors(k):
+    """item hash -> the id of its row on keys.html, made from the name ('k-storage-key', 'k-storage-key-2')."""
+    out, seen = {}, collections.Counter()
+    for e in k["items"]:
+        a = "k-" + slug(e["n"])
+        seen[a] += 1
+        out[e["h"]] = a if seen[a] == 1 else f"{a}-{seen[a]}"
+    return out
 
 
 def section_name(k, key):
@@ -290,10 +300,6 @@ def type_icon(site, s, cls="cic"):
     return site.img("map/" + s["icon"], cls=cls, alt="")
 
 
-def challenge_links(site, m, key):
-    return ", ".join(site.link("challenge", ch["name"]) for _, ch in m.challenges.get(key, []))
-
-
 def region_cell(n, unplaced):
     if not n:
         return '<span class="dim" data-v="0">–</span>'
@@ -314,7 +320,7 @@ def overview_table(site, m):
         tot.update(m.region_counts(s["key"], placed_only=True))
     rows.append(["<b>All types</b>", sum(len(m.pickups(s["key"])) for s in m.subs)]
                 + [tot.get(r, 0) for r in REGION_KEYS])
-    heads = ["Type", "Total"] + [REGION_SHORT[r] + (" (DLC)" if r in REGION_DLC else "") for r in REGION_KEYS]
+    heads = ["Type", "Total"] + [REGION_SHORT[r] for r in REGION_KEYS]
     return table(heads, rows, cls="compact ctypes", num=set(range(1, 2 + len(REGION_KEYS))))
 
 
@@ -324,7 +330,7 @@ def type_cards(site, m, main):
         if s["main"] != main:
             continue
         p = m.pickups(s["key"])
-        regs = sorted({i["r"] for i in p}, key=REGION_KEYS.index)
+        regs = m.regions(s["key"])
         where = REGION_SHORT[regs[0]] if len(regs) == 1 else f"{len(regs)} regions"
         if m.unplaced(s["key"]):
             where = "No map position"
@@ -335,7 +341,7 @@ def type_cards(site, m, main):
 
 
 def first_sentence(html):
-    text = re.sub("<[^>]+>", "", html)
+    text = strip_tags(html)
     return re.split(r"(?<=\.)\s", text, maxsplit=1)[0]
 
 
@@ -349,19 +355,6 @@ def single_region_types(m):
     return out
 
 
-def scene_region_mismatch(m):
-    """One example of an item whose internal place name names another region than the map border puts it in."""
-    words = {"archipelago": "archipelago", "southcoast": "southcoast", "farmlands": "farmlands",
-             "forest": "forest", "mountain": "mountains", "mountains": "mountains", "marshlands": "marshlands",
-             "northcoast": "northcoast"}
-    for s in m.subs:
-        for i in m.pickups(s["key"]):
-            w = norm(i["l"].split(" ")[0])
-            if w in words and words[w] != i["r"]:
-                return i, words[w]
-    return None, None
-
-
 def photo_coverage(m):
     """(names of the safehouses that have a house photo, [safehouse markers without one])."""
     have = {i["safehouse"]["n"] for i in m.pickups("safehousehints") if i.get("safehouse")}
@@ -372,111 +365,85 @@ def photo_sentence(site, m):
     """How many safehouses have a house photo, from the data."""
     have, missing = photo_coverage(m)
     mainland = [s for s in m.safehouses if s["r"] not in REGION_DLC]
-    miss_main = sorted((s for s in missing if s["r"] not in REGION_DLC), key=lambda s: norm(s["n"]))
+    miss_main = [s for s in missing if s["r"] not in REGION_DLC]
     miss_dlc = [s for s in missing if s["r"] in REGION_DLC]
-    text = f"{len(mainland) - len(miss_main)} of the {len(mainland)} mainland safehouses have a house photo."
-    if miss_main:
-        text += " " + and_list(site.link("safehouse", s["n"]) for s in miss_main) + " have none in the files"
-        text += f", and neither do any of the {len(miss_dlc)} safehouses on Himfjäll." if miss_dlc else "."
-    elif miss_dlc:
-        text += f" The {len(miss_dlc)} safehouses on Himfjäll have none in the files."
-    return text
+    text = f"{len(mainland) - len(miss_main)} of the {len(mainland)} mainland safehouses have a house photo"
+    if miss_dlc:
+        text += f"; the {len(miss_dlc)} safehouses on Himfjäll have none in the files"
+    return text + (f" (the {site.link('collectible-type', 'safehousehints', 'House photos')} page lists the ones "
+                   f"without)." if miss_main else ".")
+
+
+def all_collectibles_map(m):
+    return maplink(show=[s["key"] for s in m.subs if s["main"] == "collectibles" and not m.unplaced(s["key"])])
 
 
 def build_overview(site, m):
-    gd = site.data("gamedata")
     total = sum(len(m.pickups(s["key"])) for s in m.subs)
     n_placed = sum(len(m.placed(s["key"])) for s in m.subs)
     unplaced = [s for s in m.subs if m.unplaced(s["key"])]
     n_col = sum(len(m.pickups(s["key"])) for s in m.subs if s["main"] == "collectibles")
     n_types = sum(1 for s in m.subs if s["main"] == "collectibles")
+    n_group = {g: sum(len(m.pickups(s["key"])) for s in m.subs if s["main"] == g) for g in OWN_MAINS}
     body = []
 
-    body.append(bar("All types"))
-    body.append("<p>One row per marker type of the map that this section covers. <b>Total</b> is the number of "
-                "entries in the game files (for audio logs without the dialogue copies, see below); the region "
-                "columns split it by the region the map borders put each pickup in (Himfjäll is the Alpine Unrest "
-                "island). Click a header to sort, or a name for the page with every pickup of that type on a map.</p>")
+    for main in OWN_MAINS:
+        body.append(bar(GROUP_LABEL[main], right=plural(n_group[main], "pickup")))
+        if main == "collectibles":
+            n_ch = sum(1 for s in m.subs if s["main"] == main and m.challenges.get(s["key"]))
+            body.append(f"<p>The {n_types} collectible series. The game counts them in its <i>Collectables "
+                        f"found</i> statistic, and {n_ch} of the series also count for a challenge.</p>")
+        elif main == "schematics":
+            body.append("<p>Each of these pickups gives points of one schematic currency, which you spend in that "
+                        "crafting tree. They don't unlock a particular schematic.</p>")
+        else:
+            body.append(f"<p>{photo_sentence(site, m)}</p>")
+        body.append(type_cards(site, m, main))
+
+    body.append(bar("By region"))
+    body.append("<p>How many pickups of each type lie in each region (by the region borders of the map; Himfjäll is "
+                "the Alpine Unrest island). Click a header to sort.</p>")
     body.append(overview_table(site, m))
     if unplaced:
         body.append('<p class="dim"><small>* ' + and_list(
             site.link("collectible-type", s["key"], s["name"]) for s in unplaced)
             + " have no position in the world: their region comes from their name, and the <b>All types</b> row "
-              "leaves them out of the region totals.</small></p>")
+              "leaves them out.</small></p>")
 
-    for main in OWN_MAINS:
-        body.append(bar(GROUP_LABEL[main], right=f"{sum(len(m.pickups(s['key'])) for s in m.subs if s['main'] == main)} pickups"))
-        if main == "collectibles":
-            stat = next((x for x in gd["stats"] if x["key"] == "CollectablesFound"), None)
-            stat_txt = (f" The game keeps a <i>{esc(stat['label'])}</i> statistic (<code>{esc(stat['key'])}</code>)."
-                        if stat else "")
-            n_ch = sum(1 for s in m.subs if s["main"] == main and m.challenges.get(s["key"]))
-            body.append(f"<p>The {n_types} collectible series.{stat_txt} {n_ch} of the series also count for a "
-                        f"challenge (see below).</p>")
-        elif main == "schematics":
-            body.append("<p>Schematic point pickups are not collectibles in the menu sense: each gives points of "
-                        "one schematic currency, which you spend in that crafting tree. The markers don't name a "
-                        "schematic; the pages list what the currency buys.</p>")
-        else:
-            body.append(f"<p>{photo_sentence(site, m)}</p>")
-        body.append(type_cards(site, m, main))
-
-    body.append(bar("Challenges"))
-    body.append("<p>The challenges whose objectives count collectibles, with every tier. <b>From → to</b> is the "
-                "running total the tier starts at and needs; the title is the reward the game names for the tier. "
-                "The files flag some challenge trees as DLC; the tag names the expansion, worked out from the "
-                "missions and expansion names its challenges quote. Such a challenge is part of that expansion even when "
-                "the collectibles it counts lie on the base game map.</p>")
-    body.append(challenge_table(site, m, [s["key"] for s in m.subs]))
+    ch_table = challenge_overview(site, m)
+    if ch_table:
+        body.append(bar("Challenges"))
+        body.append("<p>The challenges that count collectibles. Each type's page has the tiers.</p>")
+        body.append(ch_table)
 
     body.append(bar("Tips"))
     body.append("<ul>" + "".join(f"<li>{t}</li>" for t in overview_tips(site, m)) + "</ul>")
-
-    body.append(bar("Reading the data"))
-    item, named = scene_region_mismatch(m)
-    ex = ""
-    if item:
-        ex = (f" For example <i>{esc(item['n'])}</i> has the place name <code>{esc(item['l'])}</code>, but lies "
-              f"inside the {esc(REGION_SHORT[item['r']])} border.")
-    body.append(note(
-        "<p>Each marker has a <b>place name</b>: the internal name of the game scene the object sits in, such as "
-        "<code>Farmlands Överby Farm Sandbo</code> or <code>R4 W045</code> (in those short codes the number is the "
-        "region: " + ", ".join(f"<code>{c}</code> {esc(REGION_SHORT[r])}" for c, r in m.scene_regions) + "; "
-        "<code>N</code> scenes are named locations and <code>W</code> scenes open world). The <b>region</b> "
-        "column is worked out from the region borders of the map, which is what the game's own map uses." + ex
-        + "</p><p>Coordinates are world metres: x grows to the east, z to the south, the same numbers as in the "
-        "interactive map.</p>", "data"))
     copies = [i for i in m.items.get("audiologs", []) if i["copy"]]
     if copies:
         body.append(note(
-            f"The map data has {len(m.items['audiologs'])} audio log markers, but only "
-            f"{len(m.pickups('audiologs'))} audio logs: every log is also in a dialogue scene "
-            f"(<code>{COPY_LABEL}</code>) at one shared spot. Lists that count {len(m.items['audiologs'])} audio "
-            f"logs count each one twice.", "fix", "Audio log count"))
+            f"The map data has {len(m.items['audiologs'])} audio log markers, but there are only "
+            f"{len(m.pickups('audiologs'))} audio logs: every log is also placed in a dialogue scene at one shared "
+            f"spot. Lists that count {len(m.items['audiologs'])} audio logs count each one twice.",
+            "fix", "Audio log count"))
 
-    stat = next((s for s in gd["stats"] if s["key"] == "CollectablesFound"), None)
-    summary = kv([
+    box = infobox("Collectibles", [
         ("Collectible series", n_types),
         ("Collectibles", n_col),
-        ("Schematic point pickups", sum(len(m.pickups(s["key"])) for s in m.subs if s["main"] == "schematics")),
-        ("House photos", len(m.pickups("safehousehints"))),
+        ("Schematic point pickups", n_group["schematics"]),
+        ("House photos", n_group["housephotos"]),
         ("All entries", total),
         ("With a map position", n_placed),
-        ("Game statistic", f"<i>{esc(stat['label'])}</i> <code>{esc(stat['key'])}</code>" if stat else None),
+        ("Map", f'<a href="{all_collectibles_map(m)}">All collectibles on the map</a>'),
         ("Keys & barcodes", f'<a href="~/world/keys.html">{len(site.data("keys")["items"])} items</a>'),
-    ])
-    body.insert(0, summary)
-    no_pos = ""
-    if unplaced:
-        no_pos = (f" (the {sum(len(m.pickups(s['key'])) for s in unplaced)} "
-                  + and_list(esc(s["name"]) for s in unplaced) + " entries are lore with no place in the world)")
+    ], image="~/map/" + m.sub["gnomes"]["icon"] if site.has_file("map/" + m.sub["gnomes"]["icon"]) else None,
+        cls="cbox")
     lead = (f"<p>Generation Zero hides <b>{n_col} collectibles</b> in {n_types} series around Östertörn and "
-            f"Himfjäll, from garden gnomes and Dala horses to mixtapes, machine blueprints and audio logs. This page "
-            f"also covers the <b>schematic point</b> pickups and the <b>house photos</b> of the safehouses: "
-            f"{total} entries in all, read from the game files, {n_placed} of them with an exact position"
-            f"{no_pos}.</p>")
+            f"Himfjäll, from garden gnomes and Dala horses to mixtapes, machine blueprints and audio logs. This "
+            f"section also covers the <b>schematic point</b> pickups and the <b>house photos</b> of the safehouses: "
+            f"{total} entries in all, {n_placed} of them with an exact position. Pick a type for its map and the "
+            f"place of every pickup.</p>")
     site.page("world/collectibles.html", "Collectibles", "\n".join(body), "world", sub="collectibles", lead=lead,
-              head_extra=CSS,
+              head_extra=CSS, infobox_html=box,
               desc=f"All {total} collectibles, schematic point pickups and house photos of Generation Zero: counts "
                    f"per region, maps and challenges.",
               search={"k": "World", "w": "collectibles collectables gnomes dalahast mixtapes"})
@@ -491,17 +458,15 @@ def overview_tips(site, m):
             regs.update(m.region_counts(s["key"], placed_only=True))
     n = sum(regs.values())
     best = regs.most_common(1)[0]
-    tips.append(f"Counting only the collectible series (not schematic points or house photos), "
-                f"{site.link('region', best[0])} holds the most: {best[1]} of the {n} collectibles with a map "
-                f"position.")
+    tips.append(f"Counting only the collectible series, {site.link('region', best[0])} holds the most: {best[1]} "
+                f"of the {n} collectibles with a map position.")
     one = single_region_types(m)
     if one:
         tips.append("Some series stay in one region, so you can finish them in one trip: " + and_list(
             f"{site.link('collectible-type', s['key'], s['name'])} ({site.link('region', r, REGION_SHORT[r])})"
             for s, r in one) + ".")
-    tips.append("Every type page with real positions has a map with all pickups and the nearest named location of "
-                f'each one; the <a href="~/map/index.html">interactive map</a> shows them all together with '
-                f"filters.")
+    tips.append(f'The <a href="{all_collectibles_map(m)}">interactive map</a> shows every collectible at once; '
+                f"each type page links to a map with only that type.")
     dlc_ch = {(ch["name"], d) for s in m.subs for ch, d in m.dlc_trees(s["key"])
               if not any(r in REGION_DLC for r in m.region_counts(s["key"]))}
     for name, d in sorted(dlc_ch):
@@ -516,27 +481,51 @@ def tree_cell(site, m, tree):
     return esc(tree["name"].title()) + (" " + dlc_badge(site, d) if d else "")
 
 
-def challenge_table(site, m, keys):
-    """Every tier of the challenges that count any of `keys`; 'Counts' names every type the challenge counts."""
-    all_keys = [s["key"] for s in m.subs]
+def challenge_overview(site, m):
+    """One row per challenge that counts collectibles (the tiers are on the type pages)."""
     rows, seen = [], set()
-    for key in keys:
-        for tree, ch in m.challenges.get(key, []):
+    for s in m.subs:
+        for tree, ch in m.challenges.get(s["key"], []):
             if ch["key"] in seen:
                 continue
             seen.add(ch["key"])
-            types = [k for k in all_keys if any(c["key"] == ch["key"] for _, c in m.challenges.get(k, []))]
-            what = " + ".join(site.link("collectible-type", k, m.sub[k]["name"]) for k in types)
-            for n, t in enumerate(ch["tiers"], 1):
-                rows.append([site.link("challenge", ch["name"]) if n == 1 else "",
-                             tree_cell(site, m, tree) if n == 1 else "",
-                             what if n == 1 else "", n, f'<span data-v="{t["req"]}">{t["start"]} → {t["req"]}</span>',
-                             esc(t["desc"]), esc(t["title"])])
+            what = " + ".join(site.link("collectible-type", k, m.sub[k]["name"]) for k in m.counted_by(ch))
+            rows.append([site.link("challenge", ch["name"]), tree_cell(site, m, tree), what, len(ch["tiers"]),
+                         ch["tiers"][-1]["req"], esc(ch["tiers"][-1]["title"])])
     if not rows:
         return ""
-    return table(["Challenge", "Tree", "Counts", "Tier", "From → to", "Objective", "Title"], rows,
-                 cls="compact", sortable=False)
+    return table(["Challenge", "Tree", "Counts", "Tiers", "Last tier", "Last title"], rows, cls="compact",
+                 num={3, 4})
 
+
+def challenge_panel(site, m, key):
+    """Side panel of a type page: the challenge(s) that count it, tier by tier."""
+    out = []
+    for tree, ch in m.challenges.get(key, []):
+        other = [k for k in m.counted_by(ch) if k != key]
+        head = f'<p class="chead2"><b>{site.link("challenge", ch["name"])}</b><br><span class="dim">' \
+               f'{tree_cell(site, m, tree)} challenge tree</span></p>'
+        if other:
+            head += "<p>Counts these together with " + and_list(
+                site.link("collectible-type", k, m.sub[k]["name"]) for k in other) + ".</p>"
+        rows = [[n, f'<span data-v="{t["req"]}">{t["start"]} → {t["req"]}</span>', esc(t["title"])]
+                for n, t in enumerate(ch["tiers"], 1)]
+        out.append(head + table(["Tier", "Collect", "Title"], rows, cls="compact ctiers", sortable=False))
+    if not out:
+        return ""
+    return panel("Challenge", "".join(out), cls="cchal")
+
+
+def region_panel(site, m, key):
+    """Side panel: pickups per region, each with a map link showing only that type in that region."""
+    rc = m.region_counts(key)
+    regs = m.regions(key)
+    if len(regs) < 2 or m.unplaced(key):
+        return ""
+    body = kv([(REGION_SHORT[r], f'<a href="{maplink(show=[key], region=[r])}" title="Show on the map">{rc[r]}</a>')
+               for r in regs])
+    return panel("By region", body + '<p class="dim"><small>Click a number for the map of that region.</small></p>',
+                 cls="cregs")
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -564,8 +553,8 @@ def _span(lo, hi, want):
     return max(0.0, lo), min(1.0, hi)
 
 
-def static_map(site, pts, link_rows=True):
-    """pts: [(x, z, label, title, anchor)]. Returns the HTML of the cropped map with numbered pins."""
+def static_map(site, pts, href):
+    """pts: [(x, z, label, title, anchor)]; href: the 'Open the full map' link (with the page's filters)."""
     if not pts:
         return ""
     us, vs = zip(*(map_frac(p[0], p[1]) for p in pts))
@@ -593,12 +582,15 @@ def static_map(site, pts, link_rows=True):
     pins = []
     for (x, z, label, title, anchor), u, v in zip(pts, us, vs):
         el = "a" if anchor else "span"
-        href = f' href="#{anchor}"' if anchor else ""
-        pins.append(f'<{el} class="spin"{href} title="{esc(title)}" style="left:{(u - u0) / su * 100:.3f}%;'
+        ref = f' href="#{anchor}"' if anchor else ""
+        pins.append(f'<{el} class="spin"{ref} title="{esc(title)}" style="left:{(u - u0) / su * 100:.3f}%;'
                     f'top:{(v - v0) / sv * 100:.3f}%">{esc(label)}</{el}>')
     many = " many" if len(pts) > MANY_PINS else ""     # collectibles.css turns these pins into dots on phones
-    return (f'<div class="smap{many}" style="aspect-ratio:{su / sv:.4f}">{inner}{"".join(pins)}'
-            f'<a class="mmopen" href="~/map/index.html">Open the full map</a></div>')
+    # the width is also capped so the map's height stays within three quarters of the window
+    return (f'<div class="smap{many}" style="aspect-ratio:{su / sv:.4f};max-width:min(1100px,calc(75vh * '
+            f'{su / sv:.4f}))">{inner}{"".join(pins)}'
+            f'<a class="mmopen" href="{href}">Open the full map</a></div>')
+
 
 # ---------------------------------------------------------------------------------------------------------------
 # world/collectibles/<key>.html
@@ -609,6 +601,13 @@ def near_cell(site, it):
     d = it["ld"]
     rel = "at" if d < 40 else f"{d:,.0f} m {compass(it['loc'], it)} of"
     return f'<span data-v="{d:.0f}"><span class="dim">{rel}</span> {site.link("location", it["loc"]["name"])}</span>'
+
+
+def map_cell(key, it):
+    """The pickup's coordinates, linked to the interactive map with only this type shown and its popup open."""
+    href = maplink(show=[key], at=(it["x"], it["z"]), focus=it["n"])
+    return (f'<a class="mono" href="{href}" title="Show {esc(it["n"])} on the map" data-v="{it["x"]:.0f}">'
+            f'{it["x"]:.0f}, {it["z"]:.0f}</a>', round(it["x"]))
 
 
 def item_name(site, key, it):
@@ -646,72 +645,71 @@ def extra_columns(site, m, key):
     return [], None
 
 
-def coords_cell(it):
-    if it["glob"]:
-        return '<span class="dim">placeholder</span>'
-    if it["copy"]:
-        return '<span class="dim">dialogue copy</span>'
-    return coords(it)
-
-
-def item_table(site, m, key):
-    items = m.items[key]
+def item_rows(site, m, key, items, with_region):
     heads, extra = extra_columns(site, m, key)
+    unplaced = m.unplaced(key)
+    cols = ["#", "Name"] + heads + (["Region"] if with_region else []) + \
+        ([] if unplaced else ["Nearest location", "Map (x, z)"])
     rows = []
     for it in items:
-        cells = [it["num"], item_name(site, key, it)] + (extra(it) if extra else []) + [
-            site.link("region", it["r"], REGION_SHORT[it["r"]]) + (" " + dlc_tag(it["r"]) if it["r"] in REGION_DLC else ""),
-            near_cell(site, it), f"<code>{esc(it['l'])}</code>", coords_cell(it)]
-        rows.append((it, cells))
-    out = ['<div class="filterbar" data-for="items"><input placeholder="Filter by name or place...">'
-           '<button class="chip on" data-g="r" data-f="*">All</button>']
-    regs = sorted({it["r"] for it in items}, key=REGION_KEYS.index)
-    if len(regs) > 1:
-        out += [f'<button class="chip" data-g="r" data-f="{r}">{esc(REGION_SHORT[r])}</button>' for r in regs]
-    if any(it["copy"] for it in items):
-        out.append('<button class="chip on" data-g="c" data-f="*">With dialogue copies</button>'
-                   '<button class="chip" data-g="c" data-f="pick">Pickups only</button>')
-    out.append('<span class="count"></span></div>')
-    html = table(["#", "Name"] + heads + ["Region", "Nearest location", "Place name (internal)", "x, z"],
-                 [c for _, c in rows], cls="compact citems", num={0})
-    # give each row its filter tags (region) and an id to link to
+        cells = [it["num"], item_name(site, key, it)] + (extra(it) if extra else [])
+        if with_region:
+            cells.append(region_link(site, it["r"]))
+        if not unplaced:
+            cells += [near_cell(site, it), map_cell(key, it)]
+        rows.append(cells)
+    html = table(cols, rows, cls="compact citems", num={0})
+    # give each row its filter tags (region) and an id to link to (the pins of the map)
     parts = html.split("<tr>")
     head, body_rows = parts[:2], parts[2:]
-    tagged = [f'<tr id="i{it["num"]}" data-f="{it["r"]} {"copy" if it["copy"] else "pick"}"'
-              f'{" class=copyrow" if it["copy"] else ""}>' + r for (it, _), r in zip(rows, body_rows)]
-    out.append(f'<div id="items">{"<tr>".join(head)}{"".join(tagged)}</div>')
+    tagged = [f'<tr id="i{it["num"]}" data-f="{it["r"]}">' + r for it, r in zip(items, body_rows)]
+    return "<tr>".join(head) + "".join(tagged)
+
+
+def item_list(site, m, key):
+    """The list of pickups: one table with region chips, or one closed fold per region for the long lists."""
+    items = m.pickups(key)
+    regs = m.regions(key)
+    out = []
+    if len(items) > FOLD_OVER and len(regs) > 1:
+        out.append('<div class="filterbar" data-for="items"><input placeholder="Filter by name or place...">'
+                   '<span class="count"></span></div><div class="foldall" data-for="items"></div>')
+        folds = []
+        for r in regs:
+            its = [i for i in items if i["r"] == r]
+            link = (f'<p class="foldmap"><a href="{maplink(show=[key], region=[r])}">Show these {len(its)} on the '
+                    f'map</a> · {site.link("region", r, "About " + REGION_SHORT[r])}</p>')
+            folds.append(fold(REGION_NAME[r], link + item_rows(site, m, key, its, False), level=3,
+                              id=f"r-{r}", right=str(len(its))))
+        out.append(f'<div id="items">{"".join(folds)}</div>')
+        return "".join(out)
+    if len(items) > 8:
+        out.append('<div class="filterbar" data-for="items"><input placeholder="Filter by name or place...">')
+        if len(regs) > 1:
+            out.append('<button class="chip on" data-g="r" data-f="*">All</button>')
+            out += [f'<button class="chip" data-g="r" data-f="{r}">{esc(REGION_SHORT[r])}</button>' for r in regs]
+        out.append('<span class="count"></span></div>')
+    out.append(f'<div id="items">{item_rows(site, m, key, items, len(regs) > 1 or m.unplaced(key))}</div>')
     return "".join(out)
 
 
-def region_table(site, m, key):
-    rc = m.region_counts(key)
-    total = sum(rc.values())
-    rows = [[site.link("region", r, REGION_SHORT[r]) + (" " + dlc_tag(r) if r in REGION_DLC else ""), rc[r],
-             f'<span data-v="{rc[r] / total:.4f}">{rc[r] / total * 100:.0f}%</span>'
-             f'<span class="sbar" style="width:{rc[r] / total * 120:.0f}px"></span>']
-            for r in REGION_KEYS if rc.get(r)]
-    return table(["Region", "Pickups", "Share"], rows, cls="compact cregions", num={1, 2})
-
-
 def map_block(site, m, key):
-    pts = [(i["x"], i["z"], str(i["num"]), f'{i["num"]}. {i["n"]}', f'i{i["num"]}')
-           for i in m.pickups(key) if not i["glob"]]
-    return static_map(site, pts)
+    pts = [(i["x"], i["z"], str(i["num"]), f'{i["num"]}. {i["n"]}', f'i{i["num"]}') for i in m.placed(key)]
+    return static_map(site, pts, maplink(show=[key]))
 
 
 def type_lead(site, m, key):
-    s = m.sub[key]
     p = m.pickups(key)
     rc = m.region_counts(key)
-    regs = [r for r in REGION_KEYS if rc.get(r)]
-    if len(regs) == 1:
-        where = f"All {len(p)} are in {site.link('region', regs[0], REGION_SHORT[regs[0]])}."
-    else:
-        where = f"The game files place <b>{len(p)}</b> across {len(regs)} regions, " + most_text(site, rc) + "."
+    regs = m.regions(key)
     if m.unplaced(key):
         where = f"There are <b>{len(p)}</b>, one per mainland region by name."
+    elif len(regs) == 1:
+        where = f"All <b>{len(p)}</b> are in {site.link('region', regs[0], REGION_SHORT[regs[0]])}."
+    else:
+        where = f"The game files place <b>{len(p)}</b> across {len(regs)} regions, " + most_text(site, rc) + "."
     dlc = ""
-    if any(r in REGION_DLC for r in regs):
+    if any(r in REGION_DLC for r in regs) and "Alpine Unrest" not in BLURB.get(key, ""):
         dlc = f" Himfjäll is the island of the {site.link('dlc', 'Alpine Unrest')} expansion."
     elif m.dlc_trees(key):
         ch, d = m.dlc_trees(key)[0]
@@ -736,54 +734,41 @@ def build_type(site, m, key, prev_key, next_key):
     body = []
     mp = map_block(site, m, key)
     if mp:
-        body.append(bar("Map", right=f"{plural(len(p), 'pickup')}"))
-        body.append("<p>Every pickup of this type. The numbers are the <b>#</b> column of the table below: hover a "
-                    "pin for its name, click it to jump to its row. The interactive map has the same pins with "
-                    "zoom and filters.</p>")
+        body.append(bar("Map", right=plural(len(p), "pickup")))
+        body.append("<p>The numbers are the <b>#</b> of the list below: hover a pin for its name, click it to jump "
+                    "to it. <b>Open the full map</b> shows only this type on the interactive map; the coordinates "
+                    "in the list open it on that pickup.</p>")
         body.append(mp)
     elif key == "worldlocations":
-        body.append(note(f"All {len(p)} World Location entries sit at the same spot in a global scene "
-                         f"(<code>{GLOBAL_LABEL}</code>), not in the world, so there is nothing to show on a map. "
-                         "Maps that put a pin for them far out west are showing that placeholder.", "warn"))
+        body.append(note(f"All {len(p)} World Location entries sit at the same spot in a global scene, not in the "
+                         "world, so there is nothing to show on a map. Maps that put a pin for them far out west are "
+                         "showing that placeholder.", "warn"))
 
-    body.append(bar(f"All {s['name'].lower()}",
-                    right=plural(len(m.items[key]), "marker")))
-    body.append("<p><b>Nearest location</b> is the closest named place of the map and how far and in which "
-                "direction the pickup lies from it. <b>Place name</b> is the internal name of the game scene the "
-                "object is in. Type in the box to filter, click a region to show only that one, click a header to "
-                "sort.</p>")
-    body.append(item_table(site, m, key))
+    title = f"All {s['name'].lower()}"
+    if len(p) > FOLD_OVER and len(m.regions(key)) > 1:
+        body.append(bar(title, right="by region"))
+        body.append("<p>One section per region; type in the box to search all of them. <b>Nearest location</b> is "
+                    "the closest named place and how far and in which direction the pickup lies from it.</p>")
+    else:
+        body.append(bar(title, right=plural(len(p), "entry", "entries") if m.unplaced(key) else ""))
+        if not m.unplaced(key):
+            body.append("<p><b>Nearest location</b> is the closest named place and how far and in which direction "
+                        "the pickup lies from it. Click a header to sort.</p>")
+    body.append(item_list(site, m, key))
     if key == "audiologs":
         body.append(note(
-            f"The rows with the place name <code>{COPY_LABEL}</code> are not pickups: every audio log also exists "
-            "in a dialogue scene, all at one shared spot. That is why the map data has twice as many audio log "
-            f"markers as there are logs. The map above shows only the {len(p)} real pickups.", "fix"))
-
-    if len({i["r"] for i in p}) > 1 and key != "worldlocations":
-        body.append(bar("By region"))
-        body.append("<p>How the pickups split over the regions.</p>")
-        body.append(region_table(site, m, key))
+            f"The map data has {len(m.items[key])} audio log markers for these {len(p)} logs: every audio log also "
+            "exists in a dialogue scene, all at one shared spot. Only the real pickups are listed here.", "fix"))
 
     body.extend(type_extras(site, m, key))
-
-    if m.challenges.get(key):
-        body.append(bar("Challenge"))
-        body.append("<p>The challenge that counts these, tier by tier.</p>")
-        body.append(challenge_table(site, m, [key]))
-
     body.append(type_nav(site, m, prev_key, next_key))
 
-    facts = type_facts(site, m, key)
-    box = ""
-    if extra_columns(site, m, key)[0]:
-        # the item table has extra columns and needs the whole width: the facts go in a list at the top
-        body.insert(0, kv([("Icon", type_icon(site, s))] + facts))
-    else:
-        box = infobox(s["name"], facts, image="~/map/" + s["icon"] if site.has_file("map/" + s["icon"]) else None,
-                      cls="cbox")
+    box = infobox(s["name"], type_facts(site, m, key),
+                  image="~/map/" + s["icon"] if site.has_file("map/" + s["icon"]) else None, cls="cbox")
     site.page(page_path(key), s["name"], "\n".join(body), "world", sub="collectibles",
               crumbs=[("Collectibles", "~/world/collectibles.html")], kind=f"World · {GROUP_ONE[s['main']]}",
               lead=type_lead(site, m, key), infobox_html=box, head_extra=CSS,
+              side=[challenge_panel(site, m, key), region_panel(site, m, key)],
               desc=f"All {len(p)} {s['name']} of Generation Zero with map, region and nearest location.")
 
 
@@ -791,23 +776,23 @@ def type_facts(site, m, key):
     """The (label, html) rows of a type's infobox."""
     s = m.sub[key]
     p = m.pickups(key)
-    rc = m.region_counts(key)
-    regs = [r for r in REGION_KEYS if rc.get(r)]
+    regs = m.regions(key)
     if any(r in REGION_DLC for r in regs):
-        dlc = dlc_tag(next(r for r in regs if r in REGION_DLC))
+        dlc = dlc_badge(site, REGION_DLC[next(r for r in regs if r in REGION_DLC)])
     else:
         # on the base game map, but the challenge that counts them may belong to an expansion
         trees = sorted({d for _, d in m.dlc_trees(key)})
-        dlc = ("Base game map" + "".join(f" · challenge: {dlc_badge(site, d)}" for d in trees)) if trees \
+        dlc = ("Base game map" + "".join(f"<br>challenge: {dlc_badge(site, d)}" for d in trees)) if trees \
             else "Base game"
+    regions = (site.link("region", regs[0], REGION_SHORT[regs[0]]) if len(regs) == 1 else
+               f"{len(regs)} regions")
     return [
-        ("Group", esc(GROUP_ONE[s["main"]])),
+        ("Group", f'<a href="~/world/collectibles.html#{slug(GROUP_LABEL[s["main"]])}">{esc(GROUP_ONE[s["main"]])}</a>'),
         ("Entries" if m.unplaced(key) else "Pickups", len(p)),
         ("Map markers", len(m.items[key]) if len(m.items[key]) != len(p) else None),
-        ("Regions", ", ".join(site.link("region", r, REGION_SHORT[r]) for r in regs)),
-        ("DLC", dlc),
-        ("Challenge", challenge_links(site, m, key) or None),
-        ("Marker key", f"<code>{esc(key)}</code>"),
+        ("Regions" if len(regs) > 1 else "Region", regions),
+        ("Content", dlc),
+        ("Map", None if m.unplaced(key) else f'<a href="{maplink(show=[key])}">Show all on the map</a>'),
     ]
 
 
@@ -831,43 +816,37 @@ def type_extras(site, m, key):
         return blueprint_extras(site, m)
     if key == "gnomes":
         return gnome_extras(site)
-    if key == "videotapes":
-        return videotape_extras(site, m)
     return []
+
+
+def schematics_link(site, text):
+    return site.link("schematic", "Schematics", text) if site.find("schematic", "Schematics") else \
+        f'<a href="~/items/schematics.html">{esc(text)}</a>'
 
 
 def schematic_extras(site, m, key):
     cur_key = key[4:]
     gd = site.data("gamedata")
     cur = next((c for c in gd["schematics"] if c["key"] == cur_key), None)
-    sc = site.data("schematics")
-    tree = [i for i in sc["items"] if i["t"] == cur_key]
-    out = [bar("What the points buy")]
-    if cur:
-        icon = site.img(f"img/currencies/{cur_key}.png", cls="cur")
-        out.append(kv([("Currency", icon + esc(cur["name"])), ("Internal hash", f"<code>{cur['hash']}</code>"),
-                       ("How the game says you get it", esc(cur["earn"]))]))
-    if cur_key == "apparel" and cur and "Rival" in cur["earn"]:
-        out.append(note(f"The game's own text says Apparel Schematic Points are found as loot on Rivals, but the "
-                        f"files also place these {len(m.pickups(key))} pickups in the world.", "info"))
-    # one row per schematic (all ranks of a name together)
+    tree = [i for i in site.data("schematics")["items"] if i["t"] == cur_key]
     by_name = collections.OrderedDict()
     for i in tree:
         by_name.setdefault(i["n"], []).append(i)
-    rows = []
-    for name, ranks in by_name.items():
-        cost = sum(r["c"] for r in ranks)
-        rows.append([site.link("schematic", name), len(ranks),
-                     " / ".join(fmt(r["c"]) for r in sorted(ranks, key=lambda r: r["q"])), cost])
-    out.append(f"<p>The markers don't name a schematic: they give points of the currency, which you spend in the "
-               f"{esc(cur_key)} tree. These are the {len(by_name)} schematics of that tree ({len(tree)} ranks). "
-               f"<b>Cost per rank</b> is the points each rank costs, lowest rank first.</p>")
-    out.append(table(["Schematic", "Ranks", "Cost per rank", "Total cost"], rows, cls="compact", num={1, 3}))
-    total = sum(r[3] for r in rows)
-    out.append(f"<p>Buying every rank of the tree costs <b>{fmt(total)}</b> {esc(cur['name'] if cur else 'points')}."
-               f" See {site.link('schematic', cur_key, 'the schematics page') if site.find('schematic', cur_key) else '<a href=\"~/items/schematics.html\">the schematics page</a>'}"
-               f" for recipes and prerequisites.</p>")
-    return out
+    rows = [[site.link("schematic", name, name), len(ranks), sum(r["c"] for r in ranks)] for name, ranks in by_name.items()]
+    total = sum(r[2] for r in rows)
+    cname = esc(cur["name"]) if cur else "points"
+    out = []
+    if cur:
+        icon = site.img(f"img/currencies/{cur_key}.png", cls="cur")
+        out.append(f"<p>{icon}<b>{cname}</b>. The game's own text: <i>{esc(cur['earn'])}</i></p>")
+        if cur_key == "apparel" and "Rival" in cur["earn"]:
+            out.append(note(f"The game's text only names Rivals, but the files also place these {len(m.pickups(key))} "
+                            f"pickups in the world.", "info"))
+    out.append(f"<p>The {esc(cur_key)} tree has {len(by_name)} schematics ({len(tree)} ranks); buying every rank "
+               f"costs <b>{fmt(total)}</b> {cname}. See {schematics_link(site, 'the schematics page')} for the cost "
+               f"of each rank, recipes and prerequisites.</p>")
+    out.append(table(["Schematic", "Ranks", "Total cost"], rows, cls="compact", num={1, 2}))
+    return [fold("What the points buy", "".join(out), right=plural(len(by_name), "schematic"))]
 
 
 def photo_extras(site, m):
@@ -875,10 +854,9 @@ def photo_extras(site, m):
     by_r = collections.defaultdict(list)
     for s in missing:
         by_r[s["r"]].append(s)
-    out = [bar("Safehouses without a photo")]
-    out.append(f"<p>{len(m.safehouses)} safehouses have a marker on the map and {len(have)} of them have a house "
-               f"photo within {PHOTO_AT} m. These {len(missing)} have none in the files:</p>")
-    rows = [[site.link("region", r, REGION_SHORT[r]) + " " + dlc_tag(r),
+    out = [f"<p>{len(m.safehouses)} safehouses have a marker on the map and {len(have)} of them have a house photo "
+           f"within {PHOTO_AT} m. These {len(missing)} have none in the files:</p>"]
+    rows = [[region_link(site, r),
              ", ".join(site.link("safehouse", s["n"]) for s in sorted(by_r[r], key=lambda s: norm(s["n"])))]
             for r in REGION_KEYS if by_r.get(r)]
     out.append(table(["Region", "Safehouses"], rows, cls="compact", sortable=False))
@@ -888,7 +866,7 @@ def photo_extras(site, m):
         out.append(note("Some photos share a name although they are different pickups at different safehouses: "
                         + ", ".join(f"<i>{esc(n)}</i> ({dup[n]}×)" for n in dups) + ". Use the safehouse column to "
                         "tell them apart.", "info"))
-    return out
+    return [fold("Safehouses without a photo", "".join(out), right=str(len(missing)))]
 
 
 def blueprint_extras(site, m):
@@ -902,41 +880,31 @@ def blueprint_extras(site, m):
         rows.append([site.link("machine", mach, mach), esc(kind),
                      " ".join(f'<a href="#i{it["num"]}">{esc(cls.replace("Class ", "") or "Rival")}</a>'
                               for cls, it in lst), len(lst)])
-    out = [bar("By machine")]
-    out.append("<p>Which blueprints each machine has. The letters are the class letters in the blueprint names; "
-               "click one to jump to its row. <b>Faction</b> follows the blueprint name: <i>Soviet Blueprint</i> and "
-               "<i>Rival Blueprint</i> as named, the rest are the original (Swedish) machines.</p>")
-    out.append(table(["Machine", "Faction", "Blueprints", "Count"], rows, cls="compact", num={3}))
-    return out
+    body = ("<p>Which blueprints each machine has. The letters are the class letters in the blueprint names; click "
+            "one to jump to it. <b>Faction</b> follows the blueprint name: <i>Soviet Blueprint</i> and <i>Rival "
+            "Blueprint</i> as named, the rest are the original (Swedish) machines.</p>"
+            + table(["Machine", "Faction", "Blueprints", "Count"], rows, cls="compact", num={3}))
+    return [fold("By machine", body, right=plural(len(rows), "machine"))]
 
 
 def gnome_extras(site):
     masks = [v for v in site.data("vanity")["items"] if v["r"].startswith("char_part_head_gnome_reward")]
     if not masks:
         return []
-    out = [bar("Gnome masks")]
-    out.append(f"<p>The apparel list has {len(masks)} gnome masks whose internal names start with "
-               f"<code>char_part_head_gnome_reward</code>, which points to them being the reward for the gnome hunt; the data here "
-               f"doesn't say how many gnomes unlock which one.</p>")
-    out.append("<ul>" + "".join(f"<li>{site.link('vanity', v['n'])} <code>{esc(v['r'])}</code></li>"
-                                for v in masks) + "</ul>")
-    return out
-
-
-def videotape_extras(site, m):
-    emotes = {norm(v["n"]): v for v in site.data("vanity")["items"] if v["g"] == "emotes"}
-    rows = []
-    for it in m.pickups("videotapes"):
-        title = it["n"].split(" - ", 1)[-1]
-        e = emotes.get(norm(title))
-        if e:
-            icon = site.img(f"img/vanity/{e['i']}", cls="li") if site.has_file(f"img/vanity/{e['i']}") else ""
-            rows.append([esc(it["n"]), icon + site.link("vanity", e["n"]), f"<code>{esc(e['r'])}</code>"])
-    if not rows:
-        return []
-    return [bar("Tapes and dance emotes"),
-            "<p>Every tape title is also the name of a dance emote in the vanity list:</p>",
-            table(["Videotape", "Dance emote", "Internal name"], rows, cls="compact")]
+    kind = lambda v: "apparel" if site.find("apparel", v["n"]) else "vanity"
+    link = lambda v: site.link(kind(v), v["n"])
+    body = (f"<p>The apparel list has {len(masks)} gnome masks that the files name as gnome rewards, so they are "
+            f"most likely the prize for the gnome hunt; the data doesn't say how many gnomes unlock which one.</p>")
+    urls = {site.url(kind(v), v["n"]) for v in masks}
+    if len(urls) == 1 and None not in urls:
+        # the apparel page lists the colours as variants of one mask: one link, the variants named
+        base = min(masks, key=lambda v: len(v["n"]))
+        variants = [v["n"].split(", ", 1)[1] for v in masks if ", " in v["n"]]
+        body += (f"<p>{link(base)}, plain and in {len(variants)} variants: "
+                 f"{esc(and_list(variants))}.</p>")
+    else:
+        body += "<ul>" + "".join(f"<li>{link(v)}</li>" for v in masks) + "</ul>"
+    return [fold("Gnome masks", body, right=str(len(masks)))]
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -980,35 +948,43 @@ KEY_MISSIONS = {
 }
 
 KEY_NOTE = {
-    "barcodes": "Each command bunker needs a full entry barcode, which the game splits into pieces: the files give "
-                "every barcode a stack of <b>{a}</b>. You collect the pieces from destroyed machines of that region "
-                "(the Warboard missions say so), and a full barcode opens that region's command bunker.",
+    "barcodes": "Each command bunker needs a full entry barcode, which the game splits into pieces: you can hold "
+                "<b>{a}</b> pieces of each. You collect them from destroyed machines of that region (the Warboard "
+                "missions say so), and a full barcode opens that region's command bunker.",
     "access": "Barcodes and keycards for research facilities and their labs.",
     "doors": "Ordinary keys to houses, barns and storage rooms. Several open a door a mission asks you to get "
              "through; for the rest no mission text names them.",
     "mission": "Items a mission hands out or asks for. Most of them belong to FNIX Rising.",
 }
+KNOWN_PACKS = {363622574: "FNIX Rising", 3565103498: "Alpine Unrest"}
+LOOSE_KEYS = "loot_x_keys"      # loot.json sub of the keys that lie loose in the world
 
 
 def pack_info(site, k):
-    """pack hash -> (display html, short label, tag class, description)."""
+    """pack hash -> (display html, short label, tag class, description). No hashes in the text."""
     sc = {i["h"]: i for i in site.data("schematics")["items"]}
     stock = {s["h"]: s for s in site.data("stock")["stock"]}
     out = {k["base_pack"]: (site.link("dlc", "Base game"), "Base game", "base", "the base game")}
-    known = {363622574: "FNIX Rising", 3565103498: "Alpine Unrest"}
     for p, hs in k["pack_items"].items():
         p = int(p)
-        if p in known:
-            out[p] = (site.link("dlc", known[p]), known[p], "dlc", f"the {known[p]} expansion")
+        if p in KNOWN_PACKS:
+            out[p] = (site.link("dlc", KNOWN_PACKS[p]), KNOWN_PACKS[p], "dlc", f"the {KNOWN_PACKS[p]} expansion")
             continue
-        n_sch = sum(1 for h in hs if h in sc)
+        n_rank = sum(1 for h in hs if h in sc)                       # schematics.json has one entry per rank
+        n_sch = len({sc[h]["n"] for h in hs if h in sc})
         n_mat = sum(1 for h in hs if stock.get(h, {}).get("g") == "materials")
+        reg = site.find("pack", str(p))
+        named = reg["title"] if reg and reg["title"] not in ("Item pack", "") else None
         if n_sch:
-            label = "Apparel crafting pack"
-            desc = (f"a content pack the files don't name, which also holds the {n_sch} apparel schematics and "
-                    f"{n_mat} crafting materials")
+            label = named or "Apparel crafting pack"
+            free = next((d.get("free") for d in site.data("steam")["dlc"] if named and norm(d["name"]) == norm(named)),
+                        None)
+            what = (f"the {'free ' if free else ''}{named} update" if named
+                    else "a content pack the files don't name")
+            desc = (f"{what}, which also holds the {n_sch} apparel schematics ({n_rank} ranks) and {n_mat} crafting "
+                    f"materials")
         else:
-            label = f"Pack {p}"
+            label = "Single-item pack"      # (its only item names it; a tag with the same words says nothing)
             desc = "a content pack of its own that holds only this item"
         out[p] = (site.link("pack", str(p), label), label, "base", desc)
     return out
@@ -1038,7 +1014,7 @@ def mission_refs(site, raw, missions):
 def key_places(site):
     """Key name -> position of the keys that lie loose in the world (loot.json, sub loot_x_keys)."""
     lo = site.data("loot")
-    idx = next((i for i, s in enumerate(lo["subs"]) if s["key"] == "loot_x_keys"), None)
+    idx = next((i for i, s in enumerate(lo["subs"]) if s["key"] == LOOSE_KEYS), None)
     out = {}
     for row in lo["items"]:
         if row[0] == idx:
@@ -1053,138 +1029,151 @@ def key_icon(site, e):
     return ""
 
 
-def key_rows(site, k, packs, missions, places, locs):
+def key_map_link(e, pl):
+    return maplink(show=[LOOSE_KEYS], at=(pl["x"], pl["z"]), focus=e["n"])
+
+
+def where_cell(site, e, pl, locs):
+    loc = min(locs, key=lambda l: dist(l, pl))
+    d = dist(loc, pl)
+    rel = "at" if d < 40 else f"{d:,.0f} m {compass(loc, pl)} of"
+    return (f'<span class="dim">{rel}</span> {site.link("location", loc["name"])}<br>'
+            f'<a href="{key_map_link(e, pl)}">Show on the map</a>')
+
+
+def key_table(site, k, items, packs, missions, places, locs, anchors):
+    """One kind's table. The Missions / Where columns only appear when a key of the kind has them."""
     rows = []
-    order = [s["key"] for s in k["sections"]]
-    for e in sorted(k["items"], key=lambda e: order.index(e["s"])):
-        p = packs.get(e["p"], (f"Pack {e['p']}", f"Pack {e['p']}", "base", ""))
+    for e in items:
         refs = mission_refs(site, e["r"], missions)
         used = "".join(f'<div class="kref">{site.link("mission", ms["name"])}'
                        f'<span class="dim">“{esc(line)}”</span></div>' for ms, line in refs)
-        where = ""
         pl = places.get(e["n"])
-        if pl:
-            loc = min(locs, key=lambda l: dist(l, pl))
-            d = dist(loc, pl)
-            where = (f'{coords(pl)}<br><span class="dim">{d:,.0f} m {compass(loc, pl)} of</span> '
-                     f'{site.link("location", loc["name"])}')
-        elif e.get("x"):
-            where = esc(e["x"])
-        flags = [f'<a class="ksec" href="#{e["s"]}">{esc(section_name(k, e["s"]))}</a>']
+        tags = []
         if e["s"] == "barcodes":
             reg = re.search(r"for the (.+?) Region", e["d"])
             if reg:
                 rk = next((key for key, name in REGIONS if norm(name) == norm(reg.group(1))), None)
-                flags.append(site.link("region", rk, reg.group(1)) if rk else esc(reg.group(1)))
+                tags.append(site.link("region", rk, reg.group(1)) if rk else esc(reg.group(1)))
+        p = packs.get(e["p"])
+        if p and e["p"] != k["base_pack"]:
+            e_ = site.find("dlc", p[1]) if p[2] == "dlc" else site.find("pack", str(e["p"]))
+            tags.append(f'<a href="{"~/" + e_["path"] if e_ else "#packs"}">'
+                        f'{tag(p[1], "dlc" if p[2] == "dlc" else "")}</a>')
         if e.get("m"):
-            flags.append(tag("Mission-flagged", "main"))
-        if p[2] == "dlc":
-            flags.append(tag(p[1], "dlc"))
-        name = (f'{key_icon(site, e)}<span class="kname"><b>{esc(e["n"])}</b><code>{esc(e["r"])}</code>'
-                f'<small class="dim">{e["h"]}</small></span>')
-        rows.append((e, [name, " ".join(flags), p[0], e["a"], esc(strip_desc(e["d"])) or '<span class="dim">–</span>',
-                         used or '<span class="dim">–</span>', where or '<span class="dim">–</span>']))
-    return rows
-
-
-def keys_table(rows):
-    html = table(["Key", "Kind & tags", "Pack", "Stack", "Description", "Missions that name it", "Where"],
-                 [c for _, c in rows], cls="compact keys", num={3})
+            tags.append(tag("Mission item", "main"))
+        name = (f'<span class="kcell">{key_icon(site, e)}<span class="kname"><b>{esc(e["n"])}</b>'
+                f'{"<span>" + " ".join(tags) + "</span>" if tags else ""}</span></span>')
+        rows.append((e, name, esc(strip_desc(e["d"])) or '<span class="dim">–</span>', used, pl))
+    has_used = any(r[3] for r in rows)
+    has_where = any(r[4] for r in rows)
+    heads = ["Key", "Description"] + (["Missions that name it"] if has_used else []) + (["Where"] if has_where else [])
+    cells = []
+    for e, name, desc, used, pl in rows:
+        c = [name, desc]
+        if has_used:
+            c.append(used or '<span class="dim">–</span>')
+        if has_where:
+            c.append(where_cell(site, e, pl, locs) if pl else '<span class="dim">–</span>')
+        cells.append(c)
+    html = table(heads, cells, cls="compact keys")
     parts = html.split("<tr>")
     head, body_rows = parts[:2], parts[2:]
-    tagged = []
-    for (e, _), r in zip(rows, body_rows):
-        f = [e["s"], "m" if e.get("m") else "", "dlc" if e["p"] != 1413277686 else "base"]
-        tagged.append(f'<tr id="{key_anchor(e)}" data-f="{" ".join(x for x in f if x)}">' + r)
+    tagged = [f'<tr id="{anchors[e["h"]]}">' + r for (e, *_), r in zip(rows, body_rows)]
     return "<tr>".join(head) + "".join(tagged)
 
 
 def build_keys(site):
     k = site.data("keys")
+    anchors = key_anchors(k)
     packs = pack_info(site, k)
     missions = {norm(ms["name"]): ms for ms in site.data("missions")["missions"]}
     places = key_places(site)
-    locs = site.data("map_locations")["list"]
+    locs = [l for l in site.data("map_locations")["list"] if l["name"] not in SKIP_LOCATIONS]
     gd = site.data("gamedata")
     by_sec = collections.Counter(e["s"] for e in k["items"])
     body = []
 
     body.append(bar("How keys work"))
     body.append(
-        "<p>Keys, barcodes, keycards and mission items are not part of your backpack. The save keeps them in the "
-        "profile's item stash (<code>Profile.ItemStash</code>), which every character of the profile shares, with "
-        "an amount for each. The save has no record of opened doors: holding the key is what opens its door. "
-        "<b>Stack</b> is how many of an item the game lets you hold (3 for the bunker barcode pieces, 1 for "
-        "everything else). Items tagged <b>Mission-flagged</b> are flagged as mission items in the files: a mission "
-        "normally hands them out or asks for them.</p>")
-    body.append("<p><b>Pack</b> is the content pack (DLC) the item belongs to. An item of a pack the account doesn't "
-                "own is moved aside by the game (to <code>InaccessibleItems</code>) instead of being usable. "
-                "<b>Missions that name it</b> quotes the mission line that asks for the item.</p>")
+        "<p>Keys, barcodes, keycards and mission items don't take up space in your backpack. The game keeps them "
+        "in your profile's item stash, which every character of the profile shares. There is no record of opened "
+        "doors: holding the key is what opens its door. Items tagged <b>Mission item</b> are flagged as such in "
+        "the files: a mission normally hands them out or asks for them.</p>"
+        "<p>Items of a DLC the account doesn't own are set aside by the game, so you can't use them. <b>Missions that name it</b> quotes "
+        "the mission line that asks for the item.</p>")
 
-    # the four kinds, then one table of every key: a filtered view never leaves empty tables behind
-    body.append(bar("Kinds of keys"))
-    items = []
+    body.append(bar("All keys", right=f"{len(k['items'])} items"))
+    body.append("<p>One section per kind of key; open one, or type in the box to search all of them.</p>")
+    body.append('<div class="filterbar" data-for="keylist"><input placeholder="Filter keys...">'
+                '<span class="count"></span></div><div class="foldall" data-for="keylist"></div>')
+    folds = []
     for s in k["sections"]:
-        a = max((e["a"] for e in k["items"] if e["s"] == s["key"]), default=1)
+        items = [e for e in k["items"] if e["s"] == s["key"]]
+        a = max((e["a"] for e in items), default=1)
         intro = KEY_NOTE.get(s["key"], "").format(a=a)
         if s["key"] == "barcodes":
             ch = next((c for t in gd["challenges"] for c in t["challenges"] if "Warboard" in c["tiers"][0]["desc"]), None)
             if ch:
                 intro += (f" Activating the Warboards is the challenge {site.link('challenge', ch['name'])} "
                           f"({esc(ch['tiers'][-1]['desc'].lower().rstrip('.'))} for the last tier).")
-        items.append(f'<li id="{s["key"]}"><b>{esc(s["name"])}</b> ({by_sec[s["key"]]}): {intro}</li>')
-    body.append('<ul class="ksecs">' + "".join(items) + "</ul>")
+        folds.append(fold(s["name"], f"<p>{intro}</p>" + key_table(site, k, items, packs, missions, places, locs,
+                                                                  anchors),
+                          level=3, id=s["key"], right=str(len(items))))
+    body.append(f'<div id="keylist">{"".join(folds)}</div>')
 
-    out = ['<div class="filterbar" data-for="keylist"><input placeholder="Filter keys...">'
-           '<button class="chip on" data-g="s" data-f="*">All</button>']
-    out += [f'<button class="chip" data-g="s" data-f="{s["key"]}">{esc(s["name"])}</button>' for s in k["sections"]]
-    out.append('<button class="chip" data-g="t" data-f="m">Mission-flagged</button>'
-               '<button class="chip" data-g="t" data-f="dlc">Not base game</button><span class="count"></span></div>')
-    body.append(bar("All keys", right=f"{len(k['items'])} items"))
-    body.append("<p>Every key in one table, in the order of the kinds above. Type to filter, or click a kind; "
-                "<b>Mission-flagged</b> keeps the items the files flag as mission items, whatever their kind, and "
-                "<b>Not base game</b> the ones from another content pack.</p>")
-    body.append("".join(out))
-    body.append(f'<div id="keylist">{keys_table(key_rows(site, k, packs, missions, places, locs))}</div>')
-
-    # the keys that lie loose in the world
-    pts = []
-    for e in k["items"]:
-        pl = places.get(e["n"])
-        if pl:
-            pts.append((pl["x"], pl["z"], str(len(pts) + 1), e["n"], key_anchor(e)))
-    if pts:
-        body.append(bar("Keys on the map"))
-        body.append(f"<p>Most keys come from a mission or a container, but the files place {len(pts)} of them as "
-                    f"loose loot in the world:</p>")
-        body.append(static_map(site, pts))
-        body.append("<ol>" + "".join(f'<li><a href="#{p[4]}">{esc(p[3])}</a></li>' for p in pts) + "</ol>")
-
-    body.append(bar("Content packs"))
-    body.append("<p>Which pack each item belongs to, by the pack's hash in the files. The base game pack has no "
-                "list of its own: every item that is in no other pack is base game.</p>")
+    # content packs
     rows = []
     cnt = collections.Counter(e["p"] for e in k["items"])
     for p, n in cnt.most_common():
         info = packs.get(p)
-        rows.append([info[0] if info else f"Pack {p}", f'<code class="nowrap">{p}</code>', n,
-                     esc(info[3]) if info else "", ", ".join(f'<a href="#{key_anchor(e)}">{esc(e["n"])}</a>'
-                                                              for e in k["items"] if e["p"] == p and p != k["base_pack"])])
-    body.append(table(["Pack", "Hash", "Keys", "What it is", "Its keys"], rows, cls="compact"))
+        its = ", ".join(f'<a href="#{anchors[e["h"]]}">{esc(e["n"])}</a>' for e in k["items"] if e["p"] == p) \
+            if p != k["base_pack"] else '<span class="dim">every other key</span>'
+        rows.append([info[0] if info else "Other pack", n, esc(info[3]) if info else "", its])
+    body.append(fold("Content packs", "<p>Which content pack (DLC) each item belongs to. The base game has no list "
+                                      "of its own: every item that is in no other pack is base game.</p>"
+                     + table(["Pack", "Keys", "What it is", "Its keys"], rows, cls="compact", num={1}),
+                     id="packs", right=plural(len(rows), "pack")))
 
-    # no infobox: the wide key table needs the whole width; the numbers go in a small list at the top
-    body.insert(0, kv([(s["name"], f'<a href="#{s["key"]}">{by_sec[s["key"]]}</a>') for s in k["sections"]] + [
+    # the keys that lie loose in the world: a small map, last
+    loose = [(e, places[e["n"]]) for e in k["items"] if e["n"] in places]
+    if loose:
+        body.append(bar("Keys on the map", right=str(len(loose))))
+        text = (f"<p>Most keys come from a mission or a container, but the files place {len(loose)} of them as "
+                f"loose loot in the world (the numbers of the little map):</p><ol class=\"kloose\">"
+                + "".join(f'<li><a href="#{anchors[e["h"]]}">{esc(e["n"])}</a> · {region_link(site, pl["r"])} · '
+                          f'<a href="{key_map_link(e, pl)}">map</a></li>' for e, pl in loose) + "</ol>")
+        (e0, p0), rest = loose[0], loose[1:]
+        # short number labels: the full names overlap on a map this small (the list beside it names them).
+        # wiki.js fits the points with almost no margin, so the outer pins sat on the map's edge: two unlabelled
+        # points just outside the keys' box (hidden by collectibles.css) give the fit a margin.
+        xs, zs = [pl["x"] for _, pl in loose], [pl["z"] for _, pl in loose]
+        pad = 0.11 * max(max(xs) - min(xs), max(zs) - min(zs))
+        pads = [(min(xs) - pad, min(zs) - pad, ""), (max(xs) + pad, max(zs) + pad, "")]
+        body.append('<div class="kmap">' + minimap(p0["x"], p0["z"], "1", markers=[
+            (pl["x"], pl["z"], str(i)) for i, (e, pl) in enumerate(rest, 2)] + pads, show=[LOOSE_KEYS],
+            small=True, text=text) + "</div>")
+
+    box = infobox("Keys & barcodes", [(s["name"], f'<a href="#{s["key"]}">{by_sec[s["key"]]}</a>')
+                                      for s in k["sections"]] + [
         ("All items", len(k["items"])),
         ("Flagged as mission items", sum(1 for e in k["items"] if e.get("m"))),
-        ("Not base game", sum(1 for e in k["items"] if e["p"] != k["base_pack"])),
-    ]))
+        ("From a DLC", f'<a href="#packs">{sum(1 for e in k["items"] if e["p"] != k["base_pack"])}</a>'),
+        ("Loose in the world", f'<a href="{maplink(show=[LOOSE_KEYS])}">{len(loose)} on the map</a>' if loose else None),
+    ], image=key_icon_url(site, k), cls="cbox")
     lead = (f"<p>Every key item in the game files: the <b>{by_sec['barcodes']} command bunker barcodes</b> that open "
             f"the regions' Warboard bunkers, <b>{by_sec['access']} facility barcodes and keycards</b>, "
-            f"<b>{by_sec['doors']} door keys</b> and <b>{by_sec['mission']} mission items</b>. For each one: its "
-            f"description, internal name and hash, the content pack it comes from, the mission that asks for it and, "
-            f"where the files place it in the world, its position.</p>")
+            f"<b>{by_sec['doors']} door keys</b> and <b>{by_sec['mission']} mission items</b>, with what they open, "
+            f"the mission that asks for them and the DLC they come from.</p>")
     site.page("world/keys.html", "Keys & barcodes", "\n".join(body), "world", sub="keys", lead=lead,
-              head_extra=CSS,
+              head_extra=CSS, infobox_html=box,
               desc="All keys, bunker barcodes, keycards and mission items of Generation Zero: what they open, which "
                    "mission uses them and which DLC they belong to.",
               search={"k": "World", "w": "keys barcode keycard bunker door"})
+
+
+def key_icon_url(site, k):
+    e = next((e for e in k["items"] if e["s"] == "barcodes"), None)
+    if e and site.has_file(f"img/keys/{e['i']}"):
+        return f"~/img/keys/{e['i']}"
+    return None

@@ -1,0 +1,452 @@
+{
+ "_about": "Generation Zero's Steam achievements. The list (name, description, icon, which ones are secret = hidden on Steam until unlocked) is the generation-zero.fandom.com 'Achievements' page (MediaWiki parse API, revision 11984, read 2026-11-06; text CC BY-SA), in its order. The count matches the Steam store (store.steampowered.com/api/appdetails?appids=704270: achievements.total = 72), and the ten achievements the store highlights match by name (steam_icon = their Steam icon file). The game files don't hold the achievement list, and Steam's global unlock percentages (api.steampowered.com, steamcommunity.com) could not be fetched, so there are none. The icons are the 14 shared category icons, copied from the Fandom wiki into docs/img/achievements/.",
+ "source": {
+  "fandom": "https://generation-zero.fandom.com/wiki/Achievements",
+  "steam_total": 72,
+  "steam_store": "https://store.steampowered.com/app/704270/"
+ },
+ "achievements": [
+  {
+   "name": "First Blood",
+   "desc": "Destroy your first machine",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false,
+   "steam_icon": "d96fdd4421312b70d8940d3c91b2ea8098505c00.jpg"
+  },
+  {
+   "name": "Decimation",
+   "desc": "Destroy 500 machines",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false,
+   "steam_icon": "ae276302afff4afc890d6dbf1da5b47d833d410f.jpg"
+  },
+  {
+   "name": "Marksman",
+   "desc": "Destroy an enemy with a shot fired from 300 meters away",
+   "icon": "img/achievements/guns_gold.webp",
+   "hidden": false,
+   "steam_icon": "76b3010b855462783098e04d8b523e3c45ff1b3e.jpg"
+  },
+  {
+   "name": "Siren Call",
+   "desc": "Use a boombox to lure an enemy",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false,
+   "steam_icon": "ae276302afff4afc890d6dbf1da5b47d833d410f.jpg"
+  },
+  {
+   "name": "Splash Damage",
+   "desc": "Destroy more than one machine at the same time using the m/49 Granatgevär or a hand grenade",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false,
+   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+  },
+  {
+   "name": "Gunslinger",
+   "desc": "Use handgun to destroy 20 machines",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false,
+   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+  },
+  {
+   "name": "Operator",
+   "desc": "Use shotguns to destroy 40 machines",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false,
+   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+  },
+  {
+   "name": "Gangster",
+   "desc": "Use submachine guns to destroy 60 machines",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false,
+   "steam_icon": "f7e9dd32981e27d7f0b4bc216bd2b9dba807fbcd.jpg"
+  },
+  {
+   "name": "Commando",
+   "desc": "Use assault rifles to destroy 80 machines",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false,
+   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+  },
+  {
+   "name": "Hunter",
+   "desc": "Use hunting rifles to destroy 20 machines",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false,
+   "steam_icon": "f7e9dd32981e27d7f0b4bc216bd2b9dba807fbcd.jpg"
+  },
+  {
+   "name": "Sapper",
+   "desc": "Use explosives to destroy 15 machines",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "You're A Disease And I'm The Cure",
+   "desc": "Destroy 20 Ticks",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Hasta La Vista Baby",
+   "desc": "Destroy 30 Seekers",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "All Out Of Bubblegum",
+   "desc": "Destroy 80 Runners",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Go Ahead, Make My Day",
+   "desc": "Destroy 30 Hunters",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Yippee-Ki-Yay",
+   "desc": "Destroy 15 Harvesters",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Say Hello To My Little Friend",
+   "desc": "Destroy 15 Tanks",
+   "icon": "img/achievements/tank_gold.webp",
+   "hidden": false
+  },
+  {
+   "name": "Offence Is The Best Defence",
+   "desc": "Destroy 3 machines without taking damage",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Hot Property",
+   "desc": "Have 8 machines simultaneously lured to the same flare",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Real Sneaky Like",
+   "desc": "Use suppressed weapons to destroy 20 enemies",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Overkill",
+   "desc": "Shoot a Seeker with the m/49 Granatgevär",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "One Shot",
+   "desc": "Destroy a Hunter with a single shot",
+   "icon": "img/achievements/guns_silver.webp",
+   "hidden": false
+  },
+  {
+   "name": "Fika Club",
+   "desc": "Unlock 5 safehouses",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Gustafsloppet",
+   "desc": "Travel 90 km on foot",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "I Just Called To Say I Love You",
+   "desc": "Listen to the messages left on 5 different answering machines",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Light My Fire",
+   "desc": "Climb to the top of 3 different lighthouses",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Folk Wisdom",
+   "desc": "Read 10 different sayings in homes",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Scavenger",
+   "desc": "Find and take 80 items from the world",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Engineer",
+   "desc": "Collect all machine blueprints",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Gardener",
+   "desc": "Collect all garden gnomes",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "DJ",
+   "desc": "Collect all mixtapes",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Tourist",
+   "desc": "Collect all souvenirs",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Explorer",
+   "desc": "Discover 50 locations",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Tunnel Rat",
+   "desc": "Discover 5 bunkers",
+   "icon": "img/achievements/compass_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Fashionista",
+   "desc": "Collect 200 items of apparel",
+   "icon": "img/achievements/characters_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Spare Parts",
+   "desc": "Scavenge a vision module from a machine",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Modder",
+   "desc": "Attach a mod to a weapon",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Lock & Load",
+   "desc": "Fully equip a level 5 weapon with level 5 mods",
+   "icon": "img/achievements/guns_silver.webp",
+   "hidden": false
+  },
+  {
+   "name": "Grey Dawn",
+   "desc": "Complete all Intro missions",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "If It Bleeds, We Can Kill It",
+   "desc": "Complete the \"A Wrench in the Works\" mission",
+   "icon": "img/achievements/map_silver.webp",
+   "hidden": false
+  },
+  {
+   "name": "Elementary",
+   "desc": "Complete the mission \"Empty Spaces\"",
+   "icon": "img/achievements/map_silver.webp",
+   "hidden": false
+  },
+  {
+   "name": "My Friend",
+   "desc": "Complete the mission \"The Enemy of my Enemy\"",
+   "icon": "img/achievements/map_silver.webp",
+   "hidden": false
+  },
+  {
+   "name": "Rise Of The Phoenix",
+   "desc": "Complete the mission \"Behind the Curtain\"",
+   "icon": "img/achievements/map_gold.webp",
+   "hidden": false
+  },
+  {
+   "name": "Kill Switch",
+   "desc": "Destroy 10 relay beacons",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Go-Getter",
+   "desc": "Complete 25 World Missions",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "It's The Final Countdown",
+   "desc": "Complete all Warboard Missions",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "I Want To Be A Mighty Pirate!",
+   "desc": "Loot something while wearing an eyepatch",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Player Two",
+   "desc": "Create a second character",
+   "icon": "img/achievements/characters_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Postgraduate",
+   "desc": "Have two separate characters with different active specializations",
+   "icon": "img/achievements/characters_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Assist",
+   "desc": "Deal more than 50% of the damage to an enemy killed by another player",
+   "icon": "img/achievements/hands_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Other Survivors",
+   "desc": "Complete the mission \"Not Alone\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "We're Fully Booked",
+   "desc": "Complete the mission \"For the Sick and the Injured\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Outside in the Distance",
+   "desc": "Complete the mission \"Nothing but the Snow\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Secrets Locked Away",
+   "desc": "Complete the mission \"The Hellmouth\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Protector of the Resistance",
+   "desc": "Complete the mission \"The Resistance\"",
+   "icon": "img/achievements/map_silver.webp",
+   "hidden": false
+  },
+  {
+   "name": "Vestiges",
+   "desc": "Find all the audio logs on Himfjäll",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Here's Pauli!",
+   "desc": "Find out what happened to the missing guest of Björntunet Hotel",
+   "icon": "img/achievements/characters_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "Room 237",
+   "desc": "Gain access to the mysteriously locked room of Björntunet Hotel",
+   "icon": "img/achievements/characters_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "Unorthodox Skiing",
+   "desc": "Get from start to finish on the ski slope in under 40 seconds",
+   "icon": "img/achievements/compass_gray.webp",
+   "hidden": false
+  },
+  {
+   "name": "Adapt and Evolve",
+   "desc": "Destroy one of each Apocalypse Class machine: Tick, Runner, Hunter and Tank",
+   "icon": "img/achievements/tank_gray.webp",
+   "hidden": false
+  },
+  {
+   "name": "He's Out There",
+   "desc": "Free the survivor in the destroyed villa during the mission \"The Ringfort\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "Private Property",
+   "desc": "Complete the mission \"Tidal Wave\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "The Sum of its Parts",
+   "desc": "Complete the mission \"Test Run\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "It's Been Fun",
+   "desc": "Complete the mission \"New Cycles\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "End of the Road",
+   "desc": "Complete the mission \"Good Night\"",
+   "icon": "img/achievements/map_silver.webp",
+   "hidden": true
+  },
+  {
+   "name": "Wheels of Fortune",
+   "desc": "Complete the side mission \"In the Face of Adversity\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "We are the Resistance",
+   "desc": "Complete the side mission \"We are the Resistance\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "Trial and Error",
+   "desc": "Complete the side mission \"The Virus\"",
+   "icon": "img/achievements/map_bronze.webp",
+   "hidden": true
+  },
+  {
+   "name": "The Ones That Came Before Us",
+   "desc": "Find all 20 \"Survivor's Notes\" and \"Love Letters\" Collectibles",
+   "icon": "img/achievements/loot_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Not Today, FNIX!",
+   "desc": "Defeat a Rival",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "Running Wild",
+   "desc": "Use a melee weapon to blow up 20 cars",
+   "icon": "img/achievements/guns_bronze.webp",
+   "hidden": false
+  },
+  {
+   "name": "From a Distance",
+   "desc": "Use a hunting or sniper rifle to destroy 15 Seekers",
+   "icon": "img/achievements/tank_bronze.webp",
+   "hidden": false
+  }
+ ]
+}

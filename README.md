@@ -9,6 +9,14 @@ GitHub Pages with no build step on GitHub's side.
 
 **Live site** (once Pages is on): `https://the-bewwy-2510.github.io/gen0-wiki/`
 
+## Branches
+
+- `claude/wiki-overhaul`: the reorganised layout (v2): fluid width, a contents bar on the right that stays on screen,
+  collapsible sections, map links that open the map with the page's filters, DLC and Achievements pages, and more.
+- `claude/project-thread-kjcbsh`: the original first version, kept unchanged just in case.
+
+Pages serves whichever branch you pick in step 4 below.
+
 ## Turning on GitHub Pages
 
 The finished site is in the `docs/` folder, so Pages only has to serve that folder:

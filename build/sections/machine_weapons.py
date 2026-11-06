@@ -1,9 +1,13 @@
 """Machines tab, part 2: machine weapons, difficulty & co-op scaling, and rivals.
 
-Pages
-  machines/weapons.html     every machine weapon in stats.json machine_weapons (64), grouped by kind, one anchor each
+Pages (layout v2: short intro, infobox on the right, short sections; no internal names or hashes are printed)
+  machines/weapons.html     every machine weapon in stats.json machine_weapons (64), one open fold per kind with a
+                            block per weapon (one anchor each); the sortable overview table is the last section,
+                            collapsed
   machines/difficulty.html  stats.json difficulty: damage multipliers per difficulty and number of players
-  machines/rivals.html      gamedata.json rival_levels, threat (rival chance per region), rival titles
+  machines/rivals.html      gamedata.json rival_levels, threat (a bar chart: score per threat level and the
+                            new-rival chance), the Reaper and the Vulture (short, their pages are in 'machines'),
+                            rival titles: a title builder (static/machine_weapons.js) and a tree of every title
 
 Data (build/data)
   stats.json     machine_weapons   key (unique colloquial name) -> internal_name, kind, faction, damage{...}, used_by,
@@ -29,9 +33,10 @@ import json
 import math
 import re
 
-from wiki.site import esc, slug, norm, fmt, pct, bar, note, kv, tag
+from wiki.site import esc, slug, norm, fmt, pct, bar, note, kv, tag, fold, infobox, maplink, REGIONS
 
-CSS = '<link rel="stylesheet" href="~/assets/machine_weapons.css">'
+CSS = ('<link rel="stylesheet" href="~/assets/machine_weapons.css">'
+       '<script src="~/assets/machine_weapons.js" defer></script>')
 WEAPONS_PAGE = "machines/weapons.html"
 DIFF_PAGE = "machines/difficulty.html"
 RIVALS_PAGE = "machines/rivals.html"
@@ -64,6 +69,8 @@ REGION_PLACES = {"the Archipelago": "archipelago", "the Farmlands": "farmlands",
 FOLKLORE = ("Baba Yaga", "Koschei", "Perun", "Zmey", "Kikimora", "Ilya Muromets", "Dobrynya Nikitich",
             "Alyosha Popovich", "Svyatogor", "Mikula Selyaninovich")
 _CACHE = {}
+# the 'Class X (unidentified)' Tick is in the files but unused in the game; the machines section leaves it out
+SKIP_MACHINE = re.compile(r"\(class x\)$", re.I)
 # weapons whose blast in the files is the explosion when the dropped object is destroyed, not part of an attack
 DESTROYED_BLAST = {"Turret Drop"}
 
@@ -97,6 +104,18 @@ def _stats_key(mws, w, machine):
     return cands[0] if cands else None
 
 
+def clean_note(n):
+    """A data note in plain words: notes about internal names are dropped, model / ammo file names taken out."""
+    if not n or n.startswith("Internal name"):
+        return None
+    n = re.sub(r"\s*\(model [a-z0-9_]+\)", "", n)
+    n = n.replace("AreaDamage component", "area damage")
+    n = re.sub(r"the ammo this layout loads is '([a-z0-9_]+)'",
+               lambda m: "this layout loads " + ("incendiary" if "incendiary" in m.group(1) else "explosive") +
+                         " rounds", n)
+    return None if re.search(r"\b[a-z]+_[a-z0-9_]+\b", n) else n
+
+
 def model(site):
     if id(site) in _CACHE:
         return _CACHE[id(site)]
@@ -117,8 +136,8 @@ def model(site):
                    # layouts: machine -> [layout labels] (each once); slots: (machine, label) -> copies on it
                    # comps: machine -> {layout label: component health dict}
                    "layouts": {}, "slots": collections.Counter(), "comps": {}}
-        if d.get("note"):
-            ws[key]["notes"].append(d["note"])
+        if clean_note(d.get("note")):
+            ws[key]["notes"].append(clean_note(d["note"]))
     for machine, label, l, h in layouts:
         comps = {c["component"].lower(): c for c in (h or {}).get("components", [])}
         for w in l["weapons"]:
@@ -140,10 +159,14 @@ def model(site):
                 if w.get(f):
                     e[s].add(w[f])
             # skip a loadout note that repeats the start of one we already have
-            if w.get("note") and not any(n.startswith(w["note"].rstrip(".")) for n in e["notes"]):
-                e["notes"].append(w["note"])
+            wn = clean_note(w.get("note"))
+            if wn and not any(n.startswith(wn.rstrip(".")) for n in e["notes"]):
+                e["notes"].append(wn)
     for e in ws.values():
-        e["used_by"] = sorted(e["d"].get("used_by", []),
+        for k in [k for k in e["layouts"] if SKIP_MACHINE.search(k)]:
+            del e["layouts"][k]
+            e["comps"].pop(k, None)
+        e["used_by"] = sorted((u for u in e["d"].get("used_by", []) if not SKIP_MACHINE.search(u)),
                               key=lambda m: machine_order.index(m) if m in machine_order else 999)
         e["n_layouts"] = sum(len(v) for v in e["layouts"].values())
     m = {"weapons": ws, "layout_count": layout_count, "machine_order": machine_order}
@@ -228,10 +251,6 @@ def diff_table(site):
 # ---------------------------------------------------------------------------------------------------------------
 # small html helpers
 # ---------------------------------------------------------------------------------------------------------------
-def code(s):
-    return f"<code>{esc(s)}</code>"
-
-
 def num(v, digits=2, base=None):
     """A numeric table cell: (html, attrs). base = unscaled value for the difficulty switch on the weapons page."""
     if v is None:
@@ -355,36 +374,58 @@ def build_weapons(site):
     for e in ws.values():
         by_kind[e["d"]["kind"]].append(e)
     about = site.data("stats")["_about"]["reading_the_numbers"]
-    lead = (f"<p>Every weapon and attack the machines use, read from the game's own tuning files: "
-            f"<b>{len(ws)}</b> entries, from the Runner's submachine gun to the Reaper's thermobaric blast. For each "
-            f"one you get the damage per projectile and per shot, blast damage and radius against you and against "
-            f"machines, burn / gas / radiation ticks, which machine classes and layouts carry it, the in-game "
-            f"component label, the health of that component and the internal names.</p>")
-    b = [reading_guide(site, about)]
-    b.append(bar("All machine weapons", f"{len(ws)} entries", id="summary"))
-    b.append(summary_table(site, ws))
+    lead = (f"<p>Every weapon and attack the machines use, from the Runner's submachine gun to the Reaper's "
+            f"thermobaric blast: <b>{len(ws)}</b> entries read from the game's tuning files. Each one shows the damage "
+            f"it does to you and to machines, its blast radius and burn, and which machines carry it.</p>")
+    b = [fold("Reading the numbers", reading_guide(site, about), id="reading")]
     for kind, (title, blurb) in KINDS.items():
         es = sorted(by_kind.get(kind, []), key=lambda e: (-(one_hit(e["dmg"]) or 0), e["key"]))
         if not es:
             continue
-        b.append(bar(title, plural(len(es), "entry", "entries"), id=slug(kind)))
-        b.append(f"<p>{blurb} Sorted by the damage of one hit.</p>" + kind_facts(kind, es))
-        b.append('<div class="mwgrid">' + "".join(weapon_block(site, e) for e in es) + "</div>")
+        b.append(fold(title, f"<p>{blurb} Sorted by the damage of one hit.</p>" + kind_facts(kind, es) +
+                      '<div class="mwgrid">' + "".join(weapon_block(site, e) for e in es) + "</div>",
+                      open=True, right=plural(len(es), "entry", "entries"), id=slug(kind)))
     leftovers = [e for e in ws.values() if e["d"]["kind"] not in KINDS]
     if leftovers:  # a kind we don't know yet: still show it
-        b.append(bar("Other", plural(len(leftovers), "entry", "entries"), id="other"))
-        b.append('<div class="mwgrid">' + "".join(weapon_block(site, e) for e in leftovers) + "</div>")
-    b.append(difficulty_section(site))
+        b.append(fold("Other", '<div class="mwgrid">' + "".join(weapon_block(site, e) for e in leftovers) +
+                      "</div>", open=True, right=plural(len(leftovers), "entry", "entries"), id="other"))
+    # the overview table: last and collapsed (the weapon blocks above hold the same numbers in words)
+    b.append(fold("All machine weapons", summary_table(site, ws), right=f"{len(ws)} entries", id="summary"))
     site.page(WEAPONS_PAGE, "Machine weapons", "\n".join(b), "machines", sub="mweapons",
-              crumbs=[("Machine weapons", "~/" + WEAPONS_PAGE)],
-              desc=f"All {len(ws)} Generation Zero machine weapons: damage, blast radius, burn, the machines that "
-                   f"carry them and internal names.", kind="Machines · Weapons", lead=lead, head_extra=CSS,
+              crumbs=[("Machine weapons", "~/" + WEAPONS_PAGE)], infobox_html=weapons_infobox(site, ws, by_kind),
+              desc=f"All {len(ws)} Generation Zero machine weapons: damage, blast radius, burn and the machines that "
+                   f"carry them.", kind="Machines · Weapons", lead=lead, head_extra=CSS,
               search={"k": "Machines", "w": "machine weapons damage blast radius"})
+
+
+def weapons_infobox(site, ws, by_kind):
+    """Counts per kind (links to the sections), the hardest hit, the widest reach and the difficulty range."""
+    dt = diff_table(site)
+    rows = [("Entries", f"<b>{len(ws)}</b>"), (None, "By kind")]
+    for kind, (title, _) in KINDS.items():
+        if by_kind.get(kind):
+            rows.append((title, f'<a href="#{slug(kind)}">{len(by_kind[kind])}</a>'))
+    hit = max(ws.values(), key=lambda e: one_hit(e["dmg"]) or 0)
+    reach = max(ws.values(), key=lambda e: radius_players(e["dmg"]) or 0)
+    rows += [(None, "Records"),
+             ("Hardest hit", f'<a href="#{hit["anchor"]}">{esc(hit["key"])}</a><br>'
+                             f'<span class="dim">{fmt(one_hit(hit["dmg"]))} damage</span>'),
+             ("Widest reach", f'<a href="#{reach["anchor"]}">{esc(reach["key"])}</a><br>'
+                              f'<span class="dim">{fmt(radius_players(reach["dmg"]))} m</span>'),
+             (None, "Difficulty"),
+             ("Numbers shown", "base (Medium solo, ×1)"),
+             ("Damage to you", f"×{fmt(dt[('Easy', 1)][1])} (Easy solo) to ×{fmt(dt[('Hard', 4)][1])} "
+                               f"(Hard, 4 players)"),
+             ("Rivals", f"×{fmt(site.data('gamedata')['rival_levels'][0]['damage'])} to "
+                        f"×{fmt(site.data('gamedata')['rival_levels'][-1]['damage'])} on top"),
+             ("More", site.link("machine-weapon", "Difficulty", "Difficulty & co-op") + " · " +
+              site.link("machine-weapon", "Rivals", "Rivals"))]
+    return infobox("Machine weapons", rows)
 
 
 def reading_guide(site, about):
     rows = [
-        ("Direct hit", "Damage of one bullet, pellet or shell that hits you (<code>damage_per_projectile</code>). "
+        ("Direct hit", "Damage of one bullet, pellet or shell that hits you. "
                        "A shotgun-style weapon fires several per shot; the table multiplies them out."),
         ("Blast", "Area damage where a projectile or attack explodes, separately against you and against "
                   "machines, each with its own radius in metres. Explosive shells do both: the direct hit "
@@ -409,8 +450,7 @@ def reading_guide(site, about):
                        f"Medium with 4 players has the same ×{fmt(diff_table(site)[('Medium', 4)][1])} as H1). "
                        f"Scaled values keep one decimal."),
     ]
-    return (bar("Reading the numbers", id="reading") +
-            "<p>All numbers are taken unchanged from the game files. Damage is in hit points, radius in metres and "
+    return ("<p>All numbers are taken unchanged from the game files. Damage is in hit points, radius in metres and "
             "time in seconds.</p>" + kv([(k, v) for k, v in rows]))
 
 
@@ -436,7 +476,7 @@ def summary_table(site, ws):
             bcell = (bcell[0] + ' <small class="dim">when destroyed</small>', bcell[1])
         rows.append(({"data-f": f"{slug(d['kind'])} {slug(d['faction'])}"}, [
             site.link("machine-weapon", e["key"]),
-            (esc(d["kind"]), {"class": "nw"}),
+            (esc(d["kind"].capitalize()), {"class": "nw"}),
             times_cell(dmg.get("damage_per_projectile"), dmg.get("projectiles_per_shot") or 1),
             bcell,
             num(dot, base=dot),
@@ -454,27 +494,10 @@ def summary_table(site, ws):
             "hardest hitters), use the chips to show one kind or faction, and switch the difficulty to see the "
             "damage you would actually take. <b>Direct hit</b> and <b>Blast</b> show damage per projectile (or "
             "bomblet) × how many per shot, with the blast radius in small print; <b>DoT</b> is the total of one burn "
-            "/ gas / radiation exposure; <b>One hit</b> and <b>Max per attack</b> are explained above; "
+            "/ gas / radiation exposure; <b>One hit</b> and <b>Max per attack</b> are explained under "
+            "<a href=\"#reading\">Reading the numbers</a>; "
             "<b>Classes</b> is how many machine classes carry it.</p>" + switch + fb +
-            rtable(head, rows, num_cols=range(2, 9), cls="mwsum compact", tid="mwsum") + SCALE_JS)
-
-
-# the difficulty switch of the summary table: multiplies every cell with data-b (and its sort value)
-SCALE_JS = """<script>
-(function () {
-  var sel = document.getElementById("mwDiff"), t = document.getElementById("mwsum");
-  if (!sel || !t) return;
-  function f(n) { return (Math.round(n * 100) / 100).toLocaleString("en-US"); }
-  sel.addEventListener("change", function () {
-    var k = parseFloat(sel.value);
-    t.querySelectorAll("td[data-b]").forEach(function (td) {
-      var v = parseFloat(td.dataset.b) * k, s = td.querySelector(".dsc");
-      td.dataset.v = v;
-      if (s) s.textContent = f(parseFloat(s.dataset.b) * k); else td.textContent = f(v);
-    });
-  });
-})();
-</script>"""
+            rtable(head, rows, num_cols=range(2, 9), cls="mwsum compact", tid="mwsum"))
 
 
 def kind_facts(kind, es):
@@ -511,12 +534,6 @@ def weapon_block(site, e):
         rows.append(("Component HP", comp_html(site, e)))
     if e["labels"]:
         rows.append(("In-game label", ", ".join(esc(x) for x in sorted(e["labels"]))))
-    names = [code(d["internal_name"])]
-    rows.append(("Internal name", " ".join(names)))
-    if e["ammo"]:
-        rows.append(("Ammo", " ".join(code(x) for x in sorted(e["ammo"]))))
-    if e["effects"]:
-        rows.append(("Damage effect", " ".join(code(x) for x in sorted(e["effects"]))))
     shorts = sorted(s for s in e["short"] if s != e["key"])
     if shorts:
         rows.append(("Loadout name", ", ".join(esc(s) for s in shorts)))
@@ -697,36 +714,23 @@ TIPS = {
 }
 
 
-def difficulty_section(site):
-    dt = diff_table(site)
-    lo, hi = dt[("Easy", 1)][1], dt[("Hard", 4)][1]
-    return (bar("How difficulty changes these numbers", id="difficulty") +
-            f"<p>Every number on this page is a base value. The game multiplies all damage machines do to you by "
-            f"a factor that depends on the difficulty and on how many players are in the session: from "
-            f"×{fmt(lo)} (Easy, solo) to ×{fmt(hi)} (Hard, 4 players). A rival machine adds its own damage "
-            f"multiplier on top. Use the switch above the table to see the scaled values, and see "
-            f"{site.link('machine-weapon', 'Difficulty', 'Difficulty & co-op')} and "
-            f"{site.link('machine-weapon', 'Rivals', 'Rivals')} for the full tables and worked examples.</p>")
-
-
 # ===============================================================================================================
 # machines/difficulty.html
 # ===============================================================================================================
 def build_difficulty(site):
     dt = diff_table(site)
-    st = site.data("stats")
     lead = ("<p>Generation Zero scales damage in two directions: how much damage <b>you</b> do to machines, and how "
-            "much damage <b>machines</b> do to you. Both depend on the difficulty you play on and on the number of "
-            "players in the session. This page lists the multipliers from the game's difficulty settings, explains "
-            "what they mean in practice and has a calculator.</p>")
+            "much damage <b>machines</b> do to you. Both depend on the difficulty and on the number of players in "
+            "the session. This page lists the multipliers from the game's difficulty settings and what they mean "
+            "in practice.</p>")
     b = []
     b.append(bar("The multipliers", id="multipliers"))
     b.append("<p>Read each cell as <i>multiply the base damage by this</i>. ×1 means the damage you see in the "
              "weapon tables of this wiki. Your damage covers every weapon you use against machines; machine damage "
              "covers every machine weapon on the "
              f"{site.link('machine-weapon', 'Machine weapons', 'machine weapons')} page.</p>")
-    b.append(mult_table(dt, 0, "Your damage to machines"))
-    b.append(mult_table(dt, 1, "Machine damage to you"))
+    b.append('<div class="cols"><div>' + mult_table(dt, 0, "Your damage to machines") + "</div><div>" +
+             mult_table(dt, 1, "Machine damage to you") + "</div></div>")
     b.append(note("The multipliers are stored with two decimals in the data, so 0.67 and 1.33 are most likely "
                   "⅔ and 1⅓, and 0.63 / 0.38 most likely 0.625 / 0.375.", "data"))
     b.append(bar("What stands out", id="surprises"))
@@ -735,12 +739,29 @@ def build_difficulty(site):
     b.append(team_table(dt))
     b.append(bar("Worked examples", id="examples"))
     b.append(examples(site, dt))
-    b.append(bar("Calculator", id="calculator"))
-    b.append(calculator(site, dt))
     site.page(DIFF_PAGE, "Difficulty & co-op", "\n".join(b), "machines", sub="difficulty",
+              infobox_html=difficulty_infobox(site, dt),
               desc="Generation Zero difficulty and co-op damage multipliers: Easy, Medium, Hard with 1-4 players, "
-                   "with worked examples and a calculator.", kind="Machines · Difficulty", lead=lead,
+                   "with worked examples.", kind="Machines · Difficulty", lead=lead,
               head_extra=CSS, search={"k": "Machines", "w": "difficulty co-op multiplayer scaling damage easy hard"})
+
+
+def difficulty_infobox(site, dt):
+    yours = [v[0] for v in dt.values()]
+    theirs = [v[1] for v in dt.values()]
+    rv = site.data("gamedata")["rival_levels"]
+    rows = [("Difficulties", ", ".join(DIFFS)),
+            ("Players", f"1 to {max(p for _, p in dt)}"),
+            ("Baseline (×1)", "Medium, 1 player"),
+            (None, "Range"),
+            ("Your damage", f"×{fmt(min(yours))} to ×{fmt(max(yours))}"),
+            ("Machine damage", f"×{fmt(min(theirs))} to ×{fmt(max(theirs))}"),
+            (None, "On top"),
+            ("Rival damage", f"×{fmt(rv[0]['damage'])} to ×{fmt(rv[-1]['damage'])}"),
+            ("Rival health", f"×{fmt(rv[0]['health'])} to ×{fmt(rv[-1]['health'])}"),
+            ("More", site.link("machine-weapon", "Rivals", "Rivals") + " · " +
+             site.link("machine-weapon", "Machine weapons", "Machine weapons"))]
+    return infobox("Difficulty", rows, subtitle="Damage multipliers by difficulty and number of players")
 
 
 def mult_table(dt, i, title):
@@ -795,7 +816,8 @@ def team_table(dt):
     for d in DIFFS:
         cells = [f"<b>{d}</b>"]
         for p in range(1, 5):
-            cells.append(num(round(p * dt[(d, p)][0], 1)))
+            v = round(p * dt[(d, p)][0], 1)
+            cells.append((f"×{fmt(v)}", {"class": "n", "data-v": v}))
         rows.append((None, cells))
     m3, m4 = round(3 * dt[("Medium", 3)][0], 1), round(4 * dt[("Medium", 4)][0], 1)
     h3, h4 = round(3 * dt[("Hard", 3)][0], 1), round(4 * dt[("Hard", 4)][0], 1)
@@ -805,8 +827,14 @@ def team_table(dt):
             rtable(["Difficulty", "1 player", "2 players", "3 players", "4 players"], rows, num_cols=range(1, 5),
                    cls="mult", sortable=False) +
             f"<p>The fourth player adds almost nothing to the group's firepower: on Medium three players together "
-            f"do ×{fmt(m3)} and four do ×{fmt(m4)}; on Hard it is ×{fmt(h3)} against ×{fmt(h4)}. What a bigger group gains is more targets for the machines, "
-            f"more angles and more people to revive you, while each of you takes more damage.</p>")
+            f"do {_vs(m3, m4)}; on Hard {_vs(h3, h4)}. What a bigger group gains is more targets for the "
+            f"machines, more angles and more people to revive you, while each of you takes more damage.</p>")
+
+
+def _vs(three, four):
+    """'×2, and four players also ×2' / '×1.5 against ×1.6 with four'."""
+    return (f"×{fmt(three)} and four players also ×{fmt(four)}" if three == four
+            else f"×{fmt(three)} and four players ×{fmt(four)}")
 
 
 def _magnum(site):
@@ -844,7 +872,7 @@ def examples(site, dt):
             f"<p>It fires {d['projectiles_per_shot']} pellets of {fmt(d['damage_per_projectile'])}: "
             f"{fmt(per)} per shot if every pellet hits. Medium with 4 players doubles machine damage "
             f"(×{fmt(m4)}): {fmt(per)} × {fmt(m4)} = <b>{fmt(per * m4)}</b> per shot, or "
-            f"{fmt(d['damage_per_projectile'] * m4)} per pellet. Alone on Medium the same blast does {fmt(per)}.</p>")
+            f"{fmt(d['damage_per_projectile'] * m4)} per pellet. Alone on Medium the same shot does {fmt(per)}.</p>")
     lac = mws.get("Linear Accelerator Cannon")
     if lac:
         d = lac["damage"]["damage_per_projectile"]
@@ -861,7 +889,7 @@ def examples(site, dt):
         ex.append(
             f"<h4>A level {top['level']} rival on Hard, solo</h4>"
             f"<p>Rival damage multipliers stack with difficulty. A level {top['level']} rival does "
-            f"×{fmt(top['damage'])} damage; on Hard solo that is ×{fmt(top['damage'])} × ×{fmt(h1)} = "
+            f"×{fmt(top['damage'])} damage; on Hard solo that is ×{fmt(top['damage'])} × {fmt(h1)} = "
             f"×{fmt(top['damage'] * h1)}. A {fmt(d)}-damage bullet becomes <b>{fmt(d * top['damage'] * h1)}</b>. "
             f"The rival also has ×{fmt(top['health'])} health while you do ×{fmt(dt[('Hard', 1)][0])} damage, so "
             f"it takes {fmt(top['health'] / dt[('Hard', 1)][0], 1)} times as many hits as the same machine on "
@@ -870,54 +898,56 @@ def examples(site, dt):
                               "files suggest. The game files don't say in which order the game rounds them.", "info")
 
 
-def calculator(site, dt):
-    diffs = {d: {p: list(dt[(d, p)]) for p in range(1, 5)} for d in DIFFS}
-    rivals = {r["level"]: [r["health"], r["damage"]] for r in site.data("gamedata")["rival_levels"]}
-    opt_d = "".join(f'<option{" selected" if d == "Medium" else ""}>{d}</option>' for d in DIFFS)
-    opt_r = '<option value="0">Not a rival</option>' + "".join(
-        f'<option value="{lv}">Rival level {lv}</option>' for lv in rivals)
-    return (
-        "<p>Type a base damage value from any table on this wiki and pick the situation.</p>"
-        '<div class="calc" id="dcalc">'
-        '<label>Base damage<input type="number" id="cBase" value="56" min="0" step="any"></label>'
-        '<label>Who hits whom<select id="cDir"><option value="0">You hit a machine</option>'
-        '<option value="1">A machine hits you</option></select></label>'
-        f'<label>Difficulty<select id="cDiff">{opt_d}</select></label>'
-        '<label>Players<select id="cPl"><option>1</option><option>2</option><option>3</option><option>4</option>'
-        '</select></label>'
-        f'<label>Machine<select id="cRiv">{opt_r}</select></label>'
-        '<output id="cOut"></output></div>'
-        f"<script>(function(){{var D={json.dumps(diffs)},R={json.dumps(rivals)};"
-        "var $=function(i){return document.getElementById(i);};"
-        "function f(n){return (Math.round(n*100)/100).toLocaleString('en-US');}"
-        "function go(){var b=parseFloat($('cBase').value)||0,dir=+$('cDir').value,m=D[$('cDiff').value][$('cPl').value][dir],"
-        "r=R[$('cRiv').value],out=b*m,t='<b>'+f(out)+'</b> damage ('+f(b)+' × '+f(m)+')';"
-        "if(r&&dir===1){out*=r[1];t='<b>'+f(out)+'</b> damage ('+f(b)+' × '+f(m)+' × rival '+f(r[1])+')';}"
-        "else if(r){t+=' against a rival with ×'+f(r[0])+' health: like '+f(out/r[0])+' against the normal machine';}"
-        "$('cOut').innerHTML=t;}"
-        "['cBase','cDir','cDiff','cPl','cRiv'].forEach(function(i){$(i).addEventListener('input',go);"
-        "$(i).addEventListener('change',go);});go();})();</script>")
-
-
 # ===============================================================================================================
 # machines/rivals.html
 # ===============================================================================================================
+RIVALS_DLC = 1173930      # steam.json appid of the free 'Rivals & Experimental Weapons' update
+
+
 def build_rivals(site):
     gd = site.data("gamedata")
-    lead = ("<p>Rivals are machines that grow stronger over time. Each one has a level, a generated "
-            "title such as <i>The Tyrant of the Mountain</i>, and a history of what it has done. They level up by "
-            "gaining experience (the Gen0 Editor's notes say: by killing players or escaping), and each level "
-            "multiplies their health, damage and reward. How often new rivals appear depends on the threat level "
-            "of the region. This page has the level table, the threat table, the two unique rival machines and "
-            "the complete title list from the game files.</p>")
+    dlc = next((d for d in site.data("steam")["dlc"] if d["appid"] == RIVALS_DLC), None)
+    when = f" ({esc(dlc['date'].split(' ')[0])} {esc(dlc['date'].split(' ')[-1])})" if dlc else ""
+    update = site.link("dlc", dlc["name"], f"{dlc['name']} update") if dlc else "Rivals update"
+    lead = (f"<p>Rivals are machines that have grown stronger and earned a name and a title, such as <i>The "
+            f"Tyrant of the Mountain</i>. They came with the free {update}{when}. When you destroy many machines in "
+            f"a region, the machines there adapt and one of them evolves into a <b>regional rival</b>; a machine "
+            f"that defeats you or a friend can become a <b>personal rival</b>. Each rival level multiplies its "
+            f"health, damage and reward, and rivals are where "
+            f"{site.link('experimental', 'Experimental weapons', 'experimental weapons')} come from.</p>")
     b = [bar("Rival levels", id="levels"), rival_levels(site, gd["rival_levels"])]
-    b += [bar("Threat levels", id="threat"), threat_levels(gd["threat"])]
+    b += [bar("Threat levels", f"{len(gd['threat']) - 1} levels", id="threat"), threat_levels(site, gd["threat"])]
     b += [bar("The Reaper and the Vulture", id="special"), special_rivals(site)]
-    b += [bar("Rival titles", f"{len(gd['titles'])} texts", id="titles"), titles_section(site, gd)]
+    rows = [(h, t, classify_title(t)) for h, t in gd["titles"].items()]
+    n_titles = sum(1 for r in rows if r[2]["group"] != "history")
+    b += [bar("Rival titles", f"{fmt(n_titles)} titles", id="titles"), titles_intro(site, gd, rows)]
+    b += [bar("Title parts", id="parts"), title_builder(site, rows)]
+    b += [bar("All titles", f"{fmt(n_titles)} titles", id="all-titles"), title_tree(rows)]
     site.page(RIVALS_PAGE, "Rivals", "\n".join(b), "machines", sub="rivals",
-              desc="Generation Zero rivals: levels, XP, health and damage multipliers, region threat levels and "
-                   "every rival title.", kind="Machines · Rivals", lead=lead, head_extra=CSS,
+              infobox_html=rivals_infobox(site, gd, n_titles, dlc),
+              desc="Generation Zero rivals: levels, health and damage multipliers, region threat levels and every "
+                   "rival title.", kind="Machines · Rivals", lead=lead, head_extra=CSS,
               search={"k": "Machines", "w": "rival rivals threat titles xp level reaper vulture"})
+
+
+def rivals_infobox(site, gd, n_titles, dlc):
+    lv, th = gd["rival_levels"], gd["threat"]
+    rng = lambda k: f"×{fmt(lv[0][k], 3)} to ×{fmt(lv[-1][k], 3)}"
+    img = f"~/{dlc['image']}" if dlc and site.has_file(dlc["image"]) else None
+    rows = [("Added in", site.link("dlc", dlc["name"]) + f"<br><span class=\"dim\">{esc(dlc['date'])}, free</span>"
+             if dlc else None),
+            (None, "Rival levels"),
+            ("Levels", f"{lv[0]['level']} to {lv[-1]['level']}"),
+            ("Health", rng("health")), ("Damage", rng("damage")), ("Reward", rng("reward")),
+            (None, "Regions"),
+            ("Threat levels", f'<a href="#threat">1 to {len(th) - 1}</a>'),
+            ("New-rival chance", f"{pct(th[1]['chance'])} to {pct(th[-1]['chance'], 1)}"),
+            (None, "Unique rivals"),
+            ("Swedish", site.link("machine", "Reaper") + ' <span class="dim">(Tank)</span>'),
+            ("Soviet", site.link("machine", "Vulture") + ' <span class="dim">(Firebird)</span>'),
+            (None, "Titles"),
+            ("Titles", f'<a href="#all-titles">{fmt(n_titles)}</a>')]
+    return infobox("Rivals", rows, image=img, image_alt="Rivals & Experimental Weapons")
 
 
 def rival_levels(site, lv):
@@ -931,8 +961,7 @@ def rival_levels(site, lv):
                             (f"×{fmt(r['damage'], 3)}", {"class": "n", "data-v": r["damage"]}),
                             (f"×{fmt(r['reward'], 3)}", {"class": "n", "data-v": r["reward"]})]))
         prev = r
-    top = lv[-1]
-    first = lv[0]
+    top, first = lv[-1], lv[0]
     h4 = dt[("Hard", 4)]
     ex_machine = example_machine(site)
     ex = ""
@@ -942,22 +971,17 @@ def rival_levels(site, lv):
               f"hit points; as a level {top['level']} rival that becomes about {fmt(hp * top['health'], 0)}.")
     return (
         "<p>A rival's level follows from its experience points (XP). <b>XP to reach</b> is the total XP at which "
-        "the level starts; the multipliers apply to the machine's normal values. <b>Reward</b> multiplies what you "
-        "get for destroying it (the Gen0 Editor shows it as the XP reward).</p>" +
+        "the level starts; the multipliers apply to the machine's normal values, and <b>Reward</b> multiplies "
+        "what you get for destroying it.</p>" +
         rtable(["Level", "XP to reach", "XP from previous level", "Health", "Damage", "Reward"], rows,
                num_cols=range(1, 6), cls="mult", sortable=False) +
         f'<ul class="tips"><li>Even a brand-new level {first["level"]} rival is tougher than the normal machine: '
-        f"×{fmt(first['health'])} health and ×{fmt(first['damage'])} damage.</li>"
+        f"×{fmt(first['health'])} health and ×{fmt(first['damage'])} damage.{ex}</li>"
         f"<li>The total XP needed doubles with each level from level 2 on "
         f"({', '.join(fmt(r['xp']) for r in lv[1:])}).</li>"
-        f"<li>At level {top['level']} health is ×{fmt(top['health'])} but the reward only "
-        f"×{fmt(top['reward'])}: high-level rivals are less worth the effort per hit point than fresh ones "
-        f"(reward per health ×{fmt(first['reward'] / first['health'], 2)} at level {first['level']}, "
-        f"×{fmt(top['reward'] / top['health'], 2)} at level {top['level']}).{ex}</li>"
-        f"<li>The rival multipliers come on top of difficulty. A level {top['level']} rival on Hard with 4 "
-        f"players hits ×{fmt(top['damage'])} × ×{fmt(h4[1])} = ×{fmt(top['damage'] * h4[1])} as hard as base, and "
-        f"needs {fmt(top['health'] / h4[0], 1)} times as many hits as the normal machine on Medium solo. See "
-        f"{site.link('machine-weapon', 'Difficulty', 'Difficulty & co-op')}.</li></ul>")
+        f"<li>Rival multipliers come on top of difficulty: a level {top['level']} rival on Hard with 4 players "
+        f"hits ×{fmt(top['damage'])} × {fmt(h4[1])} = ×{fmt(top['damage'] * h4[1])} as hard as base (see "
+        f"{site.link('machine-weapon', 'Difficulty', 'Difficulty & co-op')}).</li></ul>")
 
 
 def example_machine(site):
@@ -970,82 +994,87 @@ def example_machine(site):
         return None
 
 
-def threat_levels(th):
-    """gamedata threat: index = threat level. Index 0 is a placeholder (the editor shows levels 1..n)."""
-    rows = []
-    for i in range(1, len(th)):
-        t = th[i]
-        nxt = th[i + 1]["score"] - t["score"] if i + 1 < len(th) else None
-        rows.append((None, [f"<b>{i}</b>", num(t["score"]), num(nxt), (pct(t["chance"], 1), {
-            "class": "n", "data-v": t["chance"]}), f'<span class="sbar" style="width:{t["chance"] * 160:.0f}px">'
-                                                     f'</span>']))
-    last = th[-1]
+# ---------------------------------------------------------------------------------------------------------------
+# threat levels: a bar chart (one row per level: bar = score needed, right = new-rival chance)
+# ---------------------------------------------------------------------------------------------------------------
+def threat_levels(site, th):
+    """gamedata threat: index = threat level. Index 0 is a placeholder (the Gen0 Editor shows levels 1..n)."""
+    levels = [(i, th[i]["score"], th[i]["chance"]) for i in range(1, len(th))]
+    steps = {round(levels[k + 1][2] - levels[k][2], 6) for k in range(1, len(levels) - 1)}
+    last = levels[-1]
+    step_txt = (f"level {levels[1][0]} starts at {pct(levels[1][2])} and every level after it adds "
+                f"{fmt(steps.pop() * 100, 1)} percentage points" if len(steps) == 1 else
+                f"the chance rises from {pct(levels[1][2])} at level {levels[1][0]}")
     return (
-        "<p>Each region of the map keeps a threat score (in the save game: <code>InsurrectionScore</code> of the "
-        "region's entry in <code>RivalRegions</code>). The score sets the region's threat level, and a higher "
-        "level raises the chance that a new rival appears in that region and, according to the Gen0 Editor's notes, "
-        "also makes the region's rival missions stronger. Each region also has a cooldown, the "
-        "time before another new rival may appear there. The table shows the score at which each level starts and "
-        "the new-rival chance at that level.</p>" +
-        rtable(["Threat level", "Score to reach", "Score to next level", "New rival chance", ""], rows,
-               num_cols=range(1, 4), cls="mult compact", sortable=False) +
-        f'<ul class="tips"><li>Level 1 starts at 0 points, and its new-rival chance is 0%.</li>'
-        f"<li>From level 2 on, each level adds 2.5 percentage points of chance, up to "
-        f"{pct(last['chance'], 1)} at level {len(th) - 1}.</li>"
-        f"<li>The steps get longer: level 2 needs {fmt(th[2]['score'])} points, but the last level needs "
-        f"{fmt(last['score'] - th[-2]['score'])} more than the one before.</li></ul>" +
-        note("The game files give the thresholds and chances only. What raises or lowers a region's threat "
-             "score isn't part of the extracted data, so we don't list it here.", "data"))
+        "<p>Every region of the map keeps a threat score. The score sets the region's threat level, and a higher "
+        "level raises the chance that a new rival appears there (and, according to the Gen0 Editor's notes, makes "
+        "the region's rival missions stronger). The chart shows the score each level starts at and the new-rival "
+        "chance at that level.</p>" + threat_chart(levels) +
+        f'<ul class="tips"><li>Level 1 starts at 0 points with a {pct(levels[0][2])} chance; {step_txt}, up to '
+        f"{pct(last[2], 1)} at level {last[0]}.</li>"
+        f"<li>The steps get longer: level 2 needs {fmt(levels[1][1])} points, the last level "
+        f"{fmt(last[1] - levels[-2][1])} more than the one before.</li></ul>" +
+        note("The game files give the thresholds and chances only. The Rivals update's Steam description says "
+             "rivals appear as you take down large numbers of machines in a region; exactly how many points an "
+             "action adds or removes isn't part of the extracted data.", "data"))
 
 
-def layouts_cell(site, lays):
-    """Layout count; a '_base' entity is the template the layouts build on, so it is mentioned, not counted."""
-    base = [l for l in lays.values() if l["internal_name"].endswith("_base")]
-    real = [l for l in lays.values() if l not in base]
-    if not base:
-        return fmt(len(real))
-    weapons = {l["internal_name"]: sorted(w["internal_name"] for w in l["weapons"]) for _, _, l, _ in _layouts(site)}
-    b = base[0]
-    same_hp = all(l["total_component_health"] == b["total_component_health"] for l in real)
-    same_w = all(weapons.get(l["internal_name"]) == weapons.get(b["internal_name"]) for l in real)
-    same = " and ".join(x for x, ok in (("weapons", same_w), ("health", same_hp)) if ok)
-    return (f"{fmt(len(real))} <span class=\"dim\">(plus the base entity {code(b['internal_name'])}"
-            f"{', same ' + same if same else ''})</span>")
+def threat_chart(levels):
+    top = max(s for _, s, _ in levels)
+    axis_max = int(math.ceil(top / 5000.0)) * 5000
+    ticks = list(range(0, axis_max + 1, 5000))
+    rows = []
+    prev = None
+    for lvl, score, chance in levels:
+        w = score / axis_max * 100
+        more = f", {fmt(score - prev)} more than level {lvl - 1}" if prev is not None else ""
+        lab = f"{fmt(score)} pts"
+        rows.append(f'<div class="tcr" title="Threat level {lvl}: from {fmt(score)} points{more}; new-rival chance '
+                    f'{pct(chance, 1)}"><span class="tcl">{lvl}</span><span class="tct">'
+                    f'<span class="tcb" style="width:{w:.2f}%"></span>'
+                    f'<span class="tcv{" in" if w > 66 else ""}" style="--x:{w:.2f}%">{lab}</span></span>'
+                    f'<span class="tcc">{pct(chance, 1).replace(".0%", "%")}</span></div>')
+        prev = score
+    # tick labels: '5,000' on wide screens, '5k' on phones (machine_weapons.css)
+    axis = "".join(f'<span style="left:{t / axis_max * 100:.2f}%"><i class="lg">{fmt(t)}</i>'
+                   f'<i class="sm">{fmt(t / 1000)}{"k" if t else ""}</i></span>' for t in ticks)
+    return (f'<figure class="tchart" style="--ticks:{len(ticks) - 1}">'
+            f'<figcaption>Threat score a region needs for each threat level, and the chance of a new rival at '
+            f'that level</figcaption>'
+            f'<div class="tcr tchd"><span class="tcl"><i class="lg">Level</i><i class="sm">Lv</i></span><span class="tct">Score needed (points)</span>'
+            f'<span class="tcc"><i class="lg">Rival chance</i><i class="sm">Chance</i></span></div>'
+            + "".join(rows) +
+            f'<div class="tcr tcax"><span class="tcl"></span><span class="tct">{axis}</span>'
+            f'<span class="tcc"></span></div></figure>')
 
 
+# ---------------------------------------------------------------------------------------------------------------
+# the two unique rival machines (their own pages are in the machines section)
+# ---------------------------------------------------------------------------------------------------------------
 def special_rivals(site):
-    """The two unique Rival-class machines, from stats.json machine_health (class 'Rival') and loadouts.json."""
+    """Short facts on the Reaper and the Vulture from stats.json machine_health (class 'Rival')."""
     mh = site.data("stats")["machine_health"]
     mws = model(site)["weapons"]
-    out = ["<p>Besides the normal machines that become rivals, the game files have a separate <b>Rival</b> class "
-           "for each faction, internal class <code>classr1</code>, and each holds one unique machine: the Swedish "
-           "Reaper (a Tank) and the Soviet Vulture (a Firebird).</p>", '<div class="cols">']
+    rows = []
     for fac, mtype, name in (("Swedish", "Tank", "Reaper"), ("Soviet", "Firebird", "Vulture")):
-        cls = mh.get(fac, {}).get("Rival", {})
-        lays = cls.get("types", {}).get(mtype, {}).get("layouts", {})
+        lays = mh.get(fac, {}).get("Rival", {}).get("types", {}).get(mtype, {}).get("layouts", {})
         if not lays:
             continue
         hp = max(l["total_component_health"] for l in lays.values())
         regular = [l["total_component_health"] for c, cv in mh[fac].items() if c != "Rival"
                    for t, tv in cv["types"].items() if t == mtype for l in tv["layouts"].values()]
-        wl = [e for e in mws.values() if name in e["used_by"]]
-        rows = [("Machine", site.link("machine", name)),
-                ("Faction", faction_tag(fac)),
-                ("Based on", site.link("machine", mtype)),
-                ("Internal", code(cls.get("internal_name", "")) + " " + " ".join(
-                    code(l["internal_name"]) for l in lays.values())),
-                ("Layouts", layouts_cell(site, lays)),
-                ("Total component health", f"<b>{fmt(hp)}</b>" + (
-                    f" ({fmt(hp / max(regular), 1)}× the toughest regular {esc(mtype)} layout, {fmt(max(regular))})"
-                    if regular else "")),
-                ("Weapons", ", ".join(site.link("machine-weapon", e["key"]) for e in
-                                      sorted(wl, key=lambda e: e["key"])))]
-        out.append(f'<div class="panel"><h3>{esc(name)}</h3>{kv(rows)}</div>')
-    out.append("</div>")
-    out.append(note("Total component health adds up every component and armour plate; it is a size comparison, not "
-                    "an exact kill threshold (the game keeps no separate overall health value in a readable file).",
-                    "data"))
-    return "".join(out)
+        wl = sorted((e for e in mws.values() if name in e["used_by"]), key=lambda e: e["key"])
+        rows.append(f'<div class="panel mwrv"><h3>{site.link("machine", name)}</h3>' + kv([
+            ("Faction", faction_tag(fac)),
+            ("Based on", site.link("machine", mtype)),
+            ("Total health", f"<b>{fmt(hp)}</b>" + (f" <span class=\"dim\">(×{fmt(hp / max(regular), 1)} the toughest "
+                                                    f"regular {esc(mtype)} layout)</span>" if regular else "")),
+            ("Weapons", ", ".join(site.link("machine-weapon", e["key"]) for e in wl))]) + "</div>")
+    return ("<p>Besides the normal machines that become rivals, each faction has a separate Rival class with one "
+            "unique machine: the Swedish Reaper, built on the Tank, and the Soviet Vulture, built on the Firebird. "
+            "Their own pages have the full details.</p>" + '<div class="cols">' + "".join(rows) + "</div>" +
+            '<p class="dim small">Total health adds up every component and armour plate: a size comparison, not an '
+            'exact kill threshold.</p>')
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -1068,66 +1097,194 @@ def classify_title(text):
     return {"group": "epithet", "noun": "", "prep": "", "place": ""}
 
 
-def titles_section(site, gd):
+def titles_intro(site, gd, rows):
     titles = gd["titles"]
     hist = {v: k for k, v in gd.get("history", {}).items()}
-    rows = [(h, t, classify_title(t)) for h, t in titles.items()]
     groups = collections.Counter(c["group"] for _, _, c in rows)
     place_nouns = collections.Counter(c["noun"] for _, _, c in rows if c["group"] == "place")
     people_nouns = collections.Counter(c["noun"] for _, _, c in rows if c["group"] == "people")
     places = collections.Counter(c["place"] for _, _, c in rows if c["group"] == "place")
     peoples = collections.Counter(c["place"] for _, _, c in rows if c["group"] == "people")
     froms = sum(1 for _, _, c in rows if c["prep"] == "from")
-    out = [
-        f"<p>Every rival gets a title. The game stores them as a text table keyed by a hash (the save game keeps the "
-        f"hash of the rival's title). There are {fmt(len(titles))} texts in the table: {fmt(groups['place'])} "
-        f"place titles, {fmt(groups['people'])} titles aimed at people, {fmt(groups['epithet'])} stand-alone "
-        f"epithets, and {fmt(groups['history'])} texts that belong to the rival's history rather than its "
-        f"name.</p>",
-        "<h3>How a title is put together</h3>",
-        f'<div class="tpat"><span class="tp">The</span><span class="tp n">Epithet</span>'
-        f'<span class="tp">of / from</span><span class="tp p">Place</span></div>',
-        f"<p>Most titles follow the pattern <b>The &lt;epithet&gt; of &lt;place&gt;</b>: "
-        f"{fmt(len(place_nouns))} epithets (Tsar, Invader, Plague, Liberator ...) combined with {fmt(len(places))} "
-        f"places, from map locations like Hagaboda and Averholm Manor to landscape words like <i>the Rugged "
-        f"Wilds</i> or <i>the Cold</i>. Not every combination exists: each epithet appears with {fmt(min(place_nouns.values()))} to "
-        f"{fmt(max(place_nouns.values()))} of the places. {fmt(froms)} titles use <i>from</i> instead of <i>of</i> (<i>The Menace from "
-        f"Sävered</i>). The epithets range from menacing (Tyrant, Plague, Horror) to ironically friendly "
-        f"(Liberator, Benefactor, Helper, Savior), and a few have a Soviet ring (Tsar, Kommisar, Iron Zmey, "
-        f"Kikimora, Revolutionary).</p>",
-        f"<p>A second, smaller set uses the same pattern with people instead of a place: "
-        f"<i>The Bane of Friends</i>, <i>The Exterminator of All Humankind</i>, <i>The Predator of Meatbags</i>. "
-        f"{fmt(len(people_nouns))} epithets are combined with {fmt(len(peoples))} words for people "
-        f"({', '.join(esc(p) for p, _ in peoples.most_common())}). Their wording suggests they are given to rivals "
-        f"that have killed players, but the files we read don't say when each set is used.</p>",
-        f"<p>The remaining {fmt(groups['epithet'])} titles stand alone: <i>The Red Savior</i>, <i>The Iron Tsar</i>, "
-        f"<i>General Frost</i>, <i>Koschei the Deathless</i>. Many are built as <b>The &lt;Red / Iron / "
-        f"Mechanical / Terrible / Revolutionary / Loyal&gt; &lt;Soldier / Comrade / General / Agent / "
-        f"Kommissar&gt;</b>, and many borrow names from Russian folklore and myth (Baba Yaga, Koschei, Perun, "
-        f"the Zmey dragon, the Kikimora, and the heroes Ilya Muromets, Dobrynya Nikitich, Alyosha Popovich, "
-        f"Svyatogor and Mikula Selyaninovich), which gives them a Soviet theme.</p>",
-        history_texts(rows, hist),
-        typo_note(titles, places),
-        "<h3>The parts</h3>",
-        "<p>Every epithet and place word with the number of titles that use it. Places that are a location or "
-        "region on the map link to it. Click a column header to sort.</p>",
-        '<div class="cols tparts"><div>',
-        "<h4>Epithets with a place</h4>", count_table("Epithet", place_nouns, "tnp"),
-        "</div><div>",
-        "<h4>Epithets with people</h4>", count_table("Epithet", people_nouns, "tnh"),
-        "<h4>People</h4>", count_table("People", peoples, "tpeo"),
-        "</div><div>",
-        "<h4>Places</h4>", filterbar("tplaces", "Filter places..."), places_table(site, places),
-        "</div></div>",
-        "<h3>All titles</h3>",
-        "<p>The complete list. Filter by text (try a location or an epithet) or by group; <b>Hash</b> is the "
-        "title's text hash as stored in the save game.</p>",
-        filterbar("tlist", "Filter titles...",
-                  [("g", "Group", [("place", "Place"), ("people", "People"), ("epithet", "Stand-alone"),
-                          ("folk", "Folklore"), ("history", "History texts")])]),
-        all_titles(rows),
-    ]
-    return "".join(out)
+    return "".join([
+        f"<p>Every rival gets a title from a table of {fmt(len(titles) - groups['history'])} titles in the game "
+        f"files. Most follow one pattern:</p>",
+        '<div class="tpat"><span class="tp">The</span><span class="tp n">Epithet</span>'
+        '<span class="tp">of / from</span><span class="tp p">Place or people</span></div>',
+        f"<ul class=\"tips\"><li><b>{fmt(groups['place'])} place titles</b> combine {fmt(len(place_nouns))} epithets "
+        f"(Tsar, Invader, Plague, Liberator ...) with {fmt(len(places))} places, from map locations like Hagaboda "
+        f"to landscape words like <i>the Rugged Wilds</i>. Not every combination exists: each epithet appears with "
+        f"{fmt(min(place_nouns.values()))} to {fmt(max(place_nouns.values()))} places, and {fmt(froms)} titles "
+        f"use <i>from</i> (<i>The Menace from Sävered</i>).</li>"
+        f"<li><b>{fmt(groups['people'])} people titles</b> name people instead of a place: <i>The Bane of "
+        f"Friends</i>, <i>The Predator of Meatbags</i> ({fmt(len(people_nouns))} epithets, {fmt(len(peoples))} "
+        f"words for people). Their wording fits the personal rivals that have defeated players, but the files we "
+        f"read don't say when each set is used.</li>"
+        f"<li><b>{fmt(groups['epithet'])} stand-alone titles</b>: <i>The Red Savior</i>, <i>General Frost</i>, "
+        f"<i>Koschei the Deathless</i>. Many borrow names from Russian folklore and myth (Baba Yaga, Koschei, "
+        f"Perun, the Zmey dragon, the Kikimora and the bogatyr heroes), which gives them a Soviet theme.</li></ul>",
+        fold("Texts in the title table that are not titles", history_texts(rows, hist) + typo_note(titles, places),
+             level=3, id="title-notes", right=f"{groups['history']} texts"),
+    ])
+
+
+def history_texts(rows, hist):
+    """The four non-title texts of the table (rival history entries and a placeholder)."""
+    items = []
+    for h, t, c in sorted(rows, key=lambda r: r[1]):
+        if c["group"] != "history":
+            continue
+        role = {"creation": "history entry when the rival is created; its title fills in [TITLE]",
+                "level_up": "history entry for each level gained; [LEVEL] is the new level"}.get(hist.get(int(h)))
+        if not role:
+            role = ("placeholder text" if "TEMP" in t
+                    else "probably a history entry; not referenced in the game's history table")
+        items.append(f"<li><i>{esc(t)}</i> <span class=\"dim\">({esc(role)})</span></li>")
+    return ("<p>Four texts in the title table are not titles: the rival history entries the game uses when a "
+            "rival is created and levels up, one more that looks like a history entry, and a placeholder.</p>"
+            f'<ul class="tips">{"".join(items)}</ul>') if items else ""
+
+
+def _place_sort(p):
+    return norm(re.sub(r"^(the|of) ", "", p.strip(), flags=re.I))
+
+
+def _map_locations(site):
+    key = ("maplocs", id(site))
+    if key not in _CACHE:
+        _CACHE[key] = {norm(x["name"]): x for x in site.data("map_locations")["list"]}
+    return _CACHE[key]
+
+
+def _rel(u):
+    """'~/x.html?a=1&amp;b=2' -> 'x.html?a=1&b=2' (for the builder's JSON; the script adds the site root)."""
+    return (u or "")[2:].replace("&amp;", "&") if u else ""
+
+
+def place_info(site, place):
+    """[what it is (text), wiki page (root-relative URL or ''), map link ('' if none)] for a title place."""
+    regions = dict(REGIONS)
+    if place in REGION_PLACES:
+        k = REGION_PLACES[place]
+        e = site.find("region", k)
+        return ["a region of the map", e["path"] if e else "", _rel(maplink(region=[k]))]
+    bare = re.sub(r"^(the|of) ", "", place.strip())
+    ml = _map_locations(site).get(norm(bare))
+    e = site.find("location", bare)
+    if not ml and not e:
+        return ["", "", ""]
+    what = "a location"
+    if ml:
+        what += f" in the {regions.get(ml['region'], ml['region'])} region"
+        mlink = _rel(maplink(show=[f"loc_{ml['kind']}"], region=[ml["region"]], at=(ml["x"], ml["z"]),
+                             focus=ml["name"]))
+    else:
+        mlink = ""
+    return [what, e["path"] if e else "", mlink]
+
+
+def title_builder(site, rows):
+    """Pick an epithet and a place / people word: the title they make, whether the game has it, and the place on
+    the wiki and the map. Static chip lists (with counts) that machine_weapons.js makes interactive."""
+    two = [(t, c) for _, t, c in rows if c["group"] in ("place", "people")]
+    nouns = sorted({c["noun"] for _, c in two}, key=norm)
+    places = sorted({c["place"] for _, c in two if c["group"] == "place"}, key=_place_sort)
+    peoples = sorted({c["place"] for _, c in two if c["group"] == "people"}, key=_place_sort)
+    parts = places + peoples
+    ni, pi = {n: i for i, n in enumerate(nouns)}, {p: i for i, p in enumerate(parts)}
+    ncount = collections.Counter(c["noun"] for _, c in two)
+    pcount = collections.Counter(c["place"] for _, c in two)
+    data = {"n": nouns, "p": parts, "np": len(places),
+            "info": [place_info(site, p) for p in places] + [["people", "", ""] for _ in peoples],
+            "t": [[ni[c["noun"]], pi[c["place"]], t.strip()] for t, c in sorted(two, key=lambda x: x[0])]}
+
+    def chips(names, counts, k, start=0):
+        return "".join(f'<button type="button" class="tbc" data-k="{k}" data-i="{start + i}">{esc(n)}'
+                       f'<small>{counts[n]}</small></button>' for i, n in enumerate(names))
+    js = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    return (
+        f"<p>Pick an epithet and a place (or people) to see the title they make, whether it is in the game and "
+        f"where the place is. Picking one part shows only the parts it is combined with; the small number is how "
+        f"many titles use a part.</p>"
+        f'<div class="tb" id="tbuild">'
+        f'<div class="tbout" aria-live="polite"><div class="tbtitle"><span class="tbw">The</span> '
+        f'<span class="tbn tbslot">Epithet</span> <span class="tbw tbprep">of</span> '
+        f'<span class="tbp tbslot">Place or people</span></div>'
+        f'<div class="tbinfo">Pick an epithet and a place below, or try a random title.</div>'
+        f'<div class="tbact"><button type="button" class="chip" data-a="rand">Random title</button>'
+        f'<button type="button" class="chip" data-a="clear">Clear</button>'
+        f'<label class="tbonly"><input type="checkbox" checked> Only parts that go together</label></div></div>'
+        f'<div class="tbcols">'
+        f'<div class="tbcol"><div class="tbh">Epithet <small>{len(nouns)}</small></div>'
+        f'<input type="search" class="tbq" data-k="n" placeholder="Find an epithet..." aria-label="Find an epithet">'
+        f'<div class="tbchips" data-k="n">{chips(nouns, ncount, "n")}</div></div>'
+        f'<div class="tbcol"><div class="tbh">Place or people <small>{len(parts)}</small></div>'
+        f'<input type="search" class="tbq" data-k="p" placeholder="Find a place..." aria-label="Find a place">'
+        f'<div class="tbchips" data-k="p">{chips(places, pcount, "p")}'
+        f'<span class="tbsep">People</span>{chips(peoples, pcount, "p", len(places))}</div></div>'
+        f'</div><script type="application/json" class="tbdata">{js}</script></div>'
+        f"<p class=\"dim small\">The {fmt(sum(1 for _, _, c in rows if c['group'] == 'epithet'))} stand-alone "
+        f"titles have no parts; they are in the list below.</p>")
+
+
+def standalone_group(t, mods):
+    if t.endswith("of the Motherland"):
+        return "… of the Motherland"
+    if t.startswith(("The General's", "Bolshakov's")):
+        return "The General's …"
+    w = t.split()
+    if w[0] == "The" and len(w) >= 3 and w[1] in mods:
+        return f"The {w[1]} …"
+    if w[0] == "The" and len(w) == 2:
+        return "The … (one word)"
+    return "Other titles"
+
+
+def title_tree(rows):
+    """Every title as a tree of closed folds: place titles by epithet, people titles by people word, stand-alone
+    titles by their first word. A filter box opens the folds while typing (machine_weapons.js hides empty ones)."""
+    def items(ts, grp):
+        out = []
+        for t in sorted(ts, key=lambda x: _place_sort(x[1]) if grp != "epithet" else norm(x[0])):
+            text = t[0].strip()
+            folk = any(x in text for x in FOLKLORE)
+            out.append(f'<li class="fitem{" folk" if folk else ""}" data-f="{grp}{" folk" if folk else ""}">'
+                       f'{esc(text)}</li>')
+        return f'<ul class="tlist">{"".join(out)}</ul>'
+
+    def branch(title, grp, key, groups, tid, note_html=""):
+        n = sum(len(v) for v in groups.values())
+        inner = note_html + "".join(
+            fold(k, items(groups[k], grp), level=3, right=fmt(len(groups[k])), id=f"{tid}-{slug(k)}", cls="tsub")
+            for k in sorted(groups, key=key))
+        return fold(title, inner, level=3, right=f"{fmt(n)} titles", id=tid, cls="ttop")
+
+    place, people, alone = (collections.defaultdict(list) for _ in range(3))
+    for _, t, c in rows:
+        if c["group"] == "place":
+            place[c["noun"]].append((t, c["place"]))
+        elif c["group"] == "people":
+            people[c["place"]].append((t, c["noun"]))
+    st = [t for _, t, c in rows if c["group"] == "epithet"]
+    words = collections.Counter(t.split()[1] for t in st if t.startswith("The ") and len(t.split()) >= 3)
+    mods = {w for w, n in words.items() if n >= 3 and not w.endswith("'s")}
+    for t in st:
+        alone[standalone_group(t.strip(), mods)].append((t, ""))
+    last = lambda k: (k == "Other titles", norm(k))
+    fb = ('<div class="filterbar" data-for="ttree"><input placeholder="Filter titles (a place, an epithet ...)" '
+          'aria-label="Filter titles">'
+          '<button class="chip on" data-g="g" data-f="*">All</button>'
+          '<button class="chip" data-g="g" data-f="place">Place</button>'
+          '<button class="chip" data-g="g" data-f="people">People</button>'
+          '<button class="chip" data-g="g" data-f="epithet">Stand-alone</button>'
+          '<button class="chip" data-g="g" data-f="folk">Folklore</button><span class="count"></span></div>')
+    return ("<p>Every title, grouped like a tree: place titles by epithet, people titles by who they name, and "
+            "stand-alone titles by how they start. Names from folklore are in <span class=\"folk\">gold</span>. "
+            "Type in the filter to open the groups that match.</p>" + fb +
+            '<div class="foldall" data-for="ttree"></div><div class="ttree" id="ttree">' +
+            branch("Place titles", "place", norm, place, "tt-place") +
+            branch("People titles", "people", _place_sort, people, "tt-people") +
+            branch("Stand-alone titles", "epithet", last, alone, "tt-alone") + "</div>")
 
 
 def typo_note(titles, places):
@@ -1153,58 +1310,3 @@ def typo_note(titles, places):
     return note(txt, "data")
 
 
-def history_texts(rows, hist):
-    """The four non-title texts of the table (rival history entries and a placeholder)."""
-    items = []
-    for h, t, c in sorted(rows, key=lambda r: r[1]):
-        if c["group"] != "history":
-            continue
-        role = {"creation": "history entry when the rival is created (its title fills in [TITLE])",
-                "level_up": "history entry for each level gained ([LEVEL] = the new level)"}.get(hist.get(int(h)))
-        if not role:
-            role = ("placeholder text" if "TEMP" in t
-                    else "probably a history entry; not referenced in the game's history table")
-        items.append(f"<li><code>{esc(t)}</code> <span class=\"dim\">({esc(role)}; hash {esc(h)})</span></li>")
-    return ("<p>Four texts in the table are not titles. Two are the rival history entries the game links "
-            "to by hash (creation and level-up); of the other two, one looks like a history entry and one is a "
-            "placeholder:</p>"
-            f'<ul class="tips">{"".join(items)}</ul>') if items else ""
-
-
-def count_table(label, counts, tid):
-    rows = [(None, [esc(k), num(c)]) for k, c in sorted(counts.items(), key=lambda x: (-x[1], x[0]))]
-    return f'<div class="tscroll" id="{tid}">{rtable([label, "Titles"], rows, num_cols=(1,), cls="compact")}</div>'
-
-
-def place_link(site, place):
-    """Link a title place to its map location or region where it is one (plain text otherwise)."""
-    if place in REGION_PLACES:
-        return site.link("region", REGION_PLACES[place], place)
-    bare = re.sub(r"^(the|of) ", "", place.strip())
-    if norm(bare) in _location_names(site):
-        return site.link("location", bare, place)
-    return esc(place)
-
-
-def _location_names(site):
-    key = ("locnames", id(site))
-    if key not in _CACHE:
-        names = {norm(x["name"]) for x in site.data("gamedata")["locations"]["list"]}
-        names |= {norm(x["name"]) for x in site.data("map_locations")["list"]}
-        _CACHE[key] = names
-    return _CACHE[key]
-
-
-def places_table(site, places):
-    rows = [(None, [place_link(site, p), num(c)]) for p, c in sorted(places.items(), key=lambda x: (-x[1], x[0]))]
-    return f'<div class="tscroll" id="tplaces">{rtable(["Place", "Titles"], rows, num_cols=(1,), cls="compact")}</div>'
-
-
-def all_titles(rows):
-    out = []
-    for h, t, c in sorted(rows, key=lambda r: r[1].lower()):
-        f = c["group"] + (" folk" if any(x in t for x in FOLKLORE) else "")
-        grp = {"place": "Place", "people": "People", "epithet": "Stand-alone", "history": "History text"}[c["group"]]
-        out.append(({"data-f": f}, [esc(t), esc(c["noun"]) or None, esc(c["place"]) or None, grp,
-                                    (f"<code>{esc(h)}</code>", {"class": "n", "data-v": int(h)})]))
-    return f'<div id="tlist">{rtable(["Title", "Epithet", "Place / people", "Group", "Hash"], out, num_cols=(4,), cls="compact tlist")}</div>'

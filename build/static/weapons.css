@@ -5,15 +5,16 @@ img.aicon { height: 30px; width: 30px; max-width: none; object-fit: contain; ver
 img.crown { height: 22px; width: auto; vertical-align: middle; }
 a.wl { white-space: nowrap; }
 a.wl img.wicon { margin-right: 8px; }
-/* comparison table: 12 columns, so let text cells wrap and keep padding tight to fit a desktop width */
+/* comparison table: 10 columns, so let text cells wrap and keep padding tight to fit a desktop width */
 table.wcmp th, table.wcmp td { padding-left: 8px; padding-right: 8px; }
 table.wcmp td { white-space: normal; }
-table.wcmp td:nth-child(1), table.wcmp td:nth-child(9) { white-space: nowrap; }
+table.wcmp td:nth-child(1), table.wcmp td:nth-child(8) { white-space: nowrap; }
 table.wcmp td:nth-child(2) { min-width: 110px; }
-table.wcmp td:nth-child(5) { min-width: 120px; }
+table.wcmp td:nth-child(4) { min-width: 120px; }
 table.wcmp { font-size: 13px; }
-table.wcmp td:nth-child(12) { min-width: 140px; }
-table.wcmp td:nth-child(8) { font-size: 12.5px; min-width: 105px; }
+table.wcmp td:nth-child(10) { min-width: 105px; }
+table.wcmp td:nth-child(9) { min-width: 90px; }
+table.wcmp td:nth-child(7) { font-size: 12.5px; min-width: 90px; }
 table.dmg td:first-child code { font-size: 11px; }
 table.dmg td { font-size: 13.5px; }
 table.dmg td:last-child { min-width: 190px; font-size: 13px; }
@@ -44,4 +45,30 @@ table.wt td code { white-space: nowrap; }
 table.dmg td:first-child code { white-space: normal; word-break: break-all; }
 @media (max-width: 600px) { table.dmg td:first-child { min-width: 150px; } }
 table.wcmp td .tag { white-space: normal; display: inline-block; max-width: 130px; line-height: 1.3; }
-table.wcmp td:nth-child(4) a { white-space: nowrap; }
+table.wcmp td:nth-child(3) { min-width: 70px; }
+table.wcmp img.wicon { width: 44px; }
+table.wcmp td:nth-child(9) .small { font-size: 12.5px; }
+/* layout v2: ammo icons in the damage tables, quality crowns in headers, side panels (attachments, item IDs) */
+.ammoc { display: inline-flex; align-items: center; gap: 8px; min-width: 0; }
+.ammoc img.amicon { height: 28px; width: 28px; max-width: none; object-fit: contain; flex: none; }
+table.wt td img.amicon { max-height: 28px; }
+.qh { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.qh img.crown { height: 16px; }
+.sidepanel.wside .spb { padding: 8px 14px 10px; }
+.wside .atg { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--dim); margin: 8px 0 2px; }
+.wside .atg:first-child { margin-top: 0; }
+.wside ul.atlist { list-style: none; margin: 0; padding: 0; }
+.wside ul.atlist li { display: flex; align-items: center; gap: 8px; padding: 2px 0; min-width: 0; }
+.wside ul.atlist li a, .wside ul.atlist li span { min-width: 0; overflow-wrap: anywhere; }
+.wside img.aticon { height: 30px; width: 30px; object-fit: contain; flex: none; }
+.wside table.idtab { border-collapse: collapse; width: 100%; }
+.wside table.idtab td { padding: 3px 0; vertical-align: middle; }
+.wside table.idtab td.idv { text-align: right; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; user-select: all; }
+.wside p { margin: 8px 0 0; }
+table.exptab td:nth-child(5) { white-space: normal; min-width: 200px; }
+table.wcmp th { white-space: normal; vertical-align: bottom; }
+table.augtab td:last-child { white-space: normal; min-width: 220px; }
+@media (max-width: 600px) { table.perq td:first-child, table.augtab td:nth-child(2) { min-width: 150px; } }
+/* long DLC names (Eastern European Weapons Pack) would widen the rail: let tags in the infobox wrap */
+aside.infobox dd .tag { white-space: normal; max-width: 100%; }
+aside.infobox dd { min-width: 0; overflow-wrap: anywhere; }

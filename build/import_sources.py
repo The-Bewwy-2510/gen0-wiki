@@ -60,6 +60,14 @@ def main():
         copy(os.path.join(a.mapping, f), os.path.join(mp, f))
     copytree(os.path.join(a.mapping, "assets"), os.path.join(mp, "assets"))
     copytree(os.path.join(a.mapping, "map"), os.path.join(mp, "map"))
+    # inside the wiki, the map's WIKI button goes back to the wiki in the same tab
+    ix = os.path.join(mp, "index.html")
+    with open(ix, encoding="utf-8") as f:
+        page = f.read()
+    page = page.replace('href="https://the-bewwy-2510.github.io/gen0-wiki/" target="_blank" rel="noopener" '
+                        'title="Open the Gen0 Wiki in a new tab"', 'href="../index.html" title="Back to the Gen0 Wiki"')
+    with open(ix, "w", encoding="utf-8", newline="\n") as f:
+        f.write(page)
     print("Imported. Now run: python build/build.py")
 
 

@@ -134,23 +134,105 @@
     show(Math.max(0, btns.findIndex(b => b.classList.contains("on"))));
   });
 
+  // ------------------------------------------------------------------ collapsible sections (<details class="fold">)
+  // A link to a section (contents bar, #hash, search result) opens every fold around it first.
+  function openTo(id, scroll) {
+    let el = null;
+    try { el = id && document.getElementById(decodeURIComponent(id)); } catch (e) { el = null; }
+    if (!el) return false;
+    for (let d = el.closest("details"); d; d = d.parentElement && d.parentElement.closest("details")) d.open = true;
+    if (scroll) el.scrollIntoView({block: "start"});
+    return true;
+  }
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href^="#"]');
+    if (!a || a.getAttribute("href").length < 2) return;
+    const id = a.getAttribute("href").slice(1);
+    if (openTo(id, true)) { e.preventDefault(); history.replaceState(null, "", "#" + id); closeToc(); }
+  });
+  window.addEventListener("hashchange", () => openTo(location.hash.slice(1), true));
+  if (location.hash) requestAnimationFrame(() => openTo(location.hash.slice(1), true));
+  // "open all / close all" for a group of folds: <div class="foldall" data-for="id"></div> (the folds inside #id)
+  $$(".foldall").forEach(fa => {
+    const scope = fa.dataset.for ? document.getElementById(fa.dataset.for) : fa.parentElement;
+    if (!scope) return;
+    fa.innerHTML = '<button type="button" data-o="1">Open all</button><button type="button" data-o="0">Close all</button>';
+    fa.addEventListener("click", e => {
+      const b = e.target.closest("button"); if (!b) return;
+      $$("details.fold", scope).forEach(d => { d.open = b.dataset.o === "1"; });
+    });
+  });
+  // a filter box whose rows sit inside closed folds opens those folds while something is typed
+  document.addEventListener("input", e => {
+    const fb = e.target.closest(".filterbar[data-for]"); if (!fb) return;
+    const t = document.getElementById(fb.dataset.for); if (!t) return;
+    const on = e.target.value.trim() !== "";
+    $$("details.fold", t).forEach(d => {
+      if (on) { if (!d.open) { d.open = true; d._auto = true; } }
+      else if (d._auto) { d.open = false; d._auto = false; }
+    });
+  });
+
+  // ------------------------------------------------------------------ contents bar: highlight the section on screen
+  const toc = $(".rail .toc");
+  function closeToc() { if (toc) toc.classList.remove("open"); }
+  if (toc) {
+    const links = $$("a", toc);
+    const heads = links.map(a => document.getElementById(decodeURIComponent(a.getAttribute("href").slice(1))));
+    let ticking = false;
+    const spy = () => {
+      ticking = false;
+      let cur = 0;
+      heads.forEach((h, i) => { if (h && h.getBoundingClientRect().top < 150) cur = i; });
+      if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) cur = heads.length - 1;
+      links.forEach((a, i) => a.classList.toggle("on", i === cur));
+      const on = links[cur];
+      if (on && toc.scrollHeight > toc.clientHeight) {
+        const r = on.offsetTop - toc.scrollTop;
+        if (r < 30 || r > toc.clientHeight - 30) toc.scrollTop = on.offsetTop - toc.clientHeight / 2;
+      }
+    };
+    window.addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, {passive: true});
+    document.addEventListener("toggle", () => requestAnimationFrame(spy), true);
+    spy();
+    // narrow screens: the contents bar opens from a button in the corner
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "tocbtn"; btn.setAttribute("aria-label", "Contents");
+    btn.innerHTML = '<svg viewBox="0 0 20 20"><path d="M2 4h3v2H2zm5 0h11v2H7zM2 9h3v2H2zm5 0h11v2H7zm-5 5h3v2H2zm5 0h11v2H7z"/></svg>Contents';
+    btn.onclick = e => { e.stopPropagation(); toc.classList.toggle("open"); };
+    document.body.appendChild(btn);
+    document.addEventListener("click", e => { if (!e.target.closest(".toc, .tocbtn")) closeToc(); });
+  }
+
+  // ------------------------------------------------------------------ switcher: <div class="switcher"><div class="swpanes">
+  // <div class="swpane">..</div>..</div><div class="swbtns"><button>..</button>..</div></div> (buttons with .swx do nothing)
+  $$(".switcher").forEach(sw => {
+    const panes = $$(":scope > .swpanes > .swpane", sw), btns = $$(":scope > .swbtns > button:not(.swx)", sw);
+    btns.forEach((b, i) => b.addEventListener("click", () => {
+      btns.forEach((x, j) => x.classList.toggle("on", i === j)); panes.forEach((p, j) => p.classList.toggle("on", i === j));
+    }));
+  });
+
   // ------------------------------------------------------------------ mini maps (tiles of the interactive map in map/map/tiles)
   // world units -> level-3 pixels: 8192 + x / 2 (world 32768 units across, 16384 px)
   const LEVELS = {1: {px: 4096, n: 2}, 2: {px: 8192, n: 4}, 3: {px: 16384, n: 8}};
-  $$(".minimap").forEach(mm => {
+  // A map inside a closed fold has no size yet, so each one starts the first time it is shown.
+  function startMap(mm) {
     let pts; try { pts = JSON.parse(mm.dataset.pts); } catch (e) { return; }
     const layer = document.createElement("div"); layer.className = "mmlayer"; mm.prepend(layer);
     const zoom = document.createElement("div"); zoom.className = "mmzoom";
     zoom.innerHTML = '<button type="button" aria-label="Zoom in">+</button><button type="button" aria-label="Zoom out">−</button>';
     mm.appendChild(zoom);
     let lvl = Math.min(3, Math.max(1, +mm.dataset.zoom || 3));
+    const MINS = 0.012;   // lowest zoom: the whole 16384px world in ~200px
     // centre in level-3 pixels; scale = screen px per level-3 px
     const cx0 = pts.reduce((s, p) => s + p[0], 0) / pts.length, cz0 = pts.reduce((s, p) => s + p[1], 0) / pts.length;
     let cx = 8192 + cx0 / 2, cz = 8192 + cz0 / 2, scale = LEVELS[lvl].px / 16384;
     if (pts.length > 1) {
       const xs = pts.map(p => 8192 + p[0] / 2), zs = pts.map(p => 8192 + p[1] / 2);
-      const w = Math.max(...xs) - Math.min(...xs) + 200, h = Math.max(...zs) - Math.min(...zs) + 200;
-      scale = Math.min(1, Math.max(0.06, Math.min(mm.clientWidth / w, mm.clientHeight / h)));
+      // fit every point with ~28px of screen space around them; small overview maps may show the whole world
+      const w = Math.max(200, Math.max(...xs) - Math.min(...xs)), h = Math.max(200, Math.max(...zs) - Math.min(...zs));
+      scale = Math.min(1, Math.max(MINS, Math.min((mm.clientWidth - 56) / w, (mm.clientHeight - 56) / h)));
       cx = (Math.max(...xs) + Math.min(...xs)) / 2; cz = (Math.max(...zs) + Math.min(...zs)) / 2;
     }
     const tiles = {};
@@ -180,7 +262,7 @@
       if (p[2] && (i === 0 || pts.length <= 12)) { lb = document.createElement("div"); lb.className = "mmlabel"; lb.textContent = p[2]; mm.appendChild(lb); }
       return {x: 8192 + p[0] / 2, z: 8192 + p[1] / 2, el, lb};
     });
-    const zoomBy = f => { scale = Math.min(2, Math.max(0.06, scale * f)); draw(); };
+    const zoomBy = f => { scale = Math.min(2, Math.max(MINS, scale * f)); draw(); };
     const [zi, zo] = $$("button", zoom); zi.onclick = () => zoomBy(1.6); zo.onclick = () => zoomBy(1 / 1.6);
     let drag = null;
     mm.addEventListener("pointerdown", e => { if (e.target.closest("button, a")) return; drag = {x: e.clientX, y: e.clientY, cx, cz}; mm.setPointerCapture(e.pointerId); });
@@ -189,5 +271,11 @@
     mm.addEventListener("wheel", e => { e.preventDefault(); zoomBy(e.deltaY < 0 ? 1.25 : 0.8); }, {passive: false});
     new ResizeObserver(draw).observe(mm);
     draw();
-  });
+  }
+  const mmWatch = new ResizeObserver(entries => entries.forEach(en => {
+    const mm = en.target;
+    if (mm._started || !mm.clientWidth || !mm.clientHeight) return;
+    mm._started = true; mmWatch.unobserve(mm); startMap(mm);
+  }));
+  $$(".minimap").forEach(mm => mmWatch.observe(mm));
 })();

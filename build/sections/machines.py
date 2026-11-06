@@ -1,15 +1,19 @@
-"""Machines tab: the machine overview (factions, classes, comparison table), one page per machine type with every
-class and layout, and the detection & stealth page.
+"""Machines tab: the machine overview (factions and types, classes, comparison table), one page per machine type
+with every class and layout, and the detection & stealth page.
 
 Data (build/data):
-  stats.json     machine_health     faction -> class -> type -> layout -> components (HP each, count, component or
-                                    armour) and total_component_health
-                 machine_detection  faction -> class -> type -> unaware / alerted senses per stance
-                 machine_weapons    colloquial name -> damage, kind, used_by (machine names like 'Tank (Prototype)');
-                                    these names are the keys of the 'machine-weapon' kind (machine_weapons section)
-                 _about.reading_the_numbers  the caveats we pass on to the reader
-  loadouts.json  faction -> class -> type -> layout -> in-game name, weapons (internal names, in-game component
-                 labels, kind, notes) and deployment notes
+  stats.json          machine_health     faction -> class -> type -> layout -> components (HP each, count,
+                                         component or armour) and total_component_health
+                      machine_detection  faction -> class -> type -> unaware / alerted senses per stance
+                      machine_weapons    colloquial name -> damage, kind, used_by (machine names like
+                                         'Tank (Prototype)'); the keys of the 'machine-weapon' kind
+                      _about.reading_the_numbers  the caveats we pass on to the reader
+  loadouts.json       faction -> class -> type -> layout -> in-game name, weapons, deployment notes
+  machine_images.json type -> class -> picture (from the Fandom wiki, CC BY-SA: credited under each picture)
+  markers.json        the machine blueprints (collectibles, sub 'blueprints') shown on a small map on each type page
+
+Layout v2: no internal names, file names or hashes are printed (they stay search aliases). The 'Class X' Tick in
+the files is unused and left out; the Gnome Tick class is shown as the green 'Event' class.
 
 Kinds registered: 'machine' -- type pages ('Tank', 'Reaper', ... plus internal names like 'dreadnought'), class
 anchors ('Tank (Prototype)' -> machines/tank.html#prototype, as spelled in stats.json used_by), 'Machines',
@@ -18,16 +22,26 @@ anchors ('Tank (Prototype)' -> machines/tank.html#prototype, as spelled in stats
 Name clash: the Seeker's internal name is 'scout', so site.link('machine', 'Scout') goes to the Seeker page.
 For the Soviet Scout class link 'Scout class' (or a class anchor such as 'Firebird (Scout)').
 """
-from wiki.site import esc, slug, norm, fmt, pct, table, infobox, bar, note, cards, kv, tag
+import re
 
-CSS = '<link rel="stylesheet" href="~/assets/machines.css">'
+from wiki.site import (esc, slug, norm, fmt, pct, table, bar, fold, note, kv, tag, switcher, maplink, minimap,
+                       REGIONS)
+
+CSS = '<link rel="stylesheet" href="~/assets/machines.css?v=2">'
 STANCES = ("prone", "crouch", "stand", "run")
 STANCE_NAME = {"prone": "Prone", "crouch": "Crouched", "stand": "Standing", "run": "Running"}
+REGION_NAME = dict(REGIONS)
 
-FACTION_COLOR = {"Swedish": "#2f5e7a", "Soviet": "#8b2a20", "Rival": "#9c4a1a"}  # Rival = .tag.rival in machines.css
+# Faction colours. The Rival of a faction is a more saturated version of the faction colour; the Event class
+# (the Gnome Tick) is green. The same colours are the .mf-* classes in machines.css.
+FACTION_COLOR = {"Swedish": "#2f5e7a", "Soviet": "#8b2a20", "Swedish Rival": "#0b6fb8", "Soviet Rival": "#cc1a08",
+                 "Event": "#2e8b3e"}
+FACTION_CLS = {"Swedish": "mf-swe", "Soviet": "mf-sov", "Swedish Rival": "mf-swer", "Soviet Rival": "mf-sovr",
+               "Event": "mf-event"}
 
 # The unique Rival-class machines get their own page instead of a class section on their base type's page.
 BOSSES = {("Swedish", "Tank"): "Reaper", ("Soviet", "Firebird"): "Vulture"}
+SKIP_CLASSES = {"Class X (unidentified)"}   # in the files, but unused in the game (owner: leave it out)
 
 # Page order and the short hand-written introduction of each machine type. Everything with a number in it is
 # computed from the data on the page itself; these blurbs only say what kind of machine it is.
@@ -42,7 +56,7 @@ TYPES = {
               "melee attacks, and it can be flown in as reinforcements in a rocket pod.",
     "Tick": "Ticks are the smallest machines in the game. They rush you and latch on, and some classes explode "
             "instead. Bigger machines with a Tick Storage component release them in battle. This page also "
-            "covers the two special Tick classes in the files, the Gnome Tick and the unidentified Class X Tick.",
+            "covers the special Gnome Tick of the events.",
     "Seeker": "The Seeker is a small flying scout. It carries no weapons at all: its job is to spot you, and it "
               "has some of the sharpest senses of any Swedish machine.",
     "Runner": "The Runner is the small, common ground machine most players fight first: one light gun or "
@@ -60,6 +74,15 @@ TYPES = {
                "beacons, gas canisters and turrets from its bomb bays.",
 }
 
+FACTIONS = {
+    "Swedish": "The machines that took over Sweden, built by the FNIX company. Four regular classes: Prototype, "
+               "Military, FNIX and Apocalypse.",
+    "Soviet": "The Soviet machines arrived later in the story. Their classes have their own names: Scout, Soldier "
+              "and Spetsnaz.",
+    "Swedish Rival": "The Swedish Rival class holds a single unique machine.",
+    "Soviet Rival": "The Soviet Rival class holds a single unique machine.",
+}
+
 # Classes: (faction, class) -> short description. Strength comparisons are computed, not written here.
 CLASSES = {
     ("Swedish", "Prototype"): "The first and weakest generation of the Swedish machines.",
@@ -70,18 +93,21 @@ CLASSES = {
     ("Swedish", "Apocalypse"): "The strongest regular class, with fire, radiation and toxin weapons (Wall of Flame, "
                                "radiated blades, a contaminated submachine gun, cluster mines).",
     ("Swedish", "Rival"): "A single unique machine: the Reaper, a Tank.",
-    ("Swedish", "Gnome"): "A special Tick class with its own senses. The Gen0 tools list it as an event machine.",
-    ("Swedish", "Class X (unidentified)"): "A Tick class with no in-game name. It is in the files with unusual "
-                                           "senses, but we could not tie it to anything in the released game.",
+    ("Swedish", "Gnome"): "A special Tick class of the game's events, with its own senses.",
     ("Soviet", "Scout"): "The first and weakest class of the Soviet machines.",
     ("Soviet", "Soldier"): "The second Soviet class.",
     ("Soviet", "Spetsnaz"): "The strongest regular Soviet class.",
     ("Soviet", "Rival"): "A single unique machine: the Vulture, a Firebird.",
 }
-CLASS_TAG = {"FNIX": ("FNIX", "fnix"), "Apocalypse": ("Apocalypse", "exp"), "Rival": ("Rival", "rival"),
-             "Gnome": ("Event", "green"), "Class X (unidentified)": ("Unidentified", "base")}
+CLASS_TAG = {"FNIX": ("FNIX", "fnix"), "Apocalypse": ("Apocalypse", "exp")}
 
 DASH = '<span class="dim">–</span>'
+CUBE = ('<button type="button" class="swx" disabled title="3D viewer (coming soon)" aria-label="3D viewer (coming '
+        'soon)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 3.5 7v10l8.5 4.5 8.5-4.5V7z"/>'
+        '<path d="M3.5 7 12 11.5 20.5 7M12 11.5v10"/></svg></button>')
+NOPIC = ('<div class="mnopic"><svg viewBox="0 0 64 48" aria-hidden="true"><path d="M14 30h36l-4-14H18z"/>'
+         '<circle cx="32" cy="22" r="4"/><path d="M20 30l-6 14M44 30l6 14M28 30l-2 14M36 30l2 14"/></svg>'
+         '<span>No picture yet</span></div>')
 _CACHE = {}
 
 
@@ -124,11 +150,14 @@ def model(site):
         return _CACHE[id(site)]
     st = site.data("stats")
     lo = site.data("loadouts")
+    imgs = site.data("machine_images").get("images", {})
     health, senses = st["machine_health"], st["machine_detection"]
     types = {}       # page name -> {name, faction, path, slug, internal, variants}
     variants = []    # one per (faction, class, type)
     for fac, classes in health.items():
         for cls, cd in classes.items():
+            if cls in SKIP_CLASSES:
+                continue
             for typ, td in cd["types"].items():
                 page = BOSSES[(fac, typ)] if cls == "Rival" else typ
                 lt = lo.get(fac, {}).get(cls, {}).get("types", {}).get(typ, {}).get("layouts", {})
@@ -137,14 +166,13 @@ def model(site):
                 mach = (first["loadout"] or {}).get("machine", {})
                 v = {"faction": fac, "cls": cls, "type": typ, "page": page, "internal_class": cd["internal_name"],
                      "internal_type": td["internal_name"], "machine": first["health"]["machine"],
-                     "in_game": mach.get("in_game_name"), "text_key": mach.get("in_game_name_text_key"),
-                     "anchor": slug(cls), "groups": groups, "senses": senses.get(fac, {}).get(cls, {}).get(typ)}
+                     "in_game": mach.get("in_game_name"), "anchor": slug(cls), "groups": groups,
+                     "senses": senses.get(fac, {}).get(cls, {}).get(typ),
+                     "image": imgs.get(page, {}).get(cls)}
                 v["totals"] = [g["health"]["total_component_health"] for g in groups]
                 v["key"] = f"{typ} ({cls})" if page == typ else f"{typ} (Rival)"
-                if v["machine"] not in (v["key"],):
-                    v["alias_names"] = [v["machine"]]
-                else:
-                    v["alias_names"] = []
+                v["alias_names"] = [v["machine"]] if v["machine"] != v["key"] else []
+                v["group"] = group_of(v)
                 v["weapons"] = _class_weapons(site, v)
                 variants.append(v)
                 t = types.setdefault(page, {"name": page, "faction": fac, "slug": slug(page),
@@ -153,9 +181,47 @@ def model(site):
                 t["variants"].append(v)
     order = list(TYPES)
     types = {k: types[k] for k in sorted(types, key=lambda n: order.index(n) if n in order else 99)}
+    for t in types.values():
+        t["group"] = t["variants"][0]["group"] if t["name"] in BOSSES.values() else t["faction"]
     m = {"types": types, "variants": variants, "about": st["_about"]["reading_the_numbers"]}
+    m["blueprints"] = blueprints(site, m)
     _CACHE[id(site)] = m
     return m
+
+
+def group_of(v):
+    """Colour group of a machine class: 'Swedish', 'Soviet', 'Swedish Rival', 'Soviet Rival' or 'Event'."""
+    if v["cls"] == "Gnome":
+        return "Event"
+    return f"{v['faction']} Rival" if v["cls"] == "Rival" else v["faction"]
+
+
+def blueprints(site, m):
+    """Machine blueprint collectibles (markers.json): type page name -> [(variant or None, marker)].
+    'Blueprint - Tick Class A' (A..D = classa..classd), 'Soviet Blueprint - Lynx Class B',
+    'Rival Blueprint - Reaper (Tank)'; the type is matched by name or internal name ('Skirmisher' = Runner)."""
+    out = {}
+    by_internal = {}
+    for t in m["types"].values():
+        by_internal[norm(t["name"])] = t
+        if t["name"] not in BOSSES.values():
+            by_internal.setdefault(norm(t["internal"]), t)
+    for it in site.data("markers").get("items", []):
+        if it.get("s") != "blueprints":
+            continue
+        mt = re.match(r"^(?:(Soviet|Rival) )?Blueprint - (.+?)(?: Class ([A-Z]))?$", it["n"])
+        if not mt:
+            continue
+        kind, name, letter = mt.groups()
+        name = re.sub(r"\s*\(.*\)$", "", name)
+        t = by_internal.get(norm(name))
+        if not t:
+            continue
+        fac = "Soviet" if kind == "Soviet" else t["faction"]
+        v = next((x for x in t["variants"] if x["faction"] == fac and
+                  (x["internal_class"] == f"class{letter.lower()}" if letter else x["cls"] == "Rival")), None)
+        out.setdefault(t["name"], []).append((v, it))
+    return out
 
 
 def mw_key(site, w, machine):
@@ -169,7 +235,7 @@ def mw_key(site, w, machine):
 
 
 def _class_weapons(site, v):
-    """Ordered unique weapons of a class: [(machine-weapon key or None, display name, [layout labels])]."""
+    """Ordered unique weapons of a class: [{key: machine-weapon key or name, name, layouts: [labels]}]."""
     out = {}
     for g in v["groups"]:
         for w in (g["loadout"] or {}).get("weapons", []):
@@ -183,8 +249,27 @@ def _class_weapons(site, v):
 # ---------------------------------------------------------------------------------------------------------------
 # small formatting helpers
 # ---------------------------------------------------------------------------------------------------------------
-def code(s):
-    return f"<code>{esc(s)}</code>" if s else "–"
+_IDENT = re.compile(r"\b[a-z][a-z0-9]*_[a-z0-9_]+\b")
+
+
+def clean_note(site, text):
+    """A note from the data without internal names: a quoted ammo name becomes the weapon it belongs to,
+    parentheses holding an internal name go, and so do sentences that are only about internal names."""
+    if not text:
+        return ""
+    def ammo(mt):
+        k = mt.group(1)
+        if k.endswith("_incendiary"):
+            return "incendiary rounds"
+        if k.endswith("_ac"):
+            return "explosive rounds"
+        return "different ammo"
+    text = re.sub(r"'(machine_ammo_[a-z0-9_]+)'", ammo, text)
+    text = re.sub(r"\s*\([^()]*\b[a-z][a-z0-9]*_[a-z0-9_]+\b[^()]*\)", "", text)
+    text = text.replace("AreaDamage component", "area damage").replace("AreaDamage", "area damage")
+    sents = re.split(r"(?<=[.!?])\s+", text.strip())
+    keep = [s for s in sents if not _IDENT.search(s) and not s.startswith("Internal name")]
+    return " ".join(keep)
 
 
 def hp_range(totals):
@@ -192,14 +277,44 @@ def hp_range(totals):
     return fmt(lo_) if lo_ == hi else f"{fmt(lo_)}–{fmt(hi)}"
 
 
+def dist(x, digits=1):
+    """A distance with its unit: 16.5 -> '16.5 m', 1210 -> '1.21 km'."""
+    if x is None:
+        return "–"
+    if x >= 1000:
+        return f"{fmt(x / 1000, 2)} km"
+    return f"{fmt(x, digits)} m"
+
+
+def deg(x):
+    return "–" if x is None else f"{fmt(x)}°"
+
+
+def dcell(x):
+    """Sortable table cell for a distance."""
+    return (dist(x), x) if x is not None else None
+
+
 def class_title(v):
     if v["cls"] == "Gnome":
-        return "Gnome Tick"
-    return "Rival class" if v["cls"] == "Rival" else (v["cls"] if "Class X" in v["cls"] else f"{v['cls']} class")
+        return "Gnome Tick (Event)"
+    return "Rival class" if v["cls"] == "Rival" else f"{v['cls']} class"
+
+
+def class_label(v):
+    """Short label of a class for buttons and column headers."""
+    return "Event" if v["cls"] == "Gnome" else v["cls"]
+
+
+def gtag(group, text=None):
+    """Coloured tag of a faction group (Swedish / Soviet / Swedish Rival / Soviet Rival / Event)."""
+    return f'<span class="tag {FACTION_CLS[group]}">{esc(text or group)}</span>'
 
 
 def class_tags(v):
-    out = tag(v["faction"], "soviet" if v["faction"] == "Soviet" else "base")
+    out = gtag(v["faction"]) if v["group"] != "Event" else ""
+    if v["group"] != v["faction"]:
+        out += gtag(v["group"], "Rival" if v["cls"] == "Rival" else "Event")
     if v["cls"] in CLASS_TAG:
         out += tag(*CLASS_TAG[v["cls"]])
     return out
@@ -257,6 +372,26 @@ def dmg_text(d):
     return "; ".join(parts) or '<span class="dim">no damage values</span>'
 
 
+def picture(site, v, small=False):
+    """The class picture (or a placeholder) with its credit line."""
+    im = v.get("image")
+    tag_ = site.img(im["path"], alt=v["in_game"] or v["machine"]) if im else ""
+    if not tag_:
+        return NOPIC if not small else ""
+    if small:
+        return tag_
+    return (tag_ + f'<span class="swcap">Picture: <a href="{esc(im["source"])}" rel="nofollow">Generation Zero '
+                   f'Wiki</a> (CC BY-SA)</span>')
+
+
+def tr_attrs(table_html, attrs):
+    """table() has no row attributes: add attrs[i] (e.g. 'data-f="soviet"') to the i-th body row."""
+    head, _, rest = table_html.partition("<tbody>")
+    rows = rest.split("<tr>")
+    out = [rows[0]] + [f"<tr {a}>" + r for a, r in zip(attrs, rows[1:])]
+    return head + "<tbody>" + "".join(out)
+
+
 # ---------------------------------------------------------------------------------------------------------------
 # registry
 # ---------------------------------------------------------------------------------------------------------------
@@ -270,12 +405,14 @@ def collect(site):
                   aliases=["stealth", "senses", "machine detection"], keywords="stealth detection sight hearing")
     for t in m["types"].values():
         v0 = t["variants"][0]
+        img = next((v["image"]["path"] for v in t["variants"] if v.get("image") and site.has_file(v["image"]["path"])),
+                   None)
         internal = [t["internal"]] if t["name"] not in BOSSES.values() else []
         prefix = [v0["groups"][0]["health"]["internal_name"].split("_")[0]] if internal else []
         aliases = internal + prefix + [t["name"] + "s"]
         if t["name"] in BOSSES.values():
             aliases += [v0["internal_type"] + "_" + v0["internal_class"]]
-        site.register("machine", t["name"], t["path"], t["name"], aliases=aliases,
+        site.register("machine", t["name"], t["path"], t["name"], aliases=aliases, icon=img,
                       desc=f"{t['faction']} machine · {len(t['variants'])} class(es) · total component health "
                            f"{hp_range([x for v in t['variants'] for x in v['totals']])}",
                       keywords=" ".join(aliases) + " machine")
@@ -285,8 +422,8 @@ def collect(site):
         aliases += [f for g in v["groups"] for f, _ in g["files"]]
         if v["in_game"]:
             aliases.append(v["in_game"])
-        if v["key"] == v["page"]:
-            continue  # never happens: Rival keys are 'Tank (Rival)'
+        if v["cls"] == "Gnome":
+            aliases += ["Event Tick", "Tick (Event)"]
         site.register("machine", v["key"], f"machines/{slug(v['page'])}.html#{v['anchor']}", v["machine"],
                       aliases=aliases, desc=f"{v['in_game'] or v['machine']} · {len(v['groups'])} layout(s) · "
                                             f"total component health {hp_range(v['totals'])}",
@@ -298,11 +435,13 @@ def register_classes(site):
     """'Military class', 'Spetsnaz', ... -> the class table. Registered last so a bare class name never takes a
     name a machine already has; bare 'Scout' stays the Seeker (see the module docstring)."""
     for fac, cls in CLASSES:
-        if (cls == "Rival" and fac == "Soviet") or cls == "Gnome" or "Class X" in cls:
-            continue  # one 'Rival class' entry is enough; the special Tick classes have their own anchors
+        if (cls == "Rival" and fac == "Soviet") or cls == "Gnome":
+            continue  # one 'Rival class' entry is enough; the Gnome Tick has its own anchor
         bare = [cls] if cls not in ("Scout", "Rival") else []
         site.register("machine", f"{cls} class", "machines/index.html#the-class-system", f"{cls} class",
                       aliases=bare + [f"{fac} {cls}"], search=False)
+    site.register("machine", "Event class", "machines/tick.html#gnome", "Gnome Tick (Event class)",
+                  aliases=["Event"], search=False)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -324,25 +463,15 @@ def caveat(m):
 def build_index(site, m):
     vs = m["variants"]
     n_layouts = sum(len(v["groups"]) for v in vs)
-    lead = ("<p>Generation Zero has two machine factions: the Swedish machines (Ticks, Seekers, Runners, Hunters, "
-            "Harvesters and Tanks) and the Soviet machines (Lynxes, Wolves and Firebirds), plus two unique Rival "
-            f"machines, the Reaper and the Vulture. The game files define <b>{len(m['types'])} machine types</b> in "
-            f"<b>{len(vs)} type-and-class combinations</b> with <b>{n_layouts} distinct layouts</b>. Every "
-            "number on these pages is read from the game's own layout, loadout and senses files.</p>")
-    b = [bar("Factions")]
-    for fac, desc in (("Swedish", "The machines that took over Sweden, built by the FNIX company. They come in four "
-                                  "regular classes, Prototype, Military, FNIX and Apocalypse, plus the Rival Reaper."),
-                      ("Soviet", "The Soviet machines arrived later in the story. Their classes have their own names, "
-                                 "Scout, Soldier and Spetsnaz, plus the Rival Vulture.")):
-        ts = [t for t in m["types"].values() if t["faction"] == fac]
-        b.append(f"<h3>{esc(fac)} machines</h3><p>{esc(desc)} Types: " +
-                 ", ".join(site.link("machine", t["name"]) for t in ts) + ".</p>")
-    b.append(bar("Machine types", f"{len(m['types'])} types"))
-    b.append("<p>Pick a machine type for its classes, every layout with its weapons, the health of each "
-             "component and how far it can see and hear you.</p>")
-    b.append(cards([type_card(site, t) for t in m["types"].values()]))
+    lead = ("<p>Generation Zero has two machine factions, the Swedish and the Soviet machines, and each has one "
+            "unique Rival-class machine: the Reaper and the Vulture. The game files define "
+            f"<b>{len(m['types'])} machine types</b> in <b>{len(vs)} type-and-class combinations</b> with "
+            f"<b>{n_layouts} distinct layouts</b>. Pick a machine for its classes, weapons, component health and "
+            "senses.</p>")
+    b = [bar("Factions and machine types", f"{len(m['types'])} types")]
+    b.append(faction_grid(site, m))
     b += class_system(site, m)
-    b += comparison(site, m)
+    b.append(comparison(site, m))
     b.append(bar("More about machines"))
     b.append("<ul>"
              f"<li>{page_link(site, 'machines/weapons.html', 'Machine weapons')}: the damage of every machine "
@@ -353,43 +482,69 @@ def build_index(site, m):
              "number of players scale machine health and damage.</li>"
              f"<li>{page_link(site, 'machines/rivals.html', 'Rivals')}: rival machines, their levels and "
              "titles.</li></ul>")
-    site.page("machines/index.html", "Machines", "\n".join(b), "machines", lead=lead, head_extra=CSS, wide=False,
+    site.page("machines/index.html", "Machines", "\n".join(b), "machines", lead=lead, head_extra=CSS,
               desc="Every Generation Zero machine type and class: factions, classes, layouts, health and weapons.")
 
 
-def type_card(site, t):
-    vs = t["variants"]
-    totals = [x for v in vs for x in v["totals"]]
-    classes = ", ".join(v["cls"].replace(" (unidentified)", "") for v in vs)
-    n = sum(len(v["groups"]) for v in vs)
-    sub = (f"{esc(classes)}<br>{n} layout{'s' if n != 1 else ''} · "
-           f"{hp_range(totals)} HP<br><code>{esc(t['internal'])}</code>")
-    fac = "Rival" if t["name"] in BOSSES.values() else t["faction"]
-    return {"href": "~/" + t["path"], "title": t["name"], "sub": sub, "tag": fac, "color": FACTION_COLOR[fac]}
+def faction_grid(site, m):
+    """2x2 grid: Swedish | Soviet / Reaper (Swedish Rival) | Vulture (Soviet Rival), each with its machine types."""
+    cells = []
+    for group in ("Swedish", "Soviet", "Swedish Rival", "Soviet Rival"):
+        ts = [t for t in m["types"].values() if t["group"] == group]
+        if not ts:
+            continue
+        rival = "Rival" in group
+        title = ts[0]["name"] if rival else f"{group} machines"
+        head = (f'<div class="mfh"><span>{esc(title)}</span>'
+                f'{gtag(group, "Rival · " + group.split()[0] if rival else "Faction")}</div>')
+        if rival:
+            t = ts[0]
+            v = t["variants"][0]
+            pic = picture(site, v, small=True)
+            base = site.link("machine", v["type"])
+            body = (f'<a class="mfbig" href="~/{t["path"]}">{pic or NOPIC}</a>'
+                    f'<p>{esc(FACTIONS[group])} The {site.link("machine", t["name"])} is a Rival-class {base}.</p>'
+                    + kv([("Total health", f"{hp_range(v['totals'])} HP"),
+                          ("Layouts", str(len(v["groups"]))),
+                          ("Weapons", str(len(v["weapons"])))]))
+        else:
+            items = []
+            for t in ts:
+                tv = t["variants"]
+                img = next((picture(site, v, small=True) for v in tv if picture(site, v, small=True)), "")
+                n = sum(len(v["groups"]) for v in tv)
+                cl = f"{len(tv)} classes"
+                items.append(f'<li><a href="~/{t["path"]}"><span class="mfimg">{img}</span><span class="mft">'
+                             f'<b>{esc(t["name"])}</b><span class="dim">{esc(cl)} · {n} layouts · '
+                             f'{hp_range([x for v in tv for x in v["totals"]])} HP</span></span></a></li>')
+            body = f'<p>{esc(FACTIONS[group])}</p><ul class="mftypes">{"".join(items)}</ul>'
+        cells.append(f'<section class="mfcell {FACTION_CLS[group]}">{head}<div class="mfb">{body}</div></section>')
+    credit = ('<p class="small dim mcredit">Pictures: <a href="https://generation-zero.fandom.com/" rel="nofollow">'
+              'Generation Zero Wiki</a> (CC BY-SA).</p>')
+    return '<div class="mfgrid">' + "".join(cells) + "</div>" + credit
 
 
 def class_system(site, m):
     """The class table and a type x class table of average layout health with the step from the first class."""
     b = [bar("The class system")]
     b.append("<p>Every machine type comes in classes, and a higher class is tougher, better armed and has keener "
-             "senses. The class is part of each machine's internal name (<code>classa</code>, <code>classb</code>, "
-             "...), and the in-game name shows it after the type, for example <i>HUNTER - FNIX Class</i>. The "
-             "table lists every class in the files.</p>")
+             "senses. The in-game name shows the class after the type, for example <i>HUNTER - FNIX Class</i>.</p>")
     rows = []
     for (fac, cls), desc in CLASSES.items():
         vs = [v for v in m["variants"] if v["faction"] == fac and v["cls"] == cls]
         if not vs:
             continue
-        rows.append([tag(fac, "soviet" if fac == "Soviet" else "base"), f"<b>{esc(cls)}</b>",
-                     code(vs[0]["internal_class"]), ", ".join(mlink(site, v, v["type"] if v["page"] == v["type"]
-                                                                    else v["page"]) for v in vs),
+        g = vs[0]["group"]
+        name = "Event" if cls == "Gnome" else cls
+        rows.append([gtag(g, fac if g == fac else g),
+                     f"<b>{esc(name)}</b>",
+                     ", ".join(mlink(site, v, "Gnome Tick" if cls == "Gnome" else
+                                     v["type"] if v["page"] == v["type"] else v["page"]) for v in vs),
                      sum(len(v["groups"]) for v in vs), esc(desc)])
-    b.append(table(["Faction", "Class", "Internal", "Types", "Layouts", "About"], rows, sortable=False))
+    b.append(table(["Faction", "Class", "Types", "Layouts", "About"], rows, sortable=False, cls="mclass"))
     # strength steps
-    b.append("<h3>How much tougher is each class?</h3>")
-    b.append("<p>Average total component health of a layout, per type and class, with the factor compared with "
-             "the first class of that type in brackets. It shows how fast machines scale from class to class."
-             + scaling_sentence(m) + "</p>")
+    body = ["<p>Average total component health of a layout, per type and class, with the factor compared with "
+            "the first class of that type in brackets." + scaling_sentence(m) + "</p>"]
     for fac, classes in (("Swedish", ["Prototype", "Military", "FNIX", "Apocalypse"]),
                          ("Soviet", ["Scout", "Soldier", "Spetsnaz"])):
         rows = []
@@ -401,10 +556,11 @@ def class_system(site, m):
             row = [site.link("machine", t["name"])]
             for c in classes:
                 f = avg[c] / avg[classes[0]]
-                row.append(f'{fmt(avg[c], 1)} <span class="dim">(×{fmt(f, 2)})</span>' if c != classes[0]
-                           else fmt(avg[c], 1))
+                row.append((f'{fmt(avg[c], 1)} HP <span class="dim">(×{fmt(f, 2)})</span>' if c != classes[0]
+                            else f"{fmt(avg[c], 1)} HP", round(avg[c], 2)))
             rows.append(row)
-        b.append(table(["Type"] + classes, rows, num=set(range(1, len(classes) + 1)), cls="compact"))
+        body.append(table(["Type"] + classes, rows, num=set(range(1, len(classes) + 1)), cls="compact"))
+    b.append(fold("How much tougher is each class?", "".join(body), level=3, id="class-steps"))
     return b
 
 
@@ -423,46 +579,38 @@ def scaling_sentence(m):
            f"×{fmt(max(up.values()), 1)} in total health")
     if down:
         out += f"; the exception is the {', '.join(down)}, whose Prototype is the toughest of its classes"
-        if down == ["Seeker"]:
-            out += " (its two Engine Drives have 120 HP each, against under 10 HP in the later classes)"
     return out + "."
 
 
 def comparison(site, m):
-    b = [bar("Every machine compared", f"{len(m['variants'])} machines")]
-    b.append("<p>One row per machine type and class. <b>Layouts</b> counts the distinct layouts (the green "
-             "variants of Military machines are counted with the layout they copy). <b>Lowest / highest health</b> "
-             "is the total component health of the weakest and the toughest layout, <b>armour (toughest)</b> is the "
-             "share of the toughest layout's total that sits in armour plates (other layouts of the same class can "
-             "have a different share, see the component tables on the type pages), and <b>weapons</b> lists "
-             "everything any layout of that class carries. Click a column header to sort.</p>")
-    b.append(caveat(m))
-    b.append('<div class="filterbar" data-for="mcompare"><input placeholder="Filter machines..." aria-label="Filter">'
-             '<button class="chip on" data-g="f" data-f="*">All</button>'
-             '<button class="chip" data-g="f" data-f="swedish">Swedish</button>'
-             '<button class="chip" data-g="f" data-f="soviet">Soviet</button>'
-             '<button class="chip" data-g="f" data-f="rival">Rival</button><span class="count"></span></div>')
-    rows = []
+    b = ["<p>One row per machine type and class. <b>Layouts</b> counts the distinct layouts (the green variants of "
+         "Military machines are counted with the layout they copy). <b>Lowest / highest</b> is the total component "
+         "health of the weakest and the toughest layout, <b>armour</b> the share of the toughest layout's total "
+         "that sits in armour plates, and <b>sight</b> how far it notices you standing in the open while unaware "
+         f"(more in {site.link('machine', 'Detection', 'detection & stealth')}). Click a column header to sort.</p>",
+         caveat(m),
+         '<div class="filterbar" data-for="mcompare"><input placeholder="Filter machines..." aria-label="Filter">'
+         '<button class="chip on" data-g="f" data-f="*">All</button>'
+         '<button class="chip" data-g="f" data-f="swedish">Swedish</button>'
+         '<button class="chip" data-g="f" data-f="soviet">Soviet</button>'
+         '<button class="chip" data-g="f" data-f="rival">Rival</button><span class="count"></span></div>']
+    rows, attrs = [], []
     for v in m["variants"]:
         g_hi = max(v["groups"], key=lambda g: g["health"]["total_component_health"])
         armour = sum(c["health_each"] * c["count"] for c in g_hi["health"]["components"] if c["type"] == "armour")
+        share = armour / g_hi["health"]["total_component_health"]
         s = v["senses"]["unaware"]["sight_m"]["stand"]["max"] if v["senses"] else None
-        rows.append((v, [mlink(site, v), esc(v["cls"]), code(v["in_game"]) if not v["in_game"] else esc(v["in_game"]),
-                         len(v["groups"]), min(v["totals"]), max(v["totals"]),
-                         pct(armour / g_hi["health"]["total_component_health"]),
-                         ", ".join(wlink(site, w) for w in v["weapons"]) or '<span class="dim">none</span>', s]))
-    html_rows = table(["Machine", "Class", "In-game name", "Layouts", "Lowest health", "Highest health", "Armour (toughest)",
-                       "Weapons", "Sight (m)"], [r for _, r in rows], num={3, 4, 5, 6, 8}, cls="mcmp")
-    # add the filter tags to each row (table() has no row attributes, so patch the <tr>s in order)
-    parts = html_rows.split("<tr>")
-    out = [parts[0], "<tr>" + parts[1]]  # header row
-    for (v, _), p in zip(rows, parts[2:]):
+        rows.append([mlink(site, v), esc(class_label(v)),
+                     esc(v["in_game"]) if v["in_game"] else DASH, len(v["groups"]),
+                     (f"{fmt(min(v['totals']))} HP", min(v["totals"])), (f"{fmt(max(v['totals']))} HP", max(v["totals"])),
+                     (pct(share), round(share, 4)),
+                     ", ".join(wlink(site, w) for w in v["weapons"]) or '<span class="dim">none</span>', dcell(s)])
         f = "rival" if v["cls"] == "Rival" else v["faction"].lower()
-        out.append(f'<tr data-f="{f}">' + p)
-    b.append('<div id="mcompare">' + "".join(out) + "</div>")
-    b.append('<p class="small dim">Sight = how far the machine notices you standing in the open while it is '
-             f"unaware; see {site.link('machine', 'Detection', 'detection & stealth')} for every stance.</p>")
-    return b
+        attrs.append(f'data-f="{f} {v["group"].lower()}"')
+    t = table(["Machine", "Class", "In-game name", "Layouts", "Lowest health", "Highest health", "Armour",
+               "Weapons", "Sight"], rows, num={3, 4, 5, 6, 8}, cls="mcmp")
+    b.append('<div id="mcompare">' + tr_attrs(t, attrs) + "</div>")
+    return fold("Every machine compared", "".join(b), right=f"{len(m['variants'])} machines", id="compared")
 
 
 # ---------------------------------------------------------------- type pages
@@ -471,36 +619,28 @@ def build_type(site, m, t):
     totals = [x for v in vs for x in v["totals"]]
     boss = t["name"] in BOSSES.values()
     lead = f"<p>{esc(TYPES.get(t['name'], ''))}</p>"
+    n_lay = sum(len(v["groups"]) for v in vs)
     if not boss:
-        lead += (f"<p>The game files call it <code>{esc(t['internal'])}</code>. It comes in {len(vs)} "
-                 f"classes with {sum(len(v['groups']) for v in vs)} distinct layouts between them; total component "
+        lead += (f"<p>It comes in {len(vs)} classes with {n_lay} distinct layouts between them; total component "
                  f"health ranges from {fmt(min(totals))} to {fmt(max(totals))}.</p>")
     else:
         v = vs[0]
-        lead += (f"<p>Internally it is the <code>{esc(v['internal_type'])}</code> in class "
-                 f"<code>{esc(v['internal_class'])}</code>, a {site.link('machine', v['type'])} of the Rival class. "
-                 f"Its total component health is {hp_range(v['totals'])}.</p>")
+        lead += (f"<p>It is a {site.link('machine', v['type'])} of the {gtag(v['group'], 'Rival')} class, with a "
+                 f"total component health of {hp_range(v['totals'])}.</p>")
     b = []
     if not boss:
-        b += overview(site, t)
-    b.append(caveat(m))
+        b += overview(site, m, t)
     b += type_notes(site, m, t)
     for v in vs:
-        b += class_section(site, v)
-    rival = next(((f, ty) for (f, ty), name in BOSSES.items() if ty == t["name"] and f == t["faction"]), None)
-    if rival:
-        bv = m["types"][BOSSES[rival]]["variants"][0]
-        b.append(bar("Rival version"))
-        b.append(f"<p>The Rival-class {esc(t['name'])} is the {site.link('machine', bv['page'])}, with a total "
-                 f"component health of {hp_range(bv['totals'])}. It has its own page.</p>")
+        b += class_section(site, v, open_=boss)
     if not boss and len(vs) > 1:
         b += weapons_by_class(site, t)
         b += components_by_class(site, t)
-    ib = type_infobox(site, t)
+    b += blueprint_map(site, m, t)
     kind = f"Machine · {t['faction']}" + (" · Rival" if boss else "")
     crumbs = [("All machines", "~/machines/index.html")]
-    site.page(t["path"], t["name"], "\n".join(b), "machines", sub="machines", crumbs=crumbs, infobox_html=ib,
-              kind=kind, lead=lead, head_extra=CSS,
+    site.page(t["path"], t["name"], "\n".join(b), "machines", sub="machines", crumbs=crumbs,
+              infobox_html=type_infobox(site, m, t), kind=kind, lead=lead, head_extra=CSS,
               desc=f"Generation Zero {t['name']}: every class and layout with weapons, component health and "
                    f"detection ranges, from the game files.")
 
@@ -514,7 +654,7 @@ def type_notes(site, m, t):
     if len(vs) > 1 and all(avg[0] > x for x in avg[1:]):
         out.append(note(f"<p>The {esc(vs[0]['cls'])} {esc(t['name'])} is the toughest of its type, not the weakest: "
                         f"{fmt(avg[0], 1)} total component health against " +
-                        ", ".join(f"{fmt(a, 1)} for the {esc(v['cls'])}" for v, a in zip(vs[1:], avg[1:])) +
+                        ", ".join(f"{fmt(a, 1)} for the {esc(class_label(v))}" for v, a in zip(vs[1:], avg[1:])) +
                         "." + biggest_drop(vs) + "</p>", "warn"))
     # every class of this type (the Rival one too, which has its own page) with the very same senses
     same = [v for v in m["variants"] if v["type"] == vs[0]["type"] and v["senses"]]
@@ -522,10 +662,11 @@ def type_notes(site, m, t):
     if len(same) > 2 and len(keyed) == 1:
         u = same[0]["senses"]["unaware"]
         out.append(note(f"<p>All {len(same)} {esc(vs[0]['type'])} classes in the files (" +
-                        ", ".join(mlink(site, v, v["cls"]) for v in same) + ") have exactly the same senses: a "
-                        f"higher class does not see or hear you any farther (unaware, {fmt(u['sight_m']['stand']['max'])} "
-                        f"m standing and {fmt(u['hearing_m']['run']['max'])} m hearing you run). See "
-                        f"{site.link('machine', 'Detection', 'detection & stealth')}.</p>", "warn"))
+                        ", ".join(mlink(site, v, class_label(v)) for v in same) + ") have exactly the same senses: "
+                        f"a higher class does not see or hear you any farther (unaware, "
+                        f"{dist(u['sight_m']['stand']['max'])} standing and {dist(u['hearing_m']['run']['max'])} "
+                        f"hearing you run). See {site.link('machine', 'Detection', 'detection & stealth')}.</p>",
+                        "warn"))
     return out
 
 
@@ -549,92 +690,105 @@ def biggest_drop(vs):
             "classes.")
 
 
-def type_infobox(site, t):
+def type_infobox(site, m, t):
+    """Infobox with a class picture switcher (and the 3D viewer button, not working yet) on top."""
     vs = t["variants"]
     totals = [x for v in vs for x in v["totals"]]
     weapons = {w["key"] for v in vs for w in v["weapons"]}
     sights = [v["senses"]["unaware"]["sight_m"]["stand"]["max"] for v in vs if v["senses"]]
-    rows = [("Faction", esc(t["faction"])), ("Internal name", code(vs[0]["internal_type"]))]
-    rows.append((None, "Classes"))
+    views = []
     for v in vs:
-        rows.append((v["cls"].replace(" (unidentified)", ""), mlink(site, v, f"{len(v['groups'])} layout"
-                                                                   f"{'s' if len(v['groups']) > 1 else ''}")))
-    rows.append((None, "Numbers"))
-    rows.append(("Total health", hp_range(totals)))
-    rows.append(("Different weapons", str(len(weapons)) if weapons else "none"))
+        cap = (f'<span class="swcls">{class_tags(v)} <a href="#{v["anchor"]}">{esc(v["in_game"] or v["machine"])}'
+               f'</a></span><span class="swfacts">{len(v["groups"])} layout{"s" if len(v["groups"]) > 1 else ""}'
+               f' · {hp_range(v["totals"])} HP' +
+               (f' · sees you at {dist(v["senses"]["unaware"]["sight_m"]["stand"]["max"])}' if v["senses"] else "")
+               + "</span>")
+        views.append((class_label(v), picture(site, v) + cap))
+    rows = [("Faction", gtag(t["faction"])),
+            ("Classes", ", ".join(f'<a href="#{v["anchor"]}">{esc(class_label(v))}</a>' for v in vs)),
+            ("Layouts", str(sum(len(v["groups"]) for v in vs))),
+            ("Total health", f"{hp_range(totals)} HP"),
+            ("Weapons", f"{len(weapons)} different" if weapons else "none")]
     if sights:
-        rows.append(("Sees you standing", f"{fmt(min(sights))}–{fmt(max(sights))} m" if min(sights) != max(sights)
-                     else f"{fmt(sights[0])} m"))
-    return infobox(t["name"], rows, subtitle=class_tags(vs[0]) if t["name"] in BOSSES.values() else None)
+        rows.append(("Sees you standing", f"{dist(min(sights))} to {dist(max(sights))}" if min(sights) != max(sights)
+                     else dist(sights[0])))
+    bps = m["blueprints"].get(t["name"], [])
+    if bps:
+        rows.append(("Blueprints", f'<a href="#blueprints">{len(bps)} on the map</a>'))
+    dl = "".join(f"<dt>{esc(k)}</dt><dd>{v}</dd>" for k, v in rows if v)
+    return (f'<aside class="infobox mbox"><div class="ibh">{esc(t["name"])}</div>'
+            f'{switcher(views, cls="mswitch", extra=CUBE)}<dl>{dl}</dl></aside>')
 
 
-def overview(site, t):
+def overview(site, m, t):
     """Classes at a glance: one row per class."""
     b = [bar("Classes at a glance")]
-    b.append("<p>Each class in one row. Lowest and highest HP are the total component health of the weakest and "
-             "toughest layout; sight is how far it notices you standing and hearing how far it hears you running, "
-             "both while it is unaware.</p>")
+    b.append("<p>Each class in one row; open a class below for its layouts, weapons and weak points. Health is the "
+             "total component health of the weakest and toughest layout; sight is how far it notices you standing "
+             "and hearing how far it hears you running, both while it is unaware.</p>")
     rows = []
     for v in t["variants"]:
         s = v["senses"]["unaware"] if v["senses"] else None
-        rows.append([f'<a href="#{v["anchor"]}">{esc(v["cls"])}</a>',
+        rows.append([f'<a href="#{v["anchor"]}">{esc(class_label(v))}</a>',
                      esc(v["in_game"]) if v["in_game"] else '<span class="dim">none</span>', len(v["groups"]),
-                     min(v["totals"]), max(v["totals"]), len(v["weapons"]),
-                     s["sight_m"]["stand"]["max"] if s else None, s["hearing_m"]["run"]["max"] if s else None])
-    b.append(table(["Class", "In-game name", "Layouts", "Lowest HP", "Highest HP", "Weapons",
-                    "Sight (m)", "Hearing (m)"], rows, num={2, 3, 4, 5, 6, 7}))
+                     (f"{fmt(min(v['totals']))} HP", min(v["totals"])), (f"{fmt(max(v['totals']))} HP", max(v["totals"])),
+                     len(v["weapons"]),
+                     dcell(s["sight_m"]["stand"]["max"]) if s else None,
+                     dcell(s["hearing_m"]["run"]["max"]) if s else None])
+    b.append(table(["Class", "In-game name", "Layouts", "Lowest health", "Highest health", "Weapons",
+                    "Sight", "Hearing"], rows, num={2, 3, 4, 5, 6, 7}))
+    rival = next(((f, ty) for (f, ty), name in BOSSES.items() if ty == t["name"] and f == t["faction"]), None)
+    if rival:
+        bv = m["types"][BOSSES[rival]]["variants"][0]
+        b.append(f"<p>The Rival-class {esc(t['name'])} is the {site.link('machine', bv['page'])}, with a total "
+                 f"component health of {hp_range(bv['totals'])}. It has its own page.</p>")
+    b.append(caveat(m))
     return b
 
 
-def class_section(site, v):
-    b = [bar(class_title(v), f"{len(v['groups'])} layout{'s' if len(v['groups']) > 1 else ''}", id=v["anchor"])]
-    b.append(f"<p>{class_tags(v)} {esc(CLASSES.get((v['faction'], v['cls']), ''))}</p>")
-    b.append(kv([("In-game name", esc(v["in_game"]) if v["in_game"] else
-                  '<span class="dim">none (this layout has no in-game name text key)</span>'),
-                 ("Name in these tables", esc(v["machine"])),
-                 ("Internal class", code(v["internal_class"])),
-                 ("Name text key", code(v["text_key"]) if v["text_key"] else None),
-                 ("Total component health", hp_range(v["totals"])),
-                 ("Weapons", ", ".join(wlink(site, w) for w in v["weapons"]) or '<span class="dim">none</span>')]))
+def class_section(site, v, open_=False):
+    n = len(v["groups"])
+    body = [f"<p>{class_tags(v)} {esc(CLASSES.get((v['faction'], v['cls']), ''))}</p>"]
+    body.append(kv([("In-game name", esc(v["in_game"]) if v["in_game"] else
+                     '<span class="dim">none (the game shows no name for it)</span>'),
+                    ("Total component health", f"{hp_range(v['totals'])} HP"),
+                    ("Weapons", ", ".join(wlink(site, w) for w in v["weapons"]) or '<span class="dim">none</span>')]))
     greens = [f for g in v["groups"] for f, what in g["files"] if what == "green variant"]
     if greens:
-        b.append(note("<p>The files have a <b>green variant</b> of " +
-                      ("every layout" if len(greens) == len(v["groups"]) else f"{len(greens)} of these layouts") +
-                      " (" + ", ".join(code(f) for f in greens) + "). Each has exactly the same components, "
-                      "health and weapons as the layout it copies, so the tables below cover both. The difference "
-                      "is outside these stats (the name suggests a different paint scheme).</p>", "info",
-                      "Green variants"))
-    bases = [f for g in v["groups"] for f, what in g["files"] if what == "base entity"]
-    if bases:
-        b.append(note("<p>The files also have a base entity " + ", ".join(code(f) for f in bases) +
-                      " with exactly the same components and weapons as the layout below.</p>", "info"))
+        body.append(note("<p>The files have a <b>green variant</b> of " +
+                         ("every layout" if len(greens) == len(v["groups"]) else f"{len(greens)} of these layouts") +
+                         ". Each has exactly the same components, health and weapons as the layout it copies, so the "
+                         "tables below cover both. The difference is outside these stats (the name suggests a "
+                         "different paint scheme).</p>", "info", "Green variants"))
     groups = v["groups"]
     if len(groups) == 1:
-        b.append(layout_html(site, v, groups[0]))
+        body.append(layout_html(site, v, groups[0]))
     else:
-        b.append('<div class="tabset"><div class="tsbtns">' + "".join(
+        body.append('<div class="tabset"><div class="tsbtns">' + "".join(
             f"<button>{esc(g['label'])}</button>" for g in groups) + "</div>" + "".join(
             f'<div class="tspane">{layout_html(site, v, g)}</div>' for g in groups) + "</div>")
-    b.append(detection_summary(site, v))
-    return b
+    body.append(detection_summary(site, v))
+    right = f"{n} layout{'s' if n > 1 else ''} · {hp_range(v['totals'])} HP"
+    return [fold(class_title(v), "".join(body), open=open_, right=right, id=v["anchor"])]
 
 
 def layout_html(site, v, g):
     h, L = g["health"], g["loadout"] or {}
-    files = ", ".join(code(f) + (f' <span class="dim">({esc(w)})</span>' if w != "layout" else "")
-                      for f, w in g["files"])
-    out = [f'<div class="lhead"><span>Layout file: {files}</span>'
-           f'<span>Total component health: <b>{fmt(h["total_component_health"])}</b></span></div>']
+    out = [f'<div class="lhead"><span>{esc(g["label"])}</span>'
+           f'<span>Total component health: <b>{fmt(h["total_component_health"])} HP</b></span></div>']
     if g["same_as"]:
         out.append(note(f"<p>In the files this layout has exactly the same components, health and weapons as "
                         f"{esc(g['same_as'])} (a separate layout file with identical contents).</p>", "info"))
     out.append(weapons_html(site, v, g))
+    seen = set()
     for d in L.get("deployment") or []:
-        out.append(note(f"<p><b>{esc(d['colloquial_name'])}</b> ({code(d['internal_name'])}, ammo "
-                        f"{code(d.get('ammo_internal_name'))}, slot {code(d.get('slot'))}): {esc(d.get('note', ''))}"
-                        "</p>", "info", "Deployment"))
-    if L.get("note"):
-        out.append(f'<p class="small dim">{esc(L["note"])}</p>')
+        txt = clean_note(site, d.get("note", ""))
+        if (d["colloquial_name"], txt) in seen:
+            continue
+        seen.add((d["colloquial_name"], txt))
+        out.append(note(f"<p><b>{esc(d['colloquial_name'])}</b>: {esc(txt)}</p>", "info", "Deployment"))
+    if L.get("note") and clean_note(site, L["note"]):
+        out.append(f'<p class="small dim">{esc(clean_note(site, L["note"]))}</p>')
     out.append(components_html(h))
     tips = weak_points(site, v, g)
     if tips:
@@ -659,22 +813,17 @@ def weapons_html(site, v, g):
         name = site.link("machine-weapon", key, w["colloquial_name"]) if key else esc(w["colloquial_name"])
         if n > 1:
             name += f" <b>×{n}</b>"
-        internal = code(w["internal_name"])
-        if w.get("ammo_internal_name"):
-            internal += f' · ammo {code(w["ammo_internal_name"])}'
-        name += f'<div class="wint">{internal}</div>'
-        for n_ in dict.fromkeys([w.get("note"), mws[key].get("note") if key else None]):
+        for n_ in dict.fromkeys([clean_note(site, w.get("note")), clean_note(site, mws[key].get("note") if key else None)]):
             if n_:
                 name += f'<div class="wnote">{esc(n_)}</div>'
         comp = comps.get(norm(w["colloquial_name"])) or comps.get(norm(w.get("in_game_component_name") or "-"))
         rows.append([name, esc(w.get("in_game_component_name") or "–"), esc(w["kind"]),
                      dmg_text(mws[key].get("damage") if key else None),
-                     comp["health_each"] if comp else None])
-    return ("<h4>Weapons</h4><p class=\"small dim\">Weapon and internal names; the label the game shows when you "
-            "tag the part; the damage from the machine weapon files; and the HP of the component you can shoot "
-            "off (– for attacks that are not a separate part).</p>" +
-            table(["Weapon", "Component label", "Kind", "Damage (before difficulty)", "Part HP"], rows, num={4},
-                  cls="mweap"))
+                     (f"{fmt(comp['health_each'], 2)} HP", comp["health_each"]) if comp else None])
+    return ("<h4>Weapons</h4><p class=\"small dim\">The label the game shows when you tag the part, the damage from "
+            "the machine weapon files (before difficulty), and the HP of the part you can shoot off (– for attacks "
+            "that are not a separate part).</p>" +
+            table(["Weapon", "Part label", "Kind", "Damage", "Part HP"], rows, num={4}, cls="mweap"))
 
 
 def components_html(h):
@@ -687,7 +836,7 @@ def components_html(h):
                      c["health_each"], c["count"], round(sub, 2), pct(sub / total, 1) if total else "–"])
     armour = sum(c["health_each"] * c["count"] for c in comps if c["type"] == "armour")
     kinds = f"{len(comps)} kind{'s' if len(comps) > 1 else ''} of part"
-    cap = f"{kinds}. Total {fmt(total)} = components {fmt(total - armour)} + armour {fmt(armour)}."
+    cap = f"{kinds}. Total {fmt(total)} HP = components {fmt(total - armour)} HP + armour {fmt(armour)} HP."
     return "<h4>Component health</h4>" + table(["Component", "Type", "HP each", "Count", "Total HP", "Share"], rows,
                                                 num={2, 3, 4, 5}, caption=esc(cap), cls="compact")
 
@@ -746,12 +895,13 @@ def detection_summary(site, v):
     us, ah = u["sight_m"], u["hearing_m"]
     anchor = slug(v["machine"])
     night = u["night_sight_multiplier"]
-    txt = (f"Unaware, it notices you at up to <b>{fmt(us['stand']['max'])} m</b> standing, "
-           f"{fmt(us['crouch']['max'])} m crouched and {fmt(us['prone']['max'])} m prone "
-           f"(running: {fmt(us['run']['max'])} m). Once alerted, sight grows to {fmt(a['sight_m']['stand']['max'])} m "
-           f"standing. It hears you running at {fmt(ah['run']['max'])} m and walking at {fmt(ah['stand']['max'])} m. "
-           f"It starts searching at a detection score of {fmt(u['search_at'])}, attacks at {fmt(u['attack_at'])}, "
-           f"and the score drains by {fmt(u['drain_per_second'])} per second")
+    txt = (f"Unaware, it notices you at up to <b>{dist(us['stand']['max'])}</b> standing, "
+           f"{dist(us['crouch']['max'])} crouched and {dist(us['prone']['max'])} prone "
+           f"(running: {dist(us['run']['max'])}). Once alerted, sight grows to {dist(a['sight_m']['stand']['max'])} "
+           f"standing. It hears you running at {dist(ah['run']['max'])} and walking at {dist(ah['stand']['max'])}. "
+           f"Its vision cone is {deg(u['field_of_view_deg']['stand']['max'])} wide. It starts searching at a "
+           f"detection score of {fmt(u['search_at'])}, attacks at {fmt(u['attack_at'])}, and the score drains by "
+           f"{fmt(u['drain_per_second'])} per second")
     txt += (f"; at night sight is multiplied by {fmt(night)}." if night != 1 else "; night does not reduce its sight.")
     return (f'<div class="detsum"><h4>Detection</h4><p>{txt} '
             f'<a href="~/machines/detection.html#{anchor}">Full senses table</a>.</p></div>')
@@ -765,9 +915,8 @@ def weapons_by_class(site, t):
             allw.setdefault(w["key"], w)
     if not allw:
         return []
-    b = [bar("Weapons by class")]
-    b.append("<p>Which class carries which weapon, and on which layouts (L1 = Layout 1). Weapon names link to "
-             "their damage on the machine weapons page.</p>")
+    b = ["<p>Which class carries which weapon, and on which layouts (L1 = Layout 1). Weapon names link to their "
+         "damage on the machine weapons page.</p>"]
     # Two weapons with one colloquial name (the Firebird's two autocannon rounds, the Prototype and Military Tick
     # bites) are told apart by their machine-weapon key, e.g. 'Autocannon (incendiary rounds)'.
     names = [w["name"] for w in allw.values()]
@@ -780,8 +929,8 @@ def weapons_by_class(site, t):
             e = next((x for x in v["weapons"] if x["key"] == k), None)
             row.append(", ".join(esc(l.replace("Layout ", "L")) for l in e["layouts"]) if e else DASH)
         rows.append(row)
-    b.append(table(["Weapon"] + [v["cls"].replace(" (unidentified)", "") for v in vs], rows, cls="compact"))
-    return b
+    b.append(table(["Weapon"] + [class_label(v) for v in vs], rows, cls="compact"))
+    return [fold("Weapons by class", "".join(b), right=f"{len(allw)} weapons")]
 
 
 def components_by_class(site, t):
@@ -796,19 +945,43 @@ def components_by_class(site, t):
                 if k not in names:
                     names.append(k)
                 vals.setdefault((k, i), set()).add(c["health_each"])
-    b = [bar("Components compared")]
-    b.append("<p>Hit points of one component of each kind in every class, over all layouts (a component that "
-             "comes in several sizes shows each value). It shows which parts grow fastest from class to class.</p>")
+    b = ["<p>Hit points of one component of each kind in every class, over all layouts (a component that comes in "
+         "several sizes shows each value). It shows which parts grow fastest from class to class.</p>"]
     rows = []
     for k in names:
         row = [esc(k[0]) + (" " + tag("Armour", "base") if k[1] == "armour" else "")]
         for i in range(len(vs)):
             s = sorted(vals.get((k, i), ()), reverse=True)
-            row.append(" / ".join(fmt(x, 2) for x in s) if s else None)
+            row.append((" / ".join(fmt(x, 2) for x in s) + " HP", s[0]) if s else None)
         rows.append(row)
-    b.append(table(["Component"] + [v["cls"].replace(" (unidentified)", "") for v in vs], rows, cls="compact",
+    b.append(table(["Component"] + [class_label(v) for v in vs], rows, cls="compact",
                    num=set(range(1, len(vs) + 1))))
-    return b
+    return [fold("Components compared", "".join(b), right=f"{len(names)} parts")]
+
+
+def blueprint_map(site, m, t):
+    """The machine's blueprint collectibles: a small map placed last, with the list beside it."""
+    bps = m["blueprints"].get(t["name"], [])
+    if not bps:
+        return []
+    regions = sorted({it["r"] for _, it in bps if it.get("r")})
+    items = []
+    for v, it in bps:
+        who = class_label(v) if v else it["n"]
+        href = maplink(show=["blueprints"], at=(it["x"], it["z"]), zoom=0.6, focus=it["n"])
+        items.append(f'<li><b>{esc(who)}</b> <span class="dim">· {esc(REGION_NAME.get(it.get("r"), it.get("r", "")))}'
+                     f'</span> · <a href="{href}">show on the map</a></li>')
+    coll = site.link("collectible-type", "blueprints", "blueprints")
+    text = ((f"<p>The {esc(t['name'])} blueprint is a collectible ({coll}): there is one in the world.</p>"
+             if len(bps) == 1 else
+             f"<p>The {esc(t['name'])} {coll} are collectibles: {len(bps)} in the world, one per class.</p>")
+            + f'<ul class="bplist">{"".join(items)}</ul>')
+    first = bps[0][1]
+    pts = [(it["x"], it["z"], class_label(v) if v else "") for v, it in bps[1:]]
+    mm = minimap(first["x"], first["z"], class_label(bps[0][0]) if bps[0][0] else "", markers=pts,
+                 show=["blueprints"], region=regions, small=True, text=text, zoom=1,
+                 focus=first["n"] if len(bps) == 1 else None)
+    return [bar("Blueprints", f"{len(bps)} on the map", id="blueprints"), mm]
 
 
 # ---------------------------------------------------------------- detection page
@@ -832,7 +1005,7 @@ def alert_ratios(v):
 
 
 def prone_beats_crouch(vs):
-    """Machines that see you farther prone than crouched while unaware (only the Class X Tick in the files)."""
+    """Machines that see you farther prone than crouched while unaware."""
     return [v for v in vs if v["senses"]["unaware"]["sight_m"]["prone"]["max"] >
             v["senses"]["unaware"]["sight_m"]["crouch"]["max"]]
 
@@ -842,14 +1015,14 @@ def prone_warning(vs):
     for v in prone_beats_crouch(vs):
         u = v["senses"]["unaware"]
         out.append(f" Careful with the {esc(v['machine'])}: it sees you farther prone "
-                   f"({fmt(u['sight_m']['prone']['max'])} m, {fmt(u['field_of_view_deg']['prone']['max'])}° cone) "
-                   f"than crouched ({fmt(u['sight_m']['crouch']['max'])} m), so crouch rather than go prone near it.")
+                   f"({dist(u['sight_m']['prone']['max'])}, {deg(u['field_of_view_deg']['prone']['max'])} cone) "
+                   f"than crouched ({dist(u['sight_m']['crouch']['max'])}), so crouch rather than go prone near it.")
     return "".join(out)
 
 
 def stance_alert_note(vs):
-    """' The factor also depends on your stance for ...': machines whose alerted factor is not the same in every
-    stance (Firebirds grow more for a running target, the Class X Tick's prone sight doesn't grow at all)."""
+    """' By stance: ...': machines whose alerted factor is not the same in every stance (Firebirds grow more for a
+    running target)."""
     groups = {}   # ratios -> machine names, so the four identical Firebirds become one entry
     for v in vs:
         r = alert_ratios(v)
@@ -863,9 +1036,9 @@ def stance_alert_note(vs):
             common = max(set(r for _, r in ratios), key=lambda x: sum(1 for _, r in ratios if r == x))
             odd = [(st, r) for st, r in ratios if r != common]
             st, r = odd[0]
-            dist = fmt(ms[0]['senses']['alerted']['sight_m'][st]['max'])
+            d = dist(ms[0]['senses']['alerted']['sight_m'][st]['max'])
             grow = "does not grow at all" if r == 1 else f"grows only ×{fmt(r)}"
-            parts.append(f"the {who}'s {STANCE_NAME[st].lower()} sight {grow} ({dist} m alerted) instead of "
+            parts.append(f"the {who}'s {STANCE_NAME[st].lower()} sight {grow} ({d} alerted) instead of "
                          f"×{fmt(common)}")
         else:
             parts.append(f"for {who} the factor depends on your stance, from ×{fmt(ratios[0][1])} "
@@ -876,35 +1049,39 @@ def stance_alert_note(vs):
 
 def build_detection(site, m):
     vs = [v for v in m["variants"] if v["senses"]]
-    about = m["about"]["detection"]
     lead = ("<p>Machines notice you with sight and hearing. Each machine class has its own distances for each "
             "stance, a vision cone, and a detection score that decides when it starts searching and when it "
             f"attacks. This page lists the senses of all {len(vs)} machines in the game files and the stealth "
             "tips that follow from them.</p>")
     b = [bar("How detection works")]
-    b.append(note(f"<p>{esc(about)}</p>", "data"))
-    b.append("<ul>"
-             "<li><b>Max</b> is the farthest distance at which a machine starts to notice you at all. Between "
-             "<b>max</b> and <b>full speed within</b> the detection score builds slowly; inside the full-speed "
-             "distance it builds at the full rate.</li>"
-             "<li>The <b>vision cone</b> works the same way: the first angle is the full cone, the second the part "
-             "of it where you are noticed at the full rate (both in degrees).</li>"
-             "<li>The <b>detection score</b> rises while the machine sees or hears you and drains while it does "
-             "not. It starts searching at <i>search at</i> and attacks at <i>attack at</i>.</li>"
-             "<li><b>Unaware</b> is the normal state; <b>alerted</b> is while it searches or fights.</li></ul>")
+    b.append('<ul class="tips">'
+             "<li><b>Max distance</b> (in metres) is the farthest a machine starts to notice you at all. Between the "
+             "max distance and the <b>full-speed distance</b> the detection score builds slowly; closer than that it "
+             "builds at the full rate.</li>"
+             "<li>The <b>vision cone</b> works the same way: the first angle is the whole cone, the second the part "
+             "of it where you are noticed at the full rate (both in degrees). Hearing ignores the cone.</li>"
+             "<li>The <b>detection score</b> rises while the machine sees or hears you and drains (points per "
+             "second) while it does not. It starts searching at <i>search at</i> and attacks at <i>attack "
+             "at</i>.</li>"
+             "<li><b>Unaware</b> is the normal state; <b>alerted</b> is while it searches or fights.</li>"
+             "<li>At night (19:00 to 07:00) sight is multiplied by the machine's <b>night multiplier</b>.</li></ul>")
     b += stealth_tips(site, vs)
-    b += detection_overview(site, vs)
-    b.append(bar("Senses of every machine"))
-    b.append("<p>One table per machine. Each cell shows <b>max / full speed within</b> in metres; the vision cone "
-             "is <b>cone / full-speed cone</b> in degrees. <i>Night</i> is the unaware sight distance after the "
-             "night multiplier (19:00 to 07:00).</p>")
+    b.append(bar("Senses of every machine", f"{len(vs)} machines"))
+    b.append("<p>One table per machine, grouped by type. Each cell shows <b>max / full-speed distance</b>; the vision "
+             "cone is <b>cone / full-speed cone</b>. <i>Night</i> is the unaware sight distance after the night "
+             "multiplier.</p>")
+    b.append('<div class="foldall" data-for="senses"></div><div id="senses">')
     for t in m["types"].values():
         tv = [v for v in t["variants"] if v["senses"]]
         if not tv:
             continue
-        b.append(f'<h3 class="dettype">{site.link("machine", t["name"])}</h3>')
-        for v in tv:
-            b.append(senses_table(site, v, vs))
+        inner = "".join(senses_table(site, v, vs) for v in tv)
+        inner = f'<p class="small">{site.link("machine", t["name"], "The " + t["name"] + " page")} has its ' \
+                f"layouts and weapons.</p>" + inner
+        b.append(fold(t["name"], inner, level=3, id="senses-" + t["slug"],
+                      right=f"{len(tv)} class{'es' if len(tv) > 1 else ''}"))
+    b.append("</div>")
+    b.append(detection_overview(site, vs))
     site.page("machines/detection.html", "Detection & stealth", "\n".join(b), "machines", lead=lead, head_extra=CSS,
               crumbs=[("All machines", "~/machines/index.html")], kind="Machines · Senses",
               desc="How far every Generation Zero machine sees and hears you per stance, unaware and alerted, "
@@ -919,8 +1096,9 @@ def stealth_tips(site, vs):
     rn, _ = ratio_summary(vs, "sight_m", "run")
     exc = sorted({"Firebirds (and the Vulture)" if v["type"] == "Firebird" else v["machine"] for v in cr_x + pr_x})
     tips.append(f"<b>Get low.</b> For almost every machine, crouching cuts the distance at which it can see you to "
-                f"{pct(cr)} of the standing distance, and going prone to {pct(pr)}. Running makes it {pct(rn)}. "
-                f"Exceptions: {', '.join(esc(e) for e in exc)} (see their tables)." + prone_warning(vs))
+                f"{pct(cr)} of the standing distance, and going prone to {pct(pr)}. Running makes it {pct(rn)}." +
+                (f" Exceptions: {', '.join(esc(e) for e in exc)} (see their tables)." if exc else "") +
+                prone_warning(vs))
     alert = {}
     for v in vs:
         r = round(v["senses"]["alerted"]["sight_m"]["stand"]["max"] / v["senses"]["unaware"]["sight_m"]["stand"]["max"], 1)
@@ -930,9 +1108,9 @@ def stealth_tips(site, vs):
     ex = vs[0]  # the first machine in the files (Prototype Tank) as the worked example
     ex_u, ex_a = ex["senses"]["unaware"], ex["senses"]["alerted"]
     tips.append(f"<b>Don't be seen twice.</b> Once a machine is alerted its sight reaches {fmt(common)} times as "
-                f"far (for example the {esc(ex['machine'])}: {fmt(ex_u['sight_m']['stand']['max'])} m becomes "
-                f"{fmt(ex_a['sight_m']['stand']['max'])} m standing). Exceptions: {rest}." + stance_alert_note(vs) +
-                " Break line of sight and let it calm down before you move in the open again.")
+                f"far (for example the {esc(ex['machine'])}: {dist(ex_u['sight_m']['stand']['max'])} becomes "
+                f"{dist(ex_a['sight_m']['stand']['max'])} standing)." + (f" Exceptions: {rest}." if rest else "") +
+                stance_alert_note(vs) + " Break line of sight and let it calm down before you move in the open again.")
     th = {(v["senses"]["unaware"]["search_at"], v["senses"]["unaware"]["attack_at"],
            v["senses"]["unaware"]["drain_per_second"]) for v in vs}
     usual = max(th, key=lambda x: sum(1 for v in vs if (v["senses"]["unaware"]["search_at"],
@@ -947,22 +1125,43 @@ def stealth_tips(site, vs):
     n = min(nights - {1.0}) if nights - {1.0} else 1.0
     day = ex_u["sight_m"]["stand"]["max"]
     tips.append(f"<b>Move at night.</b> From 19:00 to 07:00 sight is multiplied by {fmt(n)} for almost every "
-                f"machine: the {esc(ex['machine'])} that sees you standing at {fmt(day)} m by day sees you at "
-                f"{fmt(day * ex_u['night_sight_multiplier'])} m.")
+                f"machine: the {esc(ex['machine'])} that sees you standing at {dist(day)} by day sees you at "
+                f"{dist(day * ex_u['night_sight_multiplier'])}.")
     hear = sorted(vs, key=lambda v: -v["senses"]["unaware"]["hearing_m"]["run"]["max"])[:4]
     tips.append("<b>Sound carries.</b> Hearing does not care about the vision cone. The best ears in the files "
                 "(running, unaware): " + ", ".join(
-                    f"{mlink(site, v)} {fmt(v['senses']['unaware']['hearing_m']['run']['max'])} m" for v in hear) +
+                    f"{mlink(site, v)} {dist(v['senses']['unaware']['hearing_m']['run']['max'])}" for v in hear) +
                 ". Going prone means no machine hears you at the full rate (its full-speed distance is 0 m).")
     sight = sorted(vs, key=lambda v: -v["senses"]["unaware"]["sight_m"]["stand"]["max"])[:5]
     tips.append("<b>Know the spotters.</b> Longest unaware sight standing: " + ", ".join(
-        f"{mlink(site, v)} {fmt(v['senses']['unaware']['sight_m']['stand']['max'])} m" for v in sight) +
+        f"{mlink(site, v)} {dist(v['senses']['unaware']['sight_m']['stand']['max'])}" for v in sight) +
         "." + seeker_note(vs))
-    tips.append("<b>Stay out of the cone.</b> Nearly all ground machines see in a 90° cone and notice you at the full rate "
-                "only in its central 45°. Firebirds that have not spotted you look through a narrow 10° to 25° cone, "
-                "which widens to 60° to 180° once alerted.")
+    tips.append("<b>Stay out of the cone.</b> " + cone_tip(vs))
     b.append('<ul class="tips">' + "".join(f"<li>{t}</li>" for t in tips) + "</ul>")
     return b
+
+
+def cone_tip(vs):
+    """The usual ground-machine cone and the Firebirds' narrow unaware / wide alerted cones, from the data."""
+    ground = [v for v in vs if v["type"] != "Firebird"]
+    fire = [v for v in vs if v["type"] == "Firebird"]
+    cones = {}
+    for v in ground:
+        f = v["senses"]["unaware"]["field_of_view_deg"]["stand"]
+        cones.setdefault((f["max"], f["full_speed"]), []).append(v)
+    (c, cf), lst = max(cones.items(), key=lambda kv_: len(kv_[1]))
+    who = f"All {len(ground)}" if len(lst) == len(ground) else f"{len(lst)} of the {len(ground)}"
+    out = (f"{who} ground machines see in a {deg(c)} cone and notice you at the full rate "
+           f"only in its central {deg(cf)}.")
+    if fire:
+        un = [v["senses"]["unaware"]["field_of_view_deg"]["stand"]["max"] for v in fire]
+        al = [v["senses"]["alerted"]["field_of_view_deg"]["stand"]["max"] for v in fire]
+
+        def rng(xs):
+            return deg(min(xs)) if min(xs) == max(xs) else f"{deg(min(xs))} to {deg(max(xs))}"
+        out += (f" Firebirds that have not spotted you look through a {rng(un)} cone, which widens to {rng(al)} "
+                "once alerted.")
+    return out
 
 
 def seeker_note(vs):
@@ -976,57 +1175,54 @@ def seeker_note(vs):
 
 
 def detection_overview(site, vs):
-    b = [bar("All machines compared", f"{len(vs)} machines")]
-    b.append("<p>The headline numbers of every machine, as max distances in metres. <b>Stand / Crouch / "
-             "Prone</b>: how far it sees you while unaware; <b>Hear run / walk</b>: how far it hears you running "
-             "or walking upright; <b>Alerted</b>: its sight of you standing once alerted; <b>Night</b>: unaware "
-             "standing sight at night; <b>Cone</b>: vision cone; then the detection thresholds and the drain per "
-             "second. Sort by any column.</p>")
-    b.append('<div class="filterbar" data-for="detcmp"><input placeholder="Filter machines..." aria-label="Filter">'
-             '<button class="chip on" data-g="f" data-f="*">All</button>'
-             '<button class="chip" data-g="f" data-f="swedish">Swedish</button>'
-             '<button class="chip" data-g="f" data-f="soviet">Soviet</button><span class="count"></span></div>')
+    b = ["<p>The headline numbers of every machine (max distances). <b>Stand / Crouch / Prone</b>: how far it sees "
+         "you while unaware; <b>Hear run / walk</b>: how far it hears you running or walking upright; "
+         "<b>Alerted</b>: its sight of you standing once alerted; <b>Night</b>: unaware standing sight at night; "
+         "<b>Cone</b>: vision cone; then the detection thresholds and how fast the score drains. Sort by any "
+         "column.</p>",
+         '<div class="filterbar" data-for="detcmp"><input placeholder="Filter machines..." aria-label="Filter">'
+         '<button class="chip on" data-g="f" data-f="*">All</button>'
+         '<button class="chip" data-g="f" data-f="swedish">Swedish</button>'
+         '<button class="chip" data-g="f" data-f="soviet">Soviet</button><span class="count"></span></div>']
     rows = []
     for v in vs:
         u, a = v["senses"]["unaware"], v["senses"]["alerted"]
         rows.append([f'<a href="#{slug(v["machine"])}">{esc(v["machine"])}</a>',
-                     u["sight_m"]["stand"]["max"], u["sight_m"]["crouch"]["max"], u["sight_m"]["prone"]["max"],
-                     u["hearing_m"]["run"]["max"], u["hearing_m"]["stand"]["max"], a["sight_m"]["stand"]["max"],
-                     round(u["sight_m"]["stand"]["max"] * u["night_sight_multiplier"], 2),
-                     f'{fmt(u["field_of_view_deg"]["stand"]["max"])}°', u["search_at"], u["attack_at"],
-                     u["drain_per_second"]])
+                     dcell(u["sight_m"]["stand"]["max"]), dcell(u["sight_m"]["crouch"]["max"]),
+                     dcell(u["sight_m"]["prone"]["max"]), dcell(u["hearing_m"]["run"]["max"]),
+                     dcell(u["hearing_m"]["stand"]["max"]), dcell(a["sight_m"]["stand"]["max"]),
+                     dcell(round(u["sight_m"]["stand"]["max"] * u["night_sight_multiplier"], 2)),
+                     (deg(u["field_of_view_deg"]["stand"]["max"]), u["field_of_view_deg"]["stand"]["max"]),
+                     u["search_at"], u["attack_at"], (f'{fmt(u["drain_per_second"])} /s', u["drain_per_second"])])
     t = table(["Machine", "Stand", "Crouch", "Prone", "Hear run", "Hear walk",
-               "Alerted", "Night", "Cone", "Search", "Attack", "Drain/s"], rows,
+               "Alerted", "Night", "Cone", "Search at", "Attack at", "Drain"], rows,
               num=set(range(1, 12)), cls="compact detcmp")
-    parts = t.split("<tr>")
-    out = [parts[0], "<tr>" + parts[1]]
-    for v, p in zip(vs, parts[2:]):
-        out.append(f'<tr data-f="{v["faction"].lower()}">' + p)
-    b.append('<div id="detcmp">' + "".join(out) + "</div>")
-    return b
+    b.append('<div id="detcmp">' + tr_attrs(t, [f'data-f="{v["faction"].lower()}"' for v in vs]) + "</div>")
+    return fold("All machines compared", "".join(b), right=f"{len(vs)} machines", id="all-machines-compared")
 
 
 def senses_table(site, v, all_vs):
     s = v["senses"]
     u, a = s["unaware"], s["alerted"]
 
-    def pair(d, st, k2="full_speed_within", unit=""):
+    def pair(d, st):
         x = d[st]
-        return f"{fmt(x['max'])}{unit} / {fmt(x[k2])}{unit}"
+        return f"{dist(x['max'])} / {dist(x['full_speed_within'])}"
+
+    def cone(d, st):
+        x = d[st]
+        return f"{deg(x['max'])} / {deg(x['full_speed'])}"
 
     rows = []
     for st in STANCES:
-        rows.append([STANCE_NAME[st], pair(u["sight_m"], st), pair(u["hearing_m"], st),
-                     pair(u["field_of_view_deg"], st, "full_speed", "°"),
-                     fmt(round(u["sight_m"][st]["max"] * u["night_sight_multiplier"], 2)),
-                     pair(a["sight_m"], st), pair(a["hearing_m"], st),
-                     pair(a["field_of_view_deg"], st, "full_speed", "°")])
-    head = (f'<div class="dethead" id="{slug(v["machine"])}"><b>{mlink(site, v)}</b>'
-            f'<span class="dim">{code(s.get("senses_column"))}</span></div>')
+        rows.append([STANCE_NAME[st], pair(u["sight_m"], st), pair(u["hearing_m"], st), cone(u["field_of_view_deg"], st),
+                     dist(round(u["sight_m"][st]["max"] * u["night_sight_multiplier"], 2)),
+                     pair(a["sight_m"], st), pair(a["hearing_m"], st), cone(a["field_of_view_deg"], st)])
+    head = (f'<div class="dethead" id="{slug(v["machine"])}"><b>{mlink(site, v)}</b>{class_tags(v)}</div>')
     thr = []
     for state, d in (("unaware", u), ("alerted", a)):
         thr.append(f"{state}: search at {fmt(d['search_at'])}, attack at {fmt(d['attack_at'])}, drain "
-                   f"{fmt(d['drain_per_second'])}/s, night ×{fmt(d['night_sight_multiplier'])}")
+                   f"{fmt(d['drain_per_second'])} per second, night ×{fmt(d['night_sight_multiplier'])}")
     if thr[0].split(": ")[1] == thr[1].split(": ")[1]:
         thr = [thr[0].split(": ")[1] + " (both states)"]
     tbl = table(["Stance", "Sight", "Hearing", "Cone", "Night", "Sight", "Hearing", "Cone"], rows,
@@ -1045,11 +1241,11 @@ def sense_quirks(v, all_vs):
     q = []
     h = u["hearing_m"]
     if h["crouch"]["max"] < h["prone"]["max"]:
-        q.append(f"The files give a shorter unaware hearing distance crouched ({fmt(h['crouch']['max'])} m) than "
-                 f"prone ({fmt(h['prone']['max'])} m); alerted, crouched is {fmt(a['hearing_m']['crouch']['max'])} m.")
+        q.append(f"The files give a shorter unaware hearing distance crouched ({dist(h['crouch']['max'])}) than "
+                 f"prone ({dist(h['prone']['max'])}); alerted, crouched is {dist(a['hearing_m']['crouch']['max'])}.")
     if u["hearing_m"] != a["hearing_m"] and a["hearing_m"]["run"]["max"] < u["hearing_m"]["run"]["max"]:
-        q.append(f"Its hearing is shorter when alerted ({fmt(a['hearing_m']['run']['max'])} m running) than when "
-                 f"unaware ({fmt(u['hearing_m']['run']['max'])} m).")
+        q.append(f"Its hearing is shorter when alerted ({dist(a['hearing_m']['run']['max'])} running) than when "
+                 f"unaware ({dist(u['hearing_m']['run']['max'])}).")
     fov = u["field_of_view_deg"]["prone"]
     if fov["max"] >= 360:
         q.append("It sees all around (360°) when you are prone.")
@@ -1057,8 +1253,8 @@ def sense_quirks(v, all_vs):
     if us["prone"]["max"] > us["crouch"]["max"]:
         only = prone_beats_crouch(all_vs) == [v]
         q.append(("Unlike every other machine it" if only else "It") +
-                 f" sees you farther prone ({fmt(us['prone']['max'])} m) than crouched ({fmt(us['crouch']['max'])} m)"
-                 + (f", and its prone sight does not grow when alerted ({fmt(as_['prone']['max'])} m)"
+                 f" sees you farther prone ({dist(us['prone']['max'])}) than crouched ({dist(us['crouch']['max'])})"
+                 + (f", and its prone sight does not grow when alerted ({dist(as_['prone']['max'])})"
                     if as_["prone"]["max"] == us["prone"]["max"] else "") + ". Crouch, don't go prone, near it.")
     odd = [STANCE_NAME[s].lower() for s in STANCES
            if u["field_of_view_deg"][s]["full_speed"] > u["field_of_view_deg"][s]["max"]]

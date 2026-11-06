@@ -1,21 +1,20 @@
-/* Augments section: augment icons on their tier frames, the weapon x augment matrix, small helpers. */
+/* Augments section: augment icons on their tier frames, tier frames, quality badges, the IDs side panel. */
 .augi { position: relative; display: inline-grid; place-items: center; vertical-align: middle; width: 40px; height: 40px; flex: none; }
 .augi.s { width: 28px; height: 28px; }
 .augi.l { width: 64px; height: 64px; }
 .augi > img { grid-area: 1 / 1; width: 100%; height: 100%; max-width: none; max-height: none !important; object-fit: contain; pointer-events: none; }
 .augi > img.ic { transform: scale(2.1); }                /* the glyph is small in its 264px canvas */
 .augi.t > img.ic { transform: scale(1.3); }              /* ... and sits inside the tier diamond */
-.augbig { display: flex; justify-content: center; gap: 14px; padding: 10px 0 6px; }
+.augbig { display: flex; justify-content: center; gap: 14px; padding: 10px 0 6px; flex-wrap: wrap; }
 .augbig .augi { width: 76px; height: 76px; }
 .augtiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 6px; margin: 8px 0 16px; }
-.augtile { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 6px 10px; border-left: 3px solid var(--c); color: var(--ink); font-weight: 600; font-size: 14px; }
+.augtile { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 6px 10px; border-left: 3px solid var(--c); color: var(--ink); font-weight: 600; font-size: 14px; min-width: 0; }
+.augtile span:last-child { overflow-wrap: anywhere; }
 .augtile:hover { background: rgba(255,255,255,.08); text-decoration: none; }
-table.wt td code { word-break: normal; }
-img.awicon { height: 26px; width: 58px; max-width: none; object-fit: contain; vertical-align: middle; margin-right: 8px; }
+img.awicon { height: 26px; width: 58px; max-width: none; object-fit: contain; vertical-align: middle; margin-right: 8px; flex: none; }
 table.wt td img.awicon { max-height: 26px; }
 .awl { white-space: nowrap; }
 img.acrown { height: 20px; width: auto; vertical-align: middle; margin-right: 6px; }
-img.aframe { height: 40px; width: 40px; object-fit: contain; }
 .ok { color: #7fd38d; font-weight: 700; }
 .tier { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
 .tier.bronze { color: #d49a5f; } .tier.silver { color: #c9d1d6; } .tier.gold { color: #e8bd3f; }
@@ -24,38 +23,61 @@ table.auglist td:last-child { min-width: 160px; font-size: 13px; }
 .related { line-height: 2; }
 .augnav { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: 26px; padding-top: 12px; border-top: 1px solid var(--line); }
 
-/* the compatibility matrix: sticky weapon column, vertical augment names */
-.augmx table.mx { width: auto; }
-.augmx th.vh { vertical-align: bottom; padding: 8px 4px; text-align: center; letter-spacing: .04em; }
-.augmx th.vh { width: 36px; }
-.augmx th.vh a { display: flex; flex-direction: column-reverse; justify-content: flex-start; align-items: center; gap: 6px; color: var(--ink2); }
-.augmx th.vh span:not(.augi) { writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; font-size: 11px; }
-.augmx th.wh, .augmx td.wn { position: sticky; left: 0; z-index: 1; background: #0b0f13; }
-.augmx th.wh { z-index: 2; vertical-align: bottom; }
-.augmx td.wn { white-space: nowrap; padding: 4px 10px; }
-.augmx td.c { text-align: center; padding: 4px 3px; min-width: 34px; border-left: 1px solid var(--line); }
-.augmx td.c.ok { color: #7fd38d; }
-.augmx td.c.part .qb { font-size: 9.5px; padding: 0 3px; margin: 1px; }
-.augmx tr.cat th { text-align: left; background: rgba(255,255,255,.08); color: #fff; font-size: 11.5px; letter-spacing: .14em; padding: 6px 12px; position: static; }
-.augmx tr.cat th { position: sticky; left: 0; }
-table.augfits td:nth-child(2) { white-space: nowrap; font-size: 13px; }
-table.augfits td:nth-child(4), table.augfits td:nth-child(5) { text-align: center; }
-@media (max-width: 700px) {
-  .augmx td.wn img.awicon { display: none; }
-  .augmx td.wn { font-size: 13px; padding: 4px 8px; }
-  .augtiles { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-}
+/* the three tier frames (Research and tiers) */
+.augframes { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 14px; }
+.augframe { display: flex; align-items: center; gap: 10px; background: var(--card); padding: 6px 16px 6px 8px; }
+.augframe img.aframe { height: 40px; width: 40px; object-fit: contain; }
+.augframe .tier { font-size: 12.5px; }
 
-/* fits table on the augment pages: keep it inside the content column */
+/* weapons it fits (augment pages): weapon icon + name, quality badges */
 table.augfits .awl { white-space: normal; display: inline-flex; align-items: center; }
-table.augfits img.awicon { width: 44px; }
-table.augfits td:nth-child(3) .tag { white-space: nowrap; }
+table.augfits img.awicon { width: 52px; }
+table.augfits td:nth-child(3) { white-space: nowrap; font-size: 13px; }
+table.augfits td:nth-child(4) .tag { white-space: nowrap; }
+.augq { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.qb.qno { color: var(--dim); border-style: dashed; text-decoration: line-through; opacity: .7; }
+
+/* the internal names and IDs side panel */
+.augside table.augids { border-collapse: collapse; width: 100%; font-size: 13px; }
+.augside table.augids td { padding: 2px 0; vertical-align: top; }
+.augside table.augids td:first-child { color: var(--dim); white-space: nowrap; padding-right: 10px; }
+.augside table.augids tr.idh td { color: var(--ink); font-weight: 700; padding: 9px 0 3px; border-bottom: 1px solid var(--line); }
+.augside table.augids tr.idh:first-child td { padding-top: 0; }
+.augside table.augids .idv { text-align: right; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; overflow-wrap: anywhere; user-select: all; }
+.augside .tag { font-size: 9.5px; }
+.augside p.small { margin-top: 10px; }
+
 /* task tables: let the table scroll on phones instead of crushing the task text */
 #augtasks td:nth-child(3), table.augres td:last-child { min-width: 200px; }
 @media (max-width: 700px) {
+  .augtiles { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   #augtasks td:first-child, #augtasks th:first-child,
   table.augres td:first-child, table.augres th:first-child { display: none; }
-  .augmx td.wn { max-width: 118px; white-space: normal; font-size: 12px; line-height: 1.2; }
-  .augmx td.wn .awl { white-space: normal; }
-  .augmx td.c { min-width: 28px; }
+  table.augfits img.awicon { width: 40px; }
+}
+.augside table.augids tr.idw td > span { display: block; }
+.augside table.augids tr.idw td > span:first-child { color: var(--dim); }
+.augside table.augids tr.idw td > span.idv { text-align: left; padding: 1px 0 2px 12px; }
+details.augside > summary { list-style: none; cursor: pointer; position: relative; padding-right: 36px; }
+details.augside > summary::-webkit-details-marker { display: none; }
+details.augside > summary::after { content: ""; position: absolute; right: 16px; top: 50%; width: 7px; height: 7px; margin-top: -6px;
+  border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+details.augside[open] > summary::after { transform: rotate(-135deg); margin-top: -2px; }
+@media (max-width: 700px) { table.augfits td:nth-child(3), table.augfits th:nth-child(3) { display: none; } }
+@media (max-width: 520px) {
+  table.augfits td:nth-child(4), table.augfits th:nth-child(4) { display: none; }
+  table.augfits .awl { flex-direction: column; align-items: flex-start; gap: 2px; }
+  table.augfits .qb { font-size: 10px; padding: 0 5px; }
+}
+
+/* review fixes: related links as a wrapping list, hidden-entry anchors clear the sticky table header, phone tables */
+ul.related { list-style: none; padding: 0; margin: 6px 0 14px; display: flex; flex-wrap: wrap; gap: 6px 22px; line-height: 1.6; }
+ul.related li { display: inline-flex; align-items: center; min-width: 0; }
+.auganchor { scroll-margin-top: 140px; }
+@media (max-width: 520px) {
+  #augslots img.acrown { display: none; }
+  #augslots th, #augslots td { padding-left: 6px; padding-right: 6px; }
+  #augslots td:nth-child(4), #augslots th:nth-child(4) { display: none; }   /* the count repeats the ticks */
+  table.augres td:nth-child(4), table.augres th:nth-child(4) { display: none; }
+  table.augres td:last-child { min-width: 0; }
 }

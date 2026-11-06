@@ -1,5 +1,6 @@
-"""Augments & research: weapons/augments.html (overview, research, compatibility matrix, IDs, hidden entries) and
-one page per augment, weapons/augments/<slug>.html.
+"""Augments & research: weapons/augments.html (slots, research, every augment and its task, hidden entries) and
+one page per augment, weapons/augments/<slug>.html (research, related things, the weapons it fits; its internal
+names and IDs in a side panel under the infobox, the only place this section prints them).
 
 Data (build/data):
   IDs.json       Augments: group (Primary / Support) -> augment name -> tier (Bronze / Silver / Gold, one augment has
@@ -18,9 +19,10 @@ Data (build/data):
 import os
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, infobox, bar, note, cards, kv, qbadge, tag, QUALITY
+from wiki.site import esc, slug, fmt, table, infobox, bar, fold, note, qbadge, tag, QUALITY
 
 CSS = '<link rel="stylesheet" href="~/assets/augments.css">'
+JS = '<script src="~/assets/augments.js" defer></script>'
 MAIN = "weapons/augments.html"
 TIERS = ("Bronze", "Silver", "Gold")
 GROUPS = ("Primary", "Support")
@@ -265,16 +267,14 @@ def build_main(site, m):
     lead = (f"<p>Augments are perks you put on a weapon: {n['Primary']} <b>Primary</b> augments that mostly change "
             f"how the weapon deals damage, and {n['Support']} <b>Support</b> augments that change how you handle "
             "it. You unlock each one by doing its <b>research task</b>, which comes in three tiers, Bronze, Silver "
-            "and Gold. This page has every augment with its task and thresholds, which weapon (and which weapon "
-            "quality) each fits, their internal names and item IDs, and the research entries that are in the game "
-            "files but not in the game.</p>")
+            "and Gold.</p><p>This page has every augment with its task and thresholds. Open an augment for the "
+            "weapons (and weapon qualities) it fits.</p>")
     body = [index_cards(site, m), section_slots(site, m), section_research(site, m), section_list(site, m),
-            section_tasks(site, m), section_matrix(site, m), section_rules(site, m), section_ids(site, m),
-            section_hidden(site, m)]
+            section_tasks(site, m), section_hidden(site, m)]
     site.page(MAIN, "Augments & research", "".join(body), "weapons", sub="augments", lead=lead, head_extra=CSS,
               kind="Weapons · Augments",
-              desc="Every Generation Zero weapon augment: research tasks per tier, weapon compatibility by quality, "
-                   "item IDs and hidden entries.")
+              desc="Every Generation Zero weapon augment: augment slots, research tasks and thresholds per tier, "
+                   "and the hidden research entries.")
 
 
 def index_cards(site, m):
@@ -299,19 +299,17 @@ def section_slots(site, m):
             "<p>How many augments a weapon takes depends only on its quality. Worn and Good (2 and 3 crown) weapons "
             "have one Primary slot; Exceptional and Special (4 and 5 crown) weapons have a Primary and a Support slot; "
             "Dilapidated and experimental weapons have none. A weapon never takes two augments of the same group.</p>" +
-            table(["Weapon quality", "Primary slot", "Support slot", "Augments"], rows, sortable=False, cls="compact",
-                  num={3}) +
+            '<div id="augslots">' + table(["Weapon quality", "Primary slot", "Support slot", "Augments"], rows,
+                                          sortable=False, cls="compact", num={3}) + "</div>" +
             note("Support augments only matter on Exceptional and Special weapons, while any Worn weapon already "
-                 "takes a Primary augment. In the save an augment only exists on its weapon (the game never keeps "
-                 "a loose one), so it goes when the weapon goes.", "info", "Tip"))
+                 "takes a Primary augment. An augment only exists on its weapon (the game never keeps a loose one), "
+                 "so it goes when the weapon goes.", "info", "Tip"))
 
 
 def section_research(site, m):
     augs = m["augs"]
-    frames = []
-    for k, t in enumerate(TIERS, 1):
-        frames.append([site.img(f"img/augments/tiers/q{k}.png", t, cls="aframe"), f"<b>{t}</b>",
-                       f"<code>equipment_augment_&lt;name&gt;_q{k}</code>", f"<code>q{k}.png</code>"])
+    frames = "".join(f'<span class="augframe">{site.img(f"img/augments/tiers/q{k}.png", t, cls="aframe")}'
+                     f'<span class="tier {t.lower()}">{t}</span></span>' for k, t in enumerate(TIERS, 1))
     free = [a for a in augs if a["items"] and a["items"][0]["need"] == 0]
     one = [a for a in augs if a["items"] and a["items"][0]["need"] == 1]
     longest = max(augs, key=lambda a: a["r"].get("max", 0))
@@ -325,7 +323,7 @@ def section_research(site, m):
            "design</b> at a crafting station, and from then on can put the augment on your weapons. Unlocked "
            "designs are stored in your profile (not in one character), so they count for every character. Each "
            "tier is a separate item with its own icon frame:</p>",
-           table(["Frame", "Tier", "Item internal name", "Frame file"], frames, sortable=False, cls="compact"),
+           f'<div class="augframes">{frames}</div>',
            "<ul>"
            f"<li><b>Bronze from the start</b> ({len(free)}): " + ", ".join(site.link("augment", a["name"]) for a in free) +
            ". Their Bronze threshold is 0, so you can make the Bronze design straight away.</li>"
@@ -335,10 +333,9 @@ def section_research(site, m):
            f"“{esc(task_text(longest['r'], longest['r'].get('max', 0)))}”{km(longest['r'])}</li>"
            "</ul>"]
     if site.has_file("img/augments/tiers/q4.png"):
-        out.append(note("The game files also hold a fourth (purple, with a star) tier frame, <code>q4.png</code>, "
-                        "and one augment (" + site.link("augment", "Power Attacker") + ") has “Tier 4” and “Tier 5” "
-                        "items. No research tier unlocks them; see <a href=\"#hidden-and-unused\">hidden and "
-                        "unused</a>.", "data"))
+        out.append(note("The game files also hold a fourth (purple, with a star) tier frame, and one augment ("
+                        + site.link("augment", "Power Attacker") + ") has “Tier 4” and “Tier 5” items. No research "
+                        "tier unlocks them; see <a href=\"#hidden-and-unused\">hidden and unused</a>.", "data"))
     return "".join(out)
 
 
@@ -406,47 +403,6 @@ def section_tasks(site, m):
             f'<div id="augtasks">{table(head, rows, cls="compact", num={3, 4, 5})}</div>')
 
 
-# ---------------------------------------------------------------- compatibility matrix
-def section_matrix(site, m):
-    tabs, panes = [], []
-    for g in GROUPS:
-        tabs.append(f"<button>{g} augments</button>")
-        panes.append(f'<div class="tspane">{matrix(site, m, g)}</div>')
-    return (bar("Which augment fits which weapon") +
-            "<p>One row per weapon, one column per augment. <span class=\"ok\">✓</span> means the augment fits every "
-            "quality of that weapon that has a slot for it (Worn to Special for Primary augments, Exceptional and "
-            "Special for Support augments). A quality badge means it fits only those qualities; an empty cell means "
-            "it never fits. Hover a column header for the augment's name, or open its page for the details.</p>" +
-            '<div class="filterbar" data-for="augmatrix"><input placeholder="Filter weapons..."></div>' +
-            f'<div id="augmatrix"><div class="tabset"><div class="tsbtns">{"".join(tabs)}</div>{"".join(panes)}</div></div>')
-
-
-def matrix(site, m, group):
-    augs = [a for a in m["augs"] if a["group"] == group]
-    sq = slot_quals(group)
-    head = "".join(f'<th class="vh" title="{esc(a["name"])}"><a href="~/{a["path"]}">'
-                   f'{aug_icon(site, a["icon"], None, "s")}<span>{esc(a["name"])}</span></a></th>' for a in augs)
-    out = [f'<div class="tablewrap augmx"><table class="wt mx"><thead><tr><th class="wh">Weapon</th>{head}</tr></thead><tbody>']
-    for cat in m["types"]:
-        ws = [w for w in m["weapons"] if w["type"] == cat]
-        out.append(f'<tr class="cat" data-w="{esc(" ".join(w["name"] for w in ws))}"><th colspan="{len(augs) + 1}">'
-                   f'{esc(cat)}</th></tr>')
-        for w in ws:
-            cells = []
-            for a in augs:
-                qs = quals_of(a["fits"].get(w["i"], 0), group)
-                if qs == sq:
-                    cells.append('<td class="c ok" title="fits">✓</td>')
-                elif qs:
-                    cells.append(f'<td class="c part" title="{esc(", ".join(QNAME[q] for q in qs))} only">'
-                                 + "".join(qbadge(q, True) for q in qs) + "</td>")
-                else:
-                    cells.append('<td class="c no"></td>')
-            out.append(f'<tr data-w="{esc(cat)}"><td class="wn">{weapon_cell(site, w)}</td>{"".join(cells)}</tr>')
-    out.append("</tbody></table></div>")
-    return "".join(out)
-
-
 # ---------------------------------------------------------------- restriction texts vs the files
 def allowed_by_text(text, m):
     """Weapon indexes the restriction text allows, or None when the text can't be checked from categories."""
@@ -480,78 +436,32 @@ def text_mismatch(site, m, a):
     return " but ".join(bits)
 
 
-def section_rules(site, m):
-    rows, odd = [], []
-    for a in m["augs"]:
-        fits = {i for i, mk in a["fits"].items() if mk}
-        excl = [w for w in m["weapons"] if w["i"] not in fits]
-        rows.append([site.link("augment", a["name"]), esc(a["only"]) or '<span class="dim">none</span>',
-                     len(fits), ", ".join(weapon_cell(site, w, False) for w in excl) if 0 < len(excl) <= 14 else
-                     (f'<span class="dim">the other {len(excl)} weapons</span>' if excl else
-                      '<span class="dim">–</span>')])
-        mism = text_mismatch(site, m, a)
-        if mism:
-            odd.append(f"<li>{site.link('augment', a['name'])}: {mism}.</li>")
-    out = [bar("Restrictions", "the game's text and the files"),
-           "<p>Many augments show a restriction in the game (“Melee weapons cannot use this augmentation.”). The "
-           "table lists that text next to the weapons the compatibility rules actually leave out. “Melee” here "
-           "is the bat, sledgehammer and pitchfork; “explosive” the grenade launchers and recoilless rifles.</p>",
-           table(["Augment", "In-game restriction", "Fits", "Doesn't fit"], rows, cls="compact", num={2})]
-    if odd:
-        out.append(note("<p>Where the in-game text and the files differ (the files decide what you can actually "
-                        "do):</p><ul>" + "".join(odd) + "</ul>", "data", "Text vs files"))
-    return "".join(out)
-
-
-# ---------------------------------------------------------------- item ids
-def section_ids(site, m):
-    rows = []
-    for a in m["augs"]:
-        for it in a["items"]:
-            rows.append([site.link("augment", a["name"]), tier_label(it),
-                         f"<code>{esc(it['raw'])}</code>", f"<code>{esc(it['id'])}</code>",
-                         f"<code>{it['sch']}</code>" if it["sch"] else '<span class="dim">–</span>'])
-    rrows = [[esc(a["name"]), f"<code>{esc(a['rslug'])}</code>", f"<code>{a['r'].get('hash', '')}</code>",
-              a["r"].get("max", 0)] for a in m["augs"]]
-    return (bar("Internal names and IDs", "for modders and save editing") +
-            "<p>Each tier of an augment is its own item. <b>Item ID</b> is the equipment hash a save stores for an "
-            "augment on a weapon; <b>design</b> is the hash of that tier's augmentation design (schematic), which "
-            "the profile holds once it is unlocked. The research counter is a separate currency entry, listed in "
-            "the second table with its maximum.</p>" +
-            '<div class="filterbar" data-for="augids"><input placeholder="Filter by name, internal name or ID...">'
-            '<span class="count"></span></div>' +
-            f'<div id="augids">{table(["Augment", "Tier", "Internal name", "Item ID", "Design hash"], rows, cls="compact")}</div>' +
-            "<h3>Research counters</h3>" +
-            table(["Augment", "Research slug", "Counter hash", "Maximum"], rrows, cls="compact", num={3}))
-
-
 # ---------------------------------------------------------------- hidden and unused
 def section_hidden(site, m):
-    out = [bar("Hidden and unused", tag("Not in the game", "unreleased")),
-           "<p>The game files keep a few augments that you can't get. They are listed here for completeness.</p>"]
+    out = ["<p>The game files keep a few augments that you can't get. They are listed here for completeness.</p>"]
     if m["hidden"]:
         out.append("<h3>Research entries without an augment</h3>"
-                   "<p>These research counters are in the game's currency list (marked <code>unlisted</code>), "
-                   "but there is no augment item for them and they have no Bronze / Silver thresholds, only a "
-                   "maximum. The Research menu doesn't show them.</p>")
+                   "<p>These research counters are in the game's currency list, marked as not listed, but there is "
+                   "no augment item for them and they have no Bronze / Silver thresholds, only a maximum. The "
+                   "Research menu doesn't show them.</p>")
         rows = []
         for r in m["hidden"]:
-            rows.append([f'<span id="{slug(r["name"])}">{aug_icon(site, r["slug"] + ".png", None)}</span>',
+            rows.append([f'<span class="auganchor" id="{slug(r["name"])}">{aug_icon(site, r["slug"] + ".png", None)}</span>',
                          f"<b>{esc(r['name'])}</b> {tag('Unreleased', 'unreleased')}", tag(r["group"].title(), "base"),
-                         esc(r.get("desc", "")), esc(task_text(r, r.get("max", 0))), f"<code>{esc(r['slug'])}</code>"])
-        out.append(table(["", "Name", "Group", "Description", "Task (maximum)", "Slug"], rows, cls="compact"))
+                         esc(r.get("desc", "")), esc(task_text(r, r.get("max", 0)))])
+        out.append(table(["", "Name", "Group", "Description", "Task (maximum)"], rows, cls="compact"))
     extra = [(a, it) for a in m["augs"] for it in a["items"] if it["tier"] not in TIERS]
     if extra:
         out.append("<h3>Extra tiers</h3><p>Items past Gold that no research tier or design unlocks:</p><ul>" + "".join(
-            f"<li>{site.link('augment', a['name'])}: {esc(it['nick'])} (<code>{esc(it['raw'])}</code>, ID "
-            f"<code>{esc(it['id'])}</code>)</li>" for a, it in extra) + "</ul>")
+            f"<li>{site.link('augment', a['name'])}: {esc(it['nick'] or it['tier'])}</li>" for a, it in extra) +
+            "</ul>")
     if m["unused_icons"]:
-        tiles = "".join(f'<div class="icon">{aug_icon(site, f, None, "l")}<span>{esc(f[:-4].replace("_", " ").capitalize())}'
-                        f'</span><span class="dim"><code>{esc(f)}</code></span></div>' for f in m["unused_icons"])
+        tiles = "".join(f'<div class="icon">{aug_icon(site, f, None, "l")}'
+                        f'<span>{esc(f[:-4].replace("_", " ").capitalize())}</span></div>' for f in m["unused_icons"])
         out.append("<h3>Icons without an augment</h3><p>The game's augment icon folder also has these icons, which "
-                   "no augment, item or research task uses. The names are the file names, nothing more is known "
-                   "about them from the files.</p>" + f'<div class="icongrid">{tiles}</div>')
-    return "".join(out)
+                   "no augment, item or research task uses. The names come from the file names; nothing more is "
+                   "known about them from the files.</p>" + f'<div class="icongrid">{tiles}</div>')
+    return fold("Hidden and unused", "".join(out), right=tag("Not in the game", "unreleased"))
 
 
 # ---------------------------------------------------------------- one augment
@@ -562,25 +472,40 @@ def build_augment(site, m, a, prev, nxt):
     box = infobox(a["name"], [
         ("Group", f"{a['group']} augment"),
         ("Slot on", ", ".join(QNAME[q] for q in slot_quals(a["group"])) + " weapons"),
-        ("Fits", f"{len(fits)} of {len(m['weapons'])} weapons"),
+        ("Fits", f'<a href="#weapons-it-fits">{len(fits)} of {len(m["weapons"])} weapons</a>'),
+        ("Restriction", esc(a["only"])),
         (None, "Research"),
         *[(it["tier"], "from the start" if it["need"] == 0 else fmt(it["need"])) for it in tiers],
-        ("Research slug", f"<code>{esc(a['rslug'])}</code>"),
-        (None, "Item IDs"),
-        # infobox labels are plain text, so the Unreleased tag of the extra tiers goes with the value
-        *[(it["tier"], f"<code>{esc(it['id'])}</code>" + ("" if it["tier"] in TIERS else
-                                                          " " + tag("Unreleased", "unreleased")))
-          for it in a["items"]],
     ], subtitle=f'<div class="augbig">{tier_icons(site, a, "l")}</div>')
     lead = (f"<p><b>{esc(a['name'])}</b> is a {a['group']} augment. The game describes it as: "
             f"“{esc(r.get('desc', ''))}”</p>")
-    if a["only"]:
-        lead += f"<p>{esc(a['only'])}</p>"
-    body = [section_aug_research(site, a), related(site, m, a), section_aug_fits(site, m, a),
-            section_aug_ids(site, a), nav_links(prev, nxt)]
+    body = [section_aug_research(site, a), related(site, m, a), section_aug_fits(site, m, a), nav_links(prev, nxt)]
     site.page(a["path"], a["name"], "".join(body), "weapons", sub="augments",
               crumbs=[("Augments & research", "~/" + MAIN)], desc=f"{a['name']}: {r.get('desc', '')}",
-              infobox_html=box, kind=f"Augment · {a['group']}", lead=lead, head_extra=CSS)
+              infobox_html=box, side=[ids_panel(a)], kind=f"Augment · {a['group']}", lead=lead, head_extra=CSS + JS)
+
+
+def ids_panel(a):
+    """Side panel under the infobox: every tier's internal name, item ID and design hash, and the research counter.
+    The one place the augments section prints internal names and IDs (for save editing)."""
+    row = lambda k, v: f'<tr><td>{esc(k)}</td><td class="idv">{esc(v)}</td></tr>' if v not in (None, "") else ""
+    rows = []
+    for it in a["items"]:
+        rows.append(f'<tr class="idh"><td colspan="2">{tier_label(it)}</td></tr>')
+        rows += [row("Item ID", it["id"]), row("Design", it["sch"])]
+        if it["raw"]:      # long: on its own line under the label, breakable after the underscores
+            rows.append(f'<tr class="idw"><td colspan="2"><span>Internal name</span><span class="idv">'
+                        f'{esc(it["raw"]).replace("_", "_<wbr>")}</span></td></tr>')
+    rows.append('<tr class="idh"><td colspan="2">Research counter</td></tr>')
+    rows += [row("Name", a["rslug"]), row("Hash", a["r"].get("hash", "")), row("Icon", a["icon"])]
+    extra = any(it["tier"] not in TIERS for it in a["items"])
+    body = (f'<table class="augids">{"".join(rows)}</table><p class="small dim">Each tier is its own item. '
+            "“Design” is that tier's augmentation design, which your profile holds once you have unlocked it."
+            + (" The tiers past Gold are in the item list, but nothing unlocks them." if extra else "") + "</p>")
+    # like wiki.site.panel(), but it can be closed: augments.js closes it on narrow screens, where the rail sits
+    # above the article and the IDs would push the page's content down
+    return (f'<details class="sidepanel augside" open><summary class="ibh">Internal names and IDs</summary>'
+            f'<div class="spb">{body}</div></details>')
 
 
 def section_aug_research(site, a):
@@ -637,7 +562,8 @@ def related(site, m, a):
                  "the list as a pointer, not a rule.")
     else:
         intro = "What the research task or the description names:"
-    return bar("Related") + f"<p>{intro}</p>" + f'<p class="related">{" · ".join(links)}</p>'
+    items = "".join(f"<li>{x}</li>" for x in links)
+    return bar("Related") + f"<p>{intro}</p>" + f'<ul class="related">{items}</ul>'
 
 
 def has_word(name, word):
@@ -656,6 +582,18 @@ def mg_magazines(site, m):
     return out
 
 
+def quality_badges(mk, sq):
+    """The weapon qualities with a slot for the augment: a badge for each one it fits, a struck-out one where the
+    compatibility data leaves that quality out."""
+    out = []
+    for q in sq:
+        if mk >> (q - 1) & 1:
+            out.append(qbadge(q))
+        else:
+            out.append(f'<span class="qb qno" title="{esc(QNAME[q])}: doesn\'t fit">{esc(QNAME[q])}</span>')
+    return f'<span class="augq">{"".join(out)}</span>'
+
+
 def section_aug_fits(site, m, a):
     sq = slot_quals(a["group"])
     rows, no = [], []
@@ -664,19 +602,18 @@ def section_aug_fits(site, m, a):
         if not mk:
             no.append(w)
             continue
-        cells = ['<span class="ok">✓</span>' if mk >> (q - 1) & 1 else '<span class="dim">–</span>' for q in sq]
-        rows.append((slug(w["type"]), [weapon_cell(site, w), esc(w["type"]), pack_cell(site, w, True), *cells,
-                                       f'<code title="binary {mk:06b}">{mk}</code>']))
-    head = ["Weapon", "Type", "Pack"] + [qbadge(q, True) for q in sq] + ["Mask"]
-    html = add_row_filters(table(head, [c for _, c in rows], cls="compact augfits", raw_headers=True),
+        nq = len(quals_of(mk, a["group"]))
+        rows.append((slug(w["type"]), [weapon_cell(site, w), (quality_badges(mk, sq), str(nq)), esc(w["type"]),
+                                       pack_cell(site, w, True)]))
+    html = add_row_filters(table(["Weapon", "Qualities", "Type", "Pack"], [c for _, c in rows], cls="compact augfits"),
                            [f for f, _ in rows])
     cats = [c for c in m["types"] if any(f == slug(c) for f, _ in rows)]
     chips = "".join(f'<button class="chip" data-g="c" data-f="{slug(c)}">{esc(c)}</button>' for c in cats)
     tid = f"fits-{a['slug']}"
+    qs = [QNAME[q] for q in sq]
     out = [bar("Weapons it fits", f"{len(rows)} of {len(m['weapons'])}"),
-           f"<p>The weapons {esc(a['name'])} goes on, at the qualities that have a {a['group']} slot "
-           "(Q2 Worn, Q3 Good, Q4 Exceptional, Q5 Special). “Mask” is the raw value from the compatibility data: bit 1 is Dilapidated, bit 2 Worn and so on up to "
-           "bit 6 Experimental (31 = Dilapidated to Special).</p>"]
+           f"<p>The weapons {esc(a['name'])} goes on. Only {' and '.join([', '.join(qs[:-1]), qs[-1]])} weapons have "
+           f"a {a['group']} slot; the badges show the qualities of each weapon that take it.</p>"]
     if len(cats) > 1:
         out.append(f'<div class="filterbar" data-for="{tid}"><input placeholder="Filter weapons...">'
                    f'<button class="chip on" data-g="c" data-f="*">All</button>{chips}<span class="count"></span></div>')
@@ -684,31 +621,18 @@ def section_aug_fits(site, m, a):
     gaps = [w for w in m["weapons"] if a["fits"].get(w["i"], 0) and quals_of(a["fits"][w["i"]], a["group"]) != sq]
     if gaps:
         out.append(note("The compatibility data leaves some qualities out for " + ", ".join(
-            weapon_cell(site, w, False) for w in gaps) + ": the missing ones (–) can't take this augment.", "data"))
+            weapon_cell(site, w, False) for w in gaps) + ": the struck-out ones can't take this augment.", "data"))
     if no:
-        out.append(f"<p><b>Doesn't fit</b> ({len(no)}): " + ", ".join(weapon_cell(site, w, False) for w in no) + "</p>")
+        names = ", ".join(weapon_cell(site, w, False) for w in no)
+        if len(no) > 8:      # a long list: a closed sub fold, so the page ends with the weapons it does fit
+            out.append(fold("Doesn't fit", f"<p>{names}</p>", level=3, right=f"{len(no)} weapons",
+                            id=f"no-{a['slug']}"))
+        else:
+            out.append(f"<p><b>Doesn't fit</b> ({len(no)}): {names}</p>")
     mism = text_mismatch(site, m, a)
     if mism:
         said = f"The in-game text says “{esc(a['only'])}”" if a["only"] else "The game shows no restriction"
         out.append(note(f"{said}, but the compatibility data {mism}.", "data", "Text vs files"))
-    return "".join(out)
-
-
-def section_aug_ids(site, a):
-    rows = [[aug_icon(site, a["icon"], it["frame"] or None, "s"), tier_label(it), esc(it["nick"]),
-             f"<code>{esc(it['raw'])}</code>", f"<code>{esc(it['id'])}</code>",
-             f"<code>{it['sch']}</code>" if it["sch"] else '<span class="dim">–</span>'] for it in a["items"]]
-    out = [bar("Internal names and IDs"),
-           "<p>Each tier is a separate item. The design hash is the tier's augmentation design, which your profile "
-           "holds once you have unlocked it.</p>",
-           table(["", "Tier", "Item name", "Internal name", "Item ID", "Design hash"], rows, sortable=False,
-                 cls="compact"),
-           kv([("Research slug", f"<code>{esc(a['rslug'])}</code>"),
-               ("Research counter hash", f"<code>{a['r'].get('hash', '')}</code>"),
-               ("Icon file", f"<code>{esc(a['icon'])}</code>")])]
-    if any(it["tier"] not in TIERS for it in a["items"]):
-        out.append(note("The items past Gold are in the game's item list, but no research tier or design unlocks "
-                        "them, so you can't get them in the game.", "warn"))
     return "".join(out)
 
 

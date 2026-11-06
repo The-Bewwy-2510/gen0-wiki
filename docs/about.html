@@ -4,52 +4,45 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>About this wiki · Gen0 Wiki</title>
-<meta name="description" content="Where the Gen0 Wiki&#x27;s data comes from, how it is built and how to correct it.">
+<meta name="description" content="Where the Gen0 Wiki&#x27;s information comes from, picture credits and how to report a mistake.">
 <link rel="icon" href="assets/app.ico">
 <link rel="preload" href="assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/wiki.css?v=1">
-
+<link rel="stylesheet" href="assets/wiki.css?v=2">
+<link rel="stylesheet" href="assets/home.css">
 </head>
 <body data-section="home" style="--bar:#1c5777" data-root="">
 <div class="bg"></div>
 <header class="topbar">
   <a class="brand" href="index.html"><img src="assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
-  <nav class="tabs" id="tabs"><a class="tab on" href="index.html">Home</a><a class="tab" href="weapons/index.html">Weapons</a><a class="tab" href="machines/index.html">Machines</a><a class="tab" href="world/index.html">World</a><a class="tab" href="missions/index.html">Missions</a><a class="tab" href="items/index.html">Items &amp; crafting</a><a class="tab" href="character/skills.html">Character</a><a class="tab" href="modding/index.html">Modding</a></nav>
+  <nav class="tabs" id="tabs"><a class="tab on" href="index.html">Home</a><a class="tab" href="weapons/index.html">Weapons</a><a class="tab" href="machines/index.html">Machines</a><a class="tab" href="world/index.html">World</a><a class="tab" href="missions/index.html">Missions</a><a class="tab" href="items/index.html">Items &amp; crafting</a><a class="tab" href="character/skills.html">Character</a></nav>
   <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
 </header>
-<nav class="subbar"><a class="stab" href="index.html">Main page</a><a class="stab" href="basics.html">Game basics</a><a class="stab" href="dlc.html">DLC &amp; updates</a><a class="stab on" href="about.html">About this wiki</a></nav>
-<main class="content">
-  <div class="crumbs"><a href="index.html">Home</a></div>
+<nav class="subbar"><a class="stab" href="index.html">Main page</a><a class="stab" href="basics.html">Game basics</a><a class="stab" href="dlc.html">DLC</a><a class="stab on" href="about.html">About this wiki</a></nav>
+<main class="content hasrail">
+  <div class="head"><div class="crumbs"><a href="index.html">Home</a></div>
   <h1>About this wiki</h1>
-  
-  <div class="lead"><p>This wiki is generated from data extracted from Generation Zero's own files, and styled after the Gen0 tools (the save editor, mod maker, extractor and map). It is a fan project and is not affiliated with Systemic Reaction or Avalanche Studios Group.</p></div>
-  <nav class="toc"><div class="toch">Contents</div><a href="#where-the-numbers-come-from">Where the numbers come from</a><a href="#corrections">Corrections</a><a href="#updating-the-wiki">Updating the wiki</a><a href="#credits">Credits</a></nav>
+  <div class="lead"><p>The Gen0 Wiki is a fan-made guide to Generation Zero. Everything on it comes straight from the game's own files.</p></div></div>
+  <aside class="rail"><div class="railtop"></div><nav class="toc" aria-label="Contents"><div class="toch">Contents</div><a href="#where-the-information-comes-from">Where the information comes from</a><a href="#pictures">Pictures</a><a href="#fan-made">Fan-made</a><a href="#found-a-mistake">Found a mistake?</a></nav></aside>
   <article class="body">
-<h2 class="wbar" id="where-the-numbers-come-from"><span>Where the numbers come from</span></h2>
-<p>Read from the game&#x27;s own tuning files (layout .epe files, .ammotunec projectile tuning, .ftunec blast tuning, weapon_tuning.bin and difficulty_settings) using the DECA-Dec-26 extractor, and machine senses from settings/hp_settings/animal_senses.bin.</p>
-<p>Item names, mission texts, skills, schematics, apparel and locations come from the game's item tables, text tables, mission files and map location files, read by the <a href="modding/tools.html">Gen0 Editor and Extractor</a>. Map positions are the game's own world coordinates (metres).</p>
-<div class="tablewrap"><table class="wt "><thead><tr><th>File (build/data)</th><th>Contents</th></tr></thead><tbody><tr><td><code>stats.json</code></td><td>Machine &amp; weapon stats: damage, component health, detection, difficulty</td></tr><tr><td><code>loadouts.json</code></td><td>Machine layouts and the weapons on each</td></tr><tr><td><code>gamedata.json</code></td><td>Skills, research, regions, rivals, challenges, safehouses, locations</td></tr><tr><td><code>augments.json</code></td><td>Which augment fits which weapon</td></tr><tr><td><code>schematics.json</code></td><td>Schematic trees, costs and recipes</td></tr><tr><td><code>stock.json</code></td><td>Inventory items, ammo and materials</td></tr><tr><td><code>missions.json</code></td><td>Missions, briefings and objectives</td></tr><tr><td><code>keys.json</code></td><td>Keys, barcodes and quest items</td></tr><tr><td><code>vanity.json</code></td><td>Apparel, skins, emotes, vehicles and companion cosmetics</td></tr><tr><td><code>IDs.json</code></td><td>Item IDs per quality (save editing)</td></tr><tr><td><code>markers.json</code></td><td>Collectibles, safehouses, control points and beacons on the map</td></tr><tr><td><code>map_locations.json</code></td><td>Every map location with its position</td></tr><tr><td><code>loot.json</code></td><td>Placed loot in the world</td></tr></tbody></table></div>
-<div class="callout data"><b>From the game files</b><div>Some effects aren't in the files the extractor reads – for example the special effect of some experimental ammo lives in a separate effect file. Pages say so where it matters.</div></div>
-<h2 class="wbar" id="corrections"><span>Corrections</span></h2>
-<p>When a value here disagrees with an older guide, the game files win: they are what the game actually uses. Green <b>Corrected</b> boxes point out the most common outdated numbers. If you find a mistake on this wiki, open an issue or pull request on <a href="https://github.com/The-Bewwy-2510/gen0-wiki">GitHub</a>.</p>
-<h2 class="wbar" id="updating-the-wiki"><span>Updating the wiki</span></h2>
-<p>The site is plain HTML generated by a Python script (no dependencies):</p>
-<ol>
-<li>Re-extract the data with the Gen0 tools after a game update.</li>
-<li><code>python build/import_sources.py --tools ../gen0-tools --mapping ../gen0-mapping --stats "Machine &amp; Weapon Stats.json" --loadouts "Machine Loadouts.json"</code></li>
-<li><code>python build/build.py</code> — writes the site into <code>docs/</code> and checks every link.</li>
-<li>Commit and push; GitHub Pages publishes <code>docs/</code>.</li>
-</ol>
-<h2 class="wbar" id="credits"><span>Credits</span></h2>
-<p>Fonts: Open Sans (SIL Open Font License, see <code>assets/OFL.txt</code>). Icons, item art and map images are from Generation Zero and belong to their owners; they are shown here for reference. Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</p>
+<h2 class="wbar" id="where-the-information-comes-from"><span>Where the information comes from</span></h2>
+<p>We made our own extraction tool that opens Generation Zero's game files and reads out the data the game itself uses: weapon damage, machine health, skills, schematics, missions, items, map positions and more. The wiki pages are built from that data automatically.</p><p>That means the numbers here are not guesses or copied from older guides. When the game is updated, the data is read again and the pages are rebuilt.</p>
+<div class="callout data"><b>From the game files</b><div>Where the current game files disagree with something older guides still say, the page points it out in a green <b>Corrected</b> box. A few things, like some special ammo effects, aren't stored where the tool can read them; the pages say so where it matters.</div></div>
+<h2 class="wbar" id="pictures"><span>Pictures</span></h2>
+<p>Item icons, map art and other game images come from Generation Zero itself and belong to Systemic Reaction and Avalanche Studios Group; they are shown here for reference.</p><p>The pictures of the machines are from the <a href="https://generation-zero.fandom.com/" rel="noopener">Generation Zero Wiki on Fandom</a>, used under the <a href="https://creativecommons.org/licenses/by-sa/3.0/" rel="noopener">CC BY-SA</a> licence. Thank you to its editors.</p><p>The DLC pictures and descriptions on the <a href="dlc.html">DLC page</a> are from the <a href="https://store.steampowered.com/app/704270/" rel="noopener">Steam store</a>.</p>
+<details class="fold l3 "><summary><h3 class="wbar3" id="picture-sources"><span>Machine picture sources</span><small>34 pictures</small></h3></summary><div class="foldbody"><ul class="hmsrc"><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_Screenshot_2022.11.04_-_21.37.36.96_Thumbnail.png" rel="noopener">Scout Firebird</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:SoldierFirebird.webp" rel="noopener">Soldier Firebird</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:SpetsnazFirebird.webp" rel="noopener">Spetsnaz Firebird</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_Harvester.png" rel="noopener">Prototype Harvester</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_harvester_army.png" rel="noopener">Military Harvester</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_Harvester_FNIX.png" rel="noopener">FNIX Harvester</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:APOC_HARVESTER.png" rel="noopener">Apocalypse Harvester</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_Hunter.png" rel="noopener">Prototype Hunter</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Hunter_army.jpg" rel="noopener">Military Hunter</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Hunter_fnix.jpg" rel="noopener">FNIX Hunter</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Apoc_hunter_bp.jpg" rel="noopener">Apocalypse Hunter</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140545.png" rel="noopener">Scout Lynx</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140735.png" rel="noopener">Soldier Lynx</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140236.png" rel="noopener">Spetsnaz Lynx</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Reaper.jpg" rel="noopener">Rival Reaper</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_runner.png" rel="noopener">Prototype Runner</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Runner_army.png" rel="noopener">Military Runner</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Runner_fnix.png" rel="noopener">FNIX Runner</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Apocalypse_Runner.jpg" rel="noopener">Apocalypse Runner</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_seeker.png" rel="noopener">Prototype Seeker</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_seeker_army.png" rel="noopener">Military Seeker</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Seeker_fnix.png" rel="noopener">FNIX Seeker</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank.png" rel="noopener">Prototype Tank</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank_army.png" rel="noopener">Military Tank</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank_fnix.png" rel="noopener">FNIX Tank</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Tank_Apoc.png" rel="noopener">Apocalypse Tank</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick.png" rel="noopener">Prototype Tick</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick_army.png" rel="noopener">Military Tick</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick_fnix.png" rel="noopener">FNIX Tick</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Tick-Apocalypse.png" rel="noopener">Apocalypse Tick</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Vulture.png" rel="noopener">Rival Vulture</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Scout_Wolf_Rival.jpg" rel="noopener">Scout Wolf</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Soldier_Class_Wolf_Rival.jpg" rel="noopener">Soldier Wolf</a></li><li><a href="https://generation-zero.fandom.com/wiki/File:Spetsnaz_Class_Wolf_Rival.jpg" rel="noopener">Spetsnaz Wolf</a></li></ul></div></details>
+<h2 class="wbar" id="fan-made"><span>Fan-made</span></h2>
+<p>This wiki is made by fans and is not affiliated with or endorsed by Systemic Reaction or Avalanche Studios Group. Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</p>
+<h2 class="wbar" id="found-a-mistake"><span>Found a mistake?</span></h2>
+<p>If something looks wrong, please open an issue on <a href="https://github.com/The-Bewwy-2510/gen0-wiki" rel="noopener">GitHub</a>.</p>
+<p class="small dim">Font: Open Sans (SIL Open Font License).</p>
   </article>
 </main>
 <footer class="hintbar">
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
-  <span class="fine">Fan-made. Data read from the game files with the <a href="https://github.com/The-Bewwy-2510/gen0-tools">Gen0 tools</a>. Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
+  <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="assets/wiki.js?v=1"></script>
+<script src="assets/wiki.js?v=2"></script>
 </body>
 </html>

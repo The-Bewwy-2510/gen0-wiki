@@ -1,55 +1,75 @@
-"""Missions tab: the list of all missions, one page per mission, and the challenges page.
+"""Missions tab: the overview, the Warboard arcs, one list page per content pack, one page per mission, the
+challenges browser and the Steam achievements.
+
+Pages
+  missions/index.html          overview: a short intro, cards to the sub pages, missions per region
+  missions/arcs.html           the three Warboard arcs
+  missions/base-game.html      one page per pack (also alpine-unrest, fnix-rising, unreleased): a "Main missions"
+                               and a "Side missions" section, each with one closed fold per region
+                               (ids main-<region key> / side-<region key>)
+  missions/<slug>.html         one page per mission
+  missions/challenges.html     the challenge trees (tiles with their tier nodes; click one for its details)
+  missions/achievements.html   the 72 Steam achievements
 
 Data (build/data):
   missions.json  packs     base / alpine (Alpine Unrest) / fnix (FNIX Rising) / dlc03 (missions of a third expansion
                            that is in the files but was never released)
-                 missions  in the order of the game's mission table (missions/missions.group.hpmissionsc):
-                           id, name, type (main / side), pack, region (a region key, or "global" when the mission is
-                           not tied to one), arc (the Warboard sub type Answers / Payback / Safety, base game only),
-                           unreleased, summary, description (the mission log briefing), steps (the objectives the
-                           game shows: id, name, deps = objective ids that must be done first, opt = optional,
-                           count = how many times it has to be done). Hidden script steps (no on-screen text) are
-                           not in the list, so a dependency can point at an objective id that isn't shown.
+                 missions  in the order of the game's mission table: id, name, type (main / side), pack, region (a
+                           region key, or "global" when the mission is not tied to one), arc (the Warboard arc
+                           Answers / Payback / Safety, base game only), unreleased, summary, description (the mission
+                           log briefing), steps (the objectives the game shows: id, name, deps = objective ids that
+                           must be done first, opt = optional, count = how many times it has to be done). Hidden
+                           script steps (no on-screen text) are not in the list, so a dependency can point at an
+                           objective id that isn't shown.
   gamedata.json  challenges  six challenge trees -> challenges -> tiers (start / req = the challenge's progress
                              counter at the start / end of the tier, desc, title = the title the tier awards)
                  locations   every map location (name, type, kind, region, x, z): we search the mission texts for
                              these names and link them
   markers.json   collectible counts for the challenges that ask you to collect things
+  achievements.json  the Steam achievements (name, desc, icon, hidden), from the Fandom wiki, checked against the
+                     Steam store (see its _about)
+  steam.json     store pictures and release dates for the pack pages
 
-Kinds registered: 'mission' (name; aliases the mission id as a string), 'challenge' (challenge name, alias its key
-like '02_03'; also the tree names 'TRUTH' ... as anchors on the challenges page).
+Kinds registered: 'mission' (name; aliases the mission id as a string), 'mission-region' (region key -> the pack page
+holding most of that region's main missions, #main-<key>), 'challenge' (challenge name, alias its key like '02_03';
+also the tree names 'TRUTH' ... as anchors on the challenges page), 'achievement' (achievement name).
 """
 import collections
+import math
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, infobox, bar, note, kv, minimap, tag, REGIONS
+from wiki.site import esc, slug, norm, fmt, table, infobox, bar, fold, panel, note, kv, minimap, maplink, tag, \
+    cards, REGIONS
 
 CSS = '<link rel="stylesheet" href="~/assets/missions.css">'
+JS = '<script src="~/assets/missions.js" defer></script>'
 REGION_NAME = dict(REGIONS)
-REGION_NAME["global"] = "Across regions"
+REGION_NAME["global"] = "No region in the files"
 REGION_ORDER = [k for k, _ in REGIONS] + ["global"]
 # the plain region names as the mission and challenge texts spell them ("... in the South Coast Region")
 REGION_TEXT = {k: ("Himfjäll" if k == "alpine" else n) for k, n in REGIONS}
 
+PACKS = ["base", "alpine", "fnix", "dlc03"]
 PACK_NAME = {"base": "Base game", "alpine": "Alpine Unrest", "fnix": "FNIX Rising", "dlc03": "Unreleased"}
+PACK_PAGE = {"base": "missions/base-game.html", "alpine": "missions/alpine-unrest.html",
+             "fnix": "missions/fnix-rising.html", "dlc03": "missions/unreleased.html"}
+PACK_SUB = {"base": "base", "alpine": "alpine", "fnix": "fnix", "dlc03": "unreleased"}
 PACK_TAG_CLS = {"base": "base", "alpine": "dlc", "fnix": "dlc", "dlc03": "unreleased"}
-# content keys of the mission table (the extraction maps these to the packs); base-game missions come from several
-# keys (the base game and its free updates), so we only name the expansion ones
-CONTENT_KEY = {"alpine": "island01", "fnix": "expansion02", "dlc03": "expansion03"}
+PACK_APPID = {"base": 704270, "alpine": 1157550, "fnix": 1301740}
 PACK_BLURB = {
-    "base": "The missions of Generation Zero itself, including everything added by free updates. Main missions are "
-            "listed region by region, in the order the game's mission table has them, followed by the FNIX "
-            "storyline from the end of the table; the Warboard arc each one belongs to is shown where the files "
-            "give one.",
-    "alpine": "The Alpine Unrest expansion's missions, all set on the island of Himfjäll. They are listed in the order "
-              "of the game's mission table, which follows the expansion's story.",
-    "fnix": "The FNIX Rising expansion's missions, spread over the Archipelago, Farmlands and South Coast. Listed in "
-            "the order of the game's mission table.",
-    "dlc03": "Six missions of a third expansion (content key <code>expansion03</code>) that are in the current game "
-             "files but are not part of the released game. They have no region of their own in the files.",
+    "base": "The missions of Generation Zero itself, including everything added by free updates. They are grouped "
+            "by region, main missions first; open a region to see its missions in the order of the game's mission "
+            "table.",
+    "alpine": "The Alpine Unrest expansion's missions, all set on the island of Himfjäll, in the order of the game's "
+              "mission table, which follows the expansion's story.",
+    "fnix": "The FNIX Rising expansion's missions, spread over the Archipelago, Farmlands and South Coast, in the order "
+            "of the game's mission table.",
+    "dlc03": "Six missions of a third expansion that are in the current game files but are not part of the released "
+             "game, so you can't play them. The files give them no region.",
 }
 ARCS = ["Answers", "Payback", "Safety"]
 TYPE_NAME = {"main": "Main missions", "side": "Side missions"}
+RESERVED = {"index", "arcs", "base-game", "alpine-unrest", "fnix-rising", "unreleased", "challenges", "achievements"}
 
 # machine types linked when an objective names them (singular or plural)
 MACHINE_WORDS = {"Runner": "Runner", "Runners": "Runner", "Tick": "Tick", "Ticks": "Tick", "Seeker": "Seeker",
@@ -58,7 +78,7 @@ MACHINE_WORDS = {"Runner": "Runner", "Runners": "Runner", "Tick": "Tick", "Ticks
                  "Firebirds": "Firebird", "Lynx": "Lynx", "Wolf": "Wolf", "Wolves": "Wolf"}
 LOCATION_SKIP = {"Unknown"}   # location names too generic to look for in the texts
 # The base game's FNIX storyline (Network Infiltration ... Launch Site Bravo) sits at the end of the mission table and
-# each briefing picks up where the previous one ends, so these keep table order instead of being sorted by region.
+# each briefing picks up where the previous one ends.
 LATE_STORY_FROM = 141
 # Missions after this table position come after the expansion entries in the table (later free updates); the region
 # challenges' text predates them, so we don't claim they count.
@@ -75,10 +95,15 @@ class Missions:
         md = site.data("missions")
         gd = site.data("gamedata")
         self.missions = []
+        used = set(RESERVED)
         for i, m in enumerate(md["missions"]):
             m = dict(m)
             m["idx"] = i + 1                                   # position in the game's mission table
-            m["path"] = f"missions/{slug(m['name'])}.html"
+            s = slug(m["name"])
+            while s in used:
+                s += "-mission"
+            used.add(s)
+            m["path"] = f"missions/{s}.html"
             self.missions.append(m)
         self.by_name = {norm(m["name"]): m for m in self.missions}
         self.trees = gd["challenges"]
@@ -89,31 +114,40 @@ class Missions:
         self._text_patterns()
         self._challenge_links()
 
-    # ------------------------------------------------------------ order and groups
     @staticmethod
     def order_key(m):
-        """Base game: region by region (the game's map order), then table order. Expansions: table order, which
-        follows their story (the SCOUT challenges name FNIX Rising's main missions in exactly this order)."""
-        if is_late_story(m):
-            return (len(REGION_ORDER), m["idx"])
-        if m["pack"] == "base":
-            return (REGION_ORDER.index(m["region"]), m["idx"])
-        return (0, m["idx"])
+        """Inside a group: the order of the game's mission table."""
+        return m["idx"]
 
     def _groups(self):
-        """(pack, type) -> missions in list order; arc -> missions; each mission's neighbours in both."""
+        """(pack, type) -> missions in table order; (pack, type, region) -> missions; arc -> missions; each
+        mission's neighbours in its pack / type list and in its arc."""
         self.groups = collections.OrderedDict()
-        for p in PACK_NAME:
+        self.by_region = collections.OrderedDict()
+        for p in PACKS:
             for t in ("main", "side"):
                 ms = sorted((m for m in self.missions if m["pack"] == p and m["type"] == t), key=self.order_key)
                 if ms:
                     self.groups[(p, t)] = ms
-        self.arcs = {a: sorted((m for m in self.missions if m.get("arc") == a), key=self.order_key) for a in ARCS}
-        for seq_name, seqs in (("list", self.groups.values()), ("arc", self.arcs.values())):
-            for seq in seqs:
+                for r in REGION_ORDER:
+                    rs = [m for m in ms if m["region"] == r]
+                    if rs:
+                        self.by_region[(p, t, r)] = rs
+        self.arcs = {a: sorted((m for m in self.missions if m.get("arc") == a),
+                               key=lambda m: (REGION_ORDER.index(m["region"]), m["idx"])) for a in ARCS}
+        # list neighbours follow the pack page: region by region, then table order
+        seqs = [[m for (p2, t2, r), rs in self.by_region.items() if (p2, t2) == k for m in rs] for k in self.groups]
+        for seq_name, ss in (("list", seqs), ("arc", self.arcs.values())):
+            for seq in ss:
                 for i, m in enumerate(seq):
                     m[seq_name + "_prev"] = seq[i - 1] if i else None
                     m[seq_name + "_next"] = seq[i + 1] if i + 1 < len(seq) else None
+
+    def region_home(self, key):
+        """The pack whose page holds most of a region's main missions (for 'mission-region' links)."""
+        best = max(PACKS, key=lambda p: (len(self.by_region.get((p, "main", key), [])),
+                                         len(self.by_region.get((p, "side", key), []))))
+        return best if self.by_region.get((best, "main", key)) else None
 
     # ------------------------------------------------------------ names to link inside the texts
     def _text_patterns(self):
@@ -186,7 +220,6 @@ class Missions:
                         excluded = re.findall(r'excluding the mission "([^"]+)"', text)
                         self.region_ch[k] = (tree, c, excluded)
 
-
     def warboard_missions(self):
         """The base-game missions that activate a Command Bunker Warboard: The Home Team (Vesslan, objective
         'Examine the Vesslan Warboard') and the six 'Warboard - X Bunker' missions. (The Hellmouth's 'Warboard room'
@@ -230,6 +263,14 @@ def tree_anchor(tree):
     return "tree-" + slug(tree["name"])
 
 
+def fold_id(t, region):
+    return f"{t}-{region}"
+
+
+def ach_anchor(a):
+    return "ach-" + slug(a["name"])
+
+
 def collect(site):
     ms = model(site)
     for m in ms.missions:
@@ -238,6 +279,11 @@ def collect(site):
                       desc=f"{'Main' if m['type'] == 'main' else 'Side'} mission · {REGION_NAME[m['region']]}"
                            f" · {PACK_NAME[m['pack']]}. {m.get('summary', '')}",
                       aliases=[str(m["id"])], keywords=" ".join(w for w in words if w))
+    for k, name in REGIONS:
+        p = ms.region_home(k)
+        if p:
+            site.register("mission-region", k, f"{PACK_PAGE[p]}#{fold_id('main', k)}", f"Missions in {name}",
+                          aliases=[name], search=False)
     for tree in ms.trees:
         site.register("challenge", tree["name"], f"missions/challenges.html#{tree_anchor(tree)}",
                       f"{tree['name'].title()} challenges", desc=f"Challenge tree with {len(tree['challenges'])} "
@@ -249,6 +295,10 @@ def collect(site):
                           " ".join(t["title"] for t in c["tiers"] if t.get("title")),
                           desc=f"{tree['name']} challenge, {len(c['tiers'])} tiers up to {fmt(last['req'])}. "
                                f"Final title: {last.get('title', '')}.")
+    for a in site.data("achievements")["achievements"]:
+        site.register("achievement", a["name"], f"missions/achievements.html#{ach_anchor(a)}", a["name"],
+                      icon=a["icon"], desc=("Secret Steam achievement" if a["hidden"] else "Steam achievement") +
+                      f": {a['desc']}", keywords="achievement steam trophy" + (" secret hidden" if a["hidden"] else ""))
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -264,7 +314,7 @@ def type_tag(t):
 
 def region_link(site, key):
     if key == "global":
-        return '<span class="dim">Across regions</span>'
+        return '<span class="dim">No region</span>'
     return site.link("region", key, REGION_NAME[key])
 
 
@@ -273,10 +323,19 @@ def mlink(m):
     return f'<a href="~/{m["path"]}">{esc(m["name"])}</a>'
 
 
+def pack_link(p, text=None):
+    return f'<a href="~/{PACK_PAGE[p]}">{esc(text or PACK_NAME[p])}</a>'
+
+
+def arc_link(a):
+    return f'<a href="~/missions/arcs.html#arc-{slug(a)}">{esc(a)}</a>'
+
+
 def linkify(site, ms, text, linked, machines=False):
     """Escape text and turn location names, '<Region> region' and (optionally) machine types into links. Each
     target is linked once per `linked` set (the caller decides the scope: briefing, objectives ...)."""
-    pats = [("loc", ms.loc_re), ("region", ms.region_re), ("region", ms.island_re)] + ([("machine", ms.machine_re)] if machines else [])
+    pats = [("loc", ms.loc_re), ("region", ms.region_re), ("region", ms.island_re)] + \
+        ([("machine", ms.machine_re)] if machines else [])
     hits = []
     for kind, rx in pats:
         for mt in rx.finditer(text):
@@ -318,13 +377,29 @@ def briefing_html(site, ms, text, linked):
     return '<div class="briefing">' + "".join(out) + "</div>"
 
 
+def obj_counts(m):
+    steps = m.get("steps", [])
+    nopt = sum(1 for s in steps if s.get("opt"))
+    return len(steps) - nopt, nopt
+
+
+DATA_NOTE = ("Mission names, summaries, briefings and objectives are the game's own English text, read from its "
+             "mission table. A mission's region comes from the <i>Location</i> line of its briefing or, without "
+             "one, from the map files the mission uses. The objective lists show what the game's mission log shows; "
+             "some missions also run hidden script steps in between, which have no text and are left out.")
+
+
 # ---------------------------------------------------------------------------------------------------------------
 def build(site):
     ms = model(site)
     build_index(site, ms)
+    build_arcs(site, ms)
+    for p in PACKS:
+        build_pack(site, ms, p)
     for m in ms.missions:
         build_mission(site, ms, m)
     build_challenges(site, ms)
+    build_achievements(site, ms)
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -333,133 +408,187 @@ def build(site):
 def build_index(site, ms):
     n = len(ms.missions)
     count = collections.Counter((m["pack"], m["type"]) for m in ms.missions)
-    lead = (f"<p>Every one of the <b>{n} missions</b> in the current game files: "
-            f"{sum(v for (p, t), v in count.items() if t == 'main')} main and "
-            f"{sum(v for (p, t), v in count.items() if t == 'side')} side missions across the base game, the "
-            f"{site.link('dlc', 'Alpine Unrest')} and {site.link('dlc', 'FNIX Rising')} expansions, plus "
-            f"{sum(v for (p, t), v in count.items() if p == 'dlc03')} missions of an unreleased third expansion. "
-            f"Each mission has its own page with the full briefing, every objective in order, the places it "
-            f"sends you and the challenges it counts towards.</p>")
-    body = [overview_tables(site, ms, count), arcs_section(ms), list_section(site, ms)]
-    body.append(note("Mission names, summaries, briefings and objectives are the game's own English text, read from "
-                     "<code>missions/missions.group.hpmissionsc</code>. A mission's region comes from the "
-                     "<i>Location</i> line of its briefing or, without one, from the map files the mission uses. "
-                     "The objective lists show what the game's mission log shows; some missions also run hidden "
-                     "script steps in between, which have no text and are left out.", "data"))
-    site.page("missions/index.html", "Missions", "\n".join(body), "missions", lead=lead, head_extra=CSS, wide=True,
-              desc=f"All {n} Generation Zero missions by pack, type and region, with briefings and objectives.")
+    mains = sum(v for (p, t), v in count.items() if t == "main")
+    sides = n - mains
+    n_ch = sum(len(t["challenges"]) for t in ms.trees)
+    achs = site.data("achievements")["achievements"]
+    lead = (f"<p>Generation Zero has <b>{n} missions</b> in the current game files: {mains} main missions that tell "
+            f"the story and {sides} side missions. Missions are handed out by the people, radios and notes you find "
+            f"around Östertörn, and the Command Bunker Warboards group many of the base game's main missions into "
+            f"three arcs. Each mission has its own page with the briefing, every objective and the places it sends "
+            f"you to.</p>")
+    sb = site.data("steam")
+    img = {d["appid"]: d.get("image") for d in sb["dlc"]}
+    img[sb["game"]["appid"]] = sb["game"].get("image")
 
+    def pimg(p):
+        path = img.get(PACK_APPID.get(p))
+        return "~/" + path if path and site.has_file(path) else None
 
-def overview_tables(site, ms, count):
-    """Counts per pack and type, and per region and pack."""
-    rows = []
-    for p in PACK_NAME:
-        rows.append([pack_tag(p), count[(p, "main")], count[(p, "side")], count[(p, "main")] + count[(p, "side")],
-                     sum(1 for m in ms.missions if m["pack"] == p and m.get("arc")) or None])
-    rows.append(["<b>All</b>", sum(count[(p, "main")] for p in PACK_NAME),
-                 sum(count[(p, "side")] for p in PACK_NAME), len(ms.missions),
-                 sum(1 for m in ms.missions if m.get("arc"))])
-    by_region = collections.Counter((m["region"], m["pack"]) for m in ms.missions)
+    items = []
+    for p in PACKS:
+        sub = (f"{count[(p, 'main')]} main · {count[(p, 'side')]} side missions" +
+               ("<br>In the files, not in the game" if p == "dlc03" else ""))
+        it = {"href": "~/" + PACK_PAGE[p], "title": PACK_NAME[p], "sub": sub,
+              "tag": "DLC" if p in ("alpine", "fnix") else ("Files only" if p == "dlc03" else ""),
+              "color": {"base": "#1d4039", "alpine": "#2f5e7a", "fnix": "#7a2a26", "dlc03": "#6b2a5e"}[p]}
+        if pimg(p):
+            it["img"] = pimg(p)
+        items.append(it)
+    more = [
+        {"href": "~/missions/arcs.html", "title": "Warboard arcs", "color": "#1f6b5c",
+         "sub": f"{sum(len(v) for v in ms.arcs.values())} base-game main missions in the arcs "
+                f"{', '.join(ARCS[:-1])} and {ARCS[-1]}", "img": "~/img/locations/mission_objective.png"},
+        {"href": "~/missions/challenges.html", "title": "Challenges", "color": "#8a6d1f",
+         "sub": f"{n_ch} challenges in {len(ms.trees)} trees; every tier awards a title"},
+        {"href": "~/missions/achievements.html", "title": "Achievements", "color": "#47545a",
+         "sub": f"The {len(achs)} Steam achievements, grouped by what they ask for",
+         "img": "~/img/achievements/map_gold.webp" if site.has_file("img/achievements/map_gold.webp") else None},
+    ]
+    for it in more:
+        if not it.get("img"):
+            it.pop("img", None)
+    body = [bar("Mission lists", id="lists"),
+            "<p>One page per content pack, each with the main and the side missions grouped by region.</p>",
+            cards(items),
+            bar("More", id="more"), cards(more)]
+    # missions per region: each count opens that pack page at the region
     rrows = []
     for k in REGION_ORDER:
-        total = sum(v for (r, p), v in by_region.items() if r == k)
-        if not total:
-            continue
-        mains = sum(1 for m in ms.missions if m["region"] == k and m["type"] == "main")
-        rrows.append([region_link(site, k)] + [by_region[(k, p)] or None for p in PACK_NAME] + [mains, total])
-    return (bar("Overview", right=f"{len(ms.missions)} missions") +
-            "<p>How many missions each content pack adds, and how they spread over the map. <i>In an arc</i> "
-            "counts the base-game main missions the files place in one of the three Warboard arcs.</p>" +
-            table(["Pack", "Main", "Side", "Total", "In an arc"], rows, sortable=False, cls="compact counts",
-                  num={1, 2, 3, 4}) +
-            "<p>Missions per region. <i>Across regions</i> holds the missions the files don't tie to one region: "
-            "The Command Bunker Network and the unreleased missions.</p>" +
-            table(["Region"] + list(PACK_NAME.values()) + ["Main", "Total"], rrows, cls="compact ovtable counts",
-                  num=set(range(1, len(PACK_NAME) + 3))))
+        cells = []
+        total = 0
+        for p in PACKS:
+            nm = len(ms.by_region.get((p, "main", k), []))
+            ns = len(ms.by_region.get((p, "side", k), []))
+            total += nm + ns
+            if nm or ns:
+                bits = []
+                if nm:
+                    bits.append(f'<a href="~/{PACK_PAGE[p]}#{fold_id("main", k)}">{nm} main</a>')
+                if ns:
+                    bits.append(f'<a href="~/{PACK_PAGE[p]}#{fold_id("side", k)}">{ns} side</a>')
+                cells.append((" · ".join(bits), nm + ns))
+            else:
+                cells.append(None)
+        if total:
+            rrows.append([region_link(site, k)] + cells + [total])
+    body.append(bar("Missions by region", id="regions"))
+    body.append("<p>Click a number to open that region on its pack page.</p>")
+    body.append(table(["Region"] + [PACK_NAME[p] for p in PACKS] + ["Total"], rrows, cls="compact counts ovtable",
+                      num={len(PACKS) + 1}))
+    body.append(note(DATA_NOTE, "data"))
+    ib = infobox("Missions", [
+        ("Missions", f"{n}"), ("Main", f"{mains}"), ("Side", f"{sides}"),
+        (None, "By pack"),
+        *[(PACK_NAME[p], pack_link(p, f"{count[(p, 'main')] + count[(p, 'side')]}")) for p in PACKS],
+        (None, "Progress"),
+        ("Warboard arcs", f'<a href="~/missions/arcs.html">{len(ARCS)}</a>'),
+        ("Challenges", f'<a href="~/missions/challenges.html">{n_ch}</a>'),
+        ("Steam achievements", f'<a href="~/missions/achievements.html">{len(achs)}</a>'),
+    ])
+    site.page("missions/index.html", "Missions", "\n".join(body), "missions", lead=lead, head_extra=CSS,
+              infobox_html=ib,
+              desc=f"All {n} Generation Zero missions by pack and region, the Warboard arcs, challenges and achievements.")
 
 
-def arcs_section(ms):
-    cols = []
+# ---------------------------------------------------------------------------------------------------------------
+# missions/arcs.html
+# ---------------------------------------------------------------------------------------------------------------
+def build_arcs(site, ms):
+    n = sum(len(v) for v in ms.arcs.values())
+    lead = (f"<p>The game files sort <b>{n}</b> of the base game's main missions into three Warboard arcs: "
+            f"<b>Answers</b>, <b>Payback</b> and <b>Safety</b>. The Warboards in the Command Bunkers hand these "
+            f"missions out.</p>")
+    body = []
     for a in ARCS:
-        items = "".join(f'<li><a href="~/{m["path"]}">{esc(m["name"])}</a>'
-                        f'<small>{esc(REGION_NAME[m["region"]])}</small></li>' for m in ms.arcs[a])
-        cols.append(f'<div class="arccol"><h3 id="arc-{slug(a)}">{esc(a)} <small class="dim">'
-                    f'{len(ms.arcs[a])} missions</small></h3><ol class="arclist">{items}</ol></div>')
-    return (bar("Warboard arcs", right=" · ".join(f"{a} {len(ms.arcs[a])}" for a in ARCS), id="arcs") +
-            "<p>The game files sort 25 of the base game's main missions into three Warboard arcs: "
-            "<b>Answers</b>, <b>Payback</b> and <b>Safety</b> (the <code>WarboardSubType</code> of each mission). "
-            "The Command Bunker Warboards hand these missions out. Within an arc the missions are listed region by "
-            "region in the order of the game's mission table; that is not necessarily the order you will play "
-            "them in.</p>"
-            f'<div class="arcs">{"".join(cols)}</div>')
+        rows = []
+        for m in ms.arcs[a]:
+            rows.append([mlink(m), region_link(site, m["region"]), f'<span class="msum">{esc(m.get("summary", ""))}</span>'])
+        body.append(bar(f"{a}", right=f"{len(ms.arcs[a])} missions", id=f"arc-{slug(a)}"))
+        body.append(table(["Mission", "Region", "Summary"], rows, cls="compact mstable"))
+    body.append(note("Within an arc the missions are listed region by region in the order of the game's mission "
+                     "table; that is not necessarily the order you will play them in.", "data"))
+    ib = infobox("Warboard arcs", [(a, f'<a href="#arc-{slug(a)}">{len(ms.arcs[a])} missions</a>') for a in ARCS] +
+                 [("Pack", pack_link("base"))])
+    site.page("missions/arcs.html", "Warboard arcs", "\n".join(body), "missions", sub="arcs", lead=lead,
+              head_extra=CSS, infobox_html=ib, crumbs=[("Warboard arcs", "~/missions/arcs.html")],
+              desc="The three Warboard arcs of Generation Zero (Answers, Payback, Safety) and their missions.")
 
 
-def list_section(site, ms):
-    """The filterable list: one block per pack, a table per type inside it."""
-    chips = ['<button class="chip on" data-g="p" data-f="*">All packs</button>'] + \
-        [f'<button class="chip" data-g="p" data-f="p-{p}">{esc(n)}</button>' for p, n in PACK_NAME.items()]
-    chips += ['<button class="chip on" data-g="t" data-f="*">Main &amp; side</button>',
-              '<button class="chip" data-g="t" data-f="t-main">Main</button>',
-              '<button class="chip" data-g="t" data-f="t-side">Side</button>']
-    chips += ['<button class="chip on" data-g="r" data-f="*">All regions</button>'] + \
-        [f'<button class="chip" data-g="r" data-f="r-{k}">{esc(REGION_NAME[k])}</button>' for k in REGION_ORDER]
-    fb = (f'<div class="filterbar msfilter" data-for="mslist"><input placeholder="Filter by name, place, '
-          f'objective...">{"".join(chips)}<span class="count"></span></div>')
-    blocks = []
-    for p in PACK_NAME:
-        inner = []
-        for t in ("main", "side"):
-            group = ms.groups.get((p, t))
-            if group:
-                inner.append(f'<section class="msgroup"><h3>{TYPE_NAME[t]} <small class="dim">{len(group)}'
-                             f'</small></h3>{group_tables(site, group, p)}</section>')
-        n = sum(len(ms.groups.get((p, t), [])) for t in ("main", "side"))
-        blocks.append(f'<section class="mspack">{bar(PACK_NAME[p], right=f"{n} missions", id="pack-" + p)}'
-                      f'<p>{PACK_BLURB[p]}</p>{"".join(inner)}</section>')
-    return (bar("All missions", right=f"{len(ms.missions)}", id="list") +
-            "<p>Filter by pack, type and region (the chips of one row combine with <i>or</i>, the rows with "
-            "<i>and</i>), or type part of a name, a place or an objective. <b>#</b> is the mission's position in "
-            "the game's mission table; <b>Obj.</b> counts the objectives shown in the mission log (optional ones in "
-            "brackets). Click a column title to sort a table.</p>" + fb +
-            f'<div id="mslist">{"".join(blocks)}</div>')
+# ---------------------------------------------------------------------------------------------------------------
+# missions/<pack>.html
+# ---------------------------------------------------------------------------------------------------------------
+def build_pack(site, ms, p):
+    name = PACK_NAME[p]
+    nmain = len(ms.groups.get((p, "main"), []))
+    nside = len(ms.groups.get((p, "side"), []))
+    lead = f"<p>{PACK_BLURB[p]}</p>"
+    body = ['<div class="filterbar" data-for="mslist"><input placeholder="Filter missions...">'
+            '<span class="count"></span></div>', '<div class="foldall" data-for="mslist"></div>',
+            '<div id="mslist">']
+    for t in ("main", "side"):
+        regions = [r for r in REGION_ORDER if (p, t, r) in ms.by_region]
+        if not regions:
+            continue
+        n = len(ms.groups[(p, t)])
+        body.append(bar(TYPE_NAME[t], right=f"{n} missions", id=t))
+        if p == "base" and t == "main":
+            late = [m for m in ms.groups[(p, t)] if is_late_story(m)]
+            if late:
+                body.append(f'<p class="small">The base game\'s last {len(late)} main missions form one story that '
+                            f'moves across regions, each briefing continuing the last: ' +
+                            " → ".join(mlink(m) for m in late) + ".</p>")
+        for r in regions:
+            group = ms.by_region[(p, t, r)]
+            inner = ""
+            if r != "global" and site.find("region", r) and p != "dlc03":
+                inner = (f'<p class="msreg small">About the region: {region_link(site, r)}</p>')
+            inner += mission_table(site, group, p, t)
+            right = f"{len(group)} mission{'s' if len(group) != 1 else ''}"
+            body.append(fold(REGION_NAME[r], inner, open=False, level=3, id=fold_id(t, r), right=right))
+    body.append("</div>")
+    body.append(note(DATA_NOTE, "data"))
+
+    # infobox: the pack's store picture, date and counts
+    sb = site.data("steam")
+    st = sb["game"] if p == "base" else next((d for d in sb["dlc"] if d["appid"] == PACK_APPID.get(p)), None)
+    image = "~/" + st["image"] if st and st.get("image") and site.has_file(st["image"]) else None
+    regions_all = [r for r in REGION_ORDER if any((p, t, r) in ms.by_region for t in ("main", "side")) and r != "global"]
+    rows = [("Pack", pack_tag(p)),
+            ("Released", esc(st["date"]) if st and st.get("date") else None),
+            ("Main missions", f'<a href="#main">{nmain}</a>' if nmain else None),
+            ("Side missions", f'<a href="#side">{nside}</a>' if nside else None),
+            ("Regions", ", ".join(region_link(site, r) for r in regions_all) if regions_all else None),
+            ("Warboard arcs", f'<a href="~/missions/arcs.html">{sum(1 for m in ms.missions if m["pack"] == p and m.get("arc"))} missions</a>'
+             if p == "base" else None),
+            ("DLC", site.link("dlc", name, "About this expansion") if p in ("alpine", "fnix") else None)]
+    ib = infobox(name, rows, image=image, image_alt=name)
+    site.page(PACK_PAGE[p], f"{name} missions" if p != "dlc03" else "Unreleased missions", "\n".join(body),
+              "missions", sub=PACK_SUB[p], lead=lead, head_extra=CSS, infobox_html=ib,
+              desc=f"The {nmain} main and {nside} side missions of {name if p != 'dlc03' else 'the unreleased expansion'}"
+                   f", by region.")
 
 
-def group_tables(site, group, pack):
-    """A group's table; the base game's later FNIX storyline gets its own table under a sub-heading."""
-    early = [m for m in group if not is_late_story(m)]
-    late = [m for m in group if is_late_story(m)]
-    out = mission_table(site, early, pack)
-    if late:
-        out += (f'<div class="mssub"><h4>FNIX storyline (later update) <small class="dim">{len(late)}</small></h4>'
-                f'<p>The five main missions at the end of the mission table, after the expansion missions, form '
-                f'one story, each briefing continuing the last, so they are listed in table order rather than by '
-                f'region.</p>'
-                f'{mission_table(site, late, pack)}</div>')
-    return out
-
-
-def mission_table(site, group, pack):
-    """One group's table. Written by hand (not wiki.site.table) because the rows need data-f / data-w for the
-    filter bar."""
-    show_arc = pack == "base"
-    head = ["#", "Mission", "Region"] + (["Arc"] if show_arc else []) + ["Obj.", "Summary"]
-    num = {0, len(head) - 2}
+def mission_table(site, group, pack, t):
+    """One region's missions. Written by hand (not wiki.site.table) because the rows need data-w for the filter
+    bar (objective and briefing text)."""
+    show_arc = pack == "base" and t == "main" and any(m.get("arc") for m in group)
+    head = ["Mission"] + (["Arc"] if show_arc else []) + ["Obj.", "Summary"]
+    num = {len(head) - 2}
     out = ['<div class="tablewrap"><table class="wt sortable mstable"><thead><tr>']
     out += [f'<th{" class=n" if i in num else ""}>{esc(h)}</th>' for i, h in enumerate(head)]
     out.append("</tr></thead><tbody>")
     for m in group:
         steps = m.get("steps", [])
-        nopt = sum(1 for s in steps if s.get("opt"))
-        tags = f"p-{m['pack']} t-{m['type']} r-{m['region']}"
+        req, nopt = obj_counts(m)
         words = " ".join(s["name"] for s in steps) + " " + m.get("description", "")
-        obj = f'{len(steps) - nopt}{f" <small>(+{nopt})</small>" if nopt else ""}'
-        cells = [f'<td class="n" data-v="{m["idx"]}">{m["idx"]}</td>',
-                 f'<td class="mname">{mlink(m)}{tag("Unreleased", "unreleased") if m.get("unreleased") and pack != "dlc03" else ""}</td>',
-                 f"<td>{region_link(site, m['region'])}</td>"]
+        obj = f'{req}{f" <small>(+{nopt})</small>" if nopt else ""}'
+        cells = [f'<td class="mname">{mlink(m)}</td>']
         if show_arc:
-            cells.append(f"<td>{esc(m.get('arc', '')) or '<span class=dim>–</span>'}</td>")
-        cells += [f'<td class="n" data-v="{len(steps) - nopt}.{nopt:02d}">{obj}</td>', f'<td class="msum">{esc(m.get("summary", ""))}</td>']
-        out.append(f'<tr data-f="{tags}" data-w="{esc(words)}">{"".join(cells)}</tr>')
+            cells.append(f"<td>{arc_link(m['arc']) if m.get('arc') else '<span class=dim>–</span>'}</td>")
+        cells += [f'<td class="n" data-v="{req}.{nopt:02d}">{obj}</td>',
+                  f'<td class="msum">{esc(m.get("summary", ""))}</td>']
+        out.append(f'<tr data-w="{esc(words)}">{"".join(cells)}</tr>')
     out.append("</tbody></table></div>")
     return "".join(out)
 
@@ -469,14 +598,13 @@ def mission_table(site, group, pack):
 # ---------------------------------------------------------------------------------------------------------------
 def build_mission(site, ms, m):
     steps = m.get("steps", [])
-    nopt = sum(1 for s in steps if s.get("opt"))
+    req, nopt = obj_counts(m)
     places = ms.places_in(m)
     lead_linked = set()
     lead = f'<p class="mslead">{linkify(site, ms, m.get("summary", ""), lead_linked)}</p>'
     if m.get("unreleased"):
-        lead += note("This mission is in the current game files (content key <code>expansion03</code>) but is not "
-                     "part of the released game, so you can't play it. The text below is as the files have it."
-                     + garble_note(m), "warn", "Unreleased")
+        lead += note("This mission is in the current game files but is not part of the released game, so you can't "
+                     "play it. The text below is as the files have it." + garble_note(m), "warn", "Unreleased")
     body = []
     if m.get("description"):
         body.append(bar("Briefing"))
@@ -484,7 +612,7 @@ def build_mission(site, ms, m):
                     m.get("unreleased") else "The mission log text, as the game shows it.") + "</p>")
         body.append(briefing_html(site, ms, m["description"], set()))
     if steps:
-        body.append(bar("Objectives", right=f"{len(steps) - nopt} required" + (f" · {nopt} optional" if nopt else "")))
+        body.append(bar("Objectives", right=f"{req} required" + (f" · {nopt} optional" if nopt else "")))
         body.append(objectives_html(site, ms, m))
     if places:
         body.append(places_html(site, m, places))
@@ -493,25 +621,22 @@ def build_mission(site, ms, m):
         body.append(chs)
     body.append(neighbours_html(m))
 
+    region_cell = region_link(site, m["region"])
     rows = [("Type", type_tag(m["type"]) + ("Main mission" if m["type"] == "main" else "Side mission")),
-            ("Pack", site.link("dlc", m["pack"], PACK_NAME[m["pack"]]) if m["pack"] != "dlc03"
-             else tag("Unreleased", "unreleased")),
-            ("Region", region_link(site, m["region"])),
+            ("Pack", pack_link(m["pack"]) + (" " + tag("DLC", "dlc") if m["pack"] in ("alpine", "fnix") else "")),
+            ("Region", region_cell),
             ("Briefing places it in", ", ".join(region_link(site, k) for k in ms.regions_named(m))
              if m["region"] == "global" else None),
-            ("Warboard arc", f'<a href="~/missions/index.html#arc-{slug(m["arc"])}">{esc(m["arc"])}</a>'
-             if m.get("arc") else None),
-            ("Objectives", f"{len(steps) - nopt}" + (f" + {nopt} optional" if nopt else "")),
-            ("Places named", str(len(places)) if places else None),
-            (None, "Game files"),
-            ("Mission id", f"<code>{m['id']}</code>"),
-            ("Table position", f"{m['idx']} of {len(ms.missions)}"),
-            ("Content key", f"<code>{CONTENT_KEY[m['pack']]}</code>" if m["pack"] in CONTENT_KEY else None)]
+            ("Warboard arc", arc_link(m["arc"]) if m.get("arc") else None),
+            ("Objectives", f"{req}" + (f" + {nopt} optional" if nopt else "")),
+            ("Places named", str(len(places)) if places else None)]
     ib = infobox(m["name"], rows, subtitle=tag(m["arc"] + " arc", "arc") if m.get("arc") else None)
     kind = f"{'Main' if m['type'] == 'main' else 'Side'} mission · {PACK_NAME[m['pack']]}"
-    site.page(m["path"], m["name"], "\n".join(body), "missions", sub="missions",
-              crumbs=[(PACK_NAME[m["pack"]], f"~/missions/index.html#pack-{m['pack']}")], infobox_html=ib,
-              kind=kind, lead=lead, head_extra=CSS,
+    crumbs = [(PACK_NAME[m["pack"]], "~/" + PACK_PAGE[m["pack"]]),
+              (REGION_NAME[m["region"]] if m["region"] != "global" else TYPE_NAME[m["type"]],
+               f"~/{PACK_PAGE[m['pack']]}#{fold_id(m['type'], m['region'])}")]
+    site.page(m["path"], m["name"], "\n".join(body), "missions", sub=PACK_SUB[m["pack"]], crumbs=crumbs,
+              infobox_html=ib, kind=kind, lead=lead, head_extra=CSS,
               desc=f"{m['name']}: {kind.lower()} in {REGION_NAME[m['region']]}. {m.get('summary', '')}")
 
 
@@ -597,20 +722,28 @@ def steps_ref(nums):
 
 
 def places_html(site, m, places):
-    """The map locations a mission's texts name, with a mini map."""
+    """The map locations a mission's texts name, with a mini map whose full-map button shows those kinds of
+    location in those regions."""
     where_name = {"summary": "Summary", "briefing": "Briefing", "objectives": "Objectives"}
     rows = []
     for l, where in places:
         rows.append([site.link("location", l["name"], icon=True), esc(l.get("type") or l["kind"]),
                      region_link(site, l["region"]), ", ".join(where_name[w] for w in where)])
     pts = [(l["x"], l["z"], l["name"]) for l, _ in places]
+    show = sorted({"loc_" + l["kind"] for l, _ in places if l.get("kind")})
+    regions = sorted({l["region"] for l, _ in places if l["region"] != "global"})
     out = [bar("Places", right=f"{len(places)} named"),
            "<p>The map locations the summary, briefing or objectives mention by name, in order of first mention. "
            "They are where the mission sends you or what it talks about; the exact objective markers are not in "
            "the data.</p>",
            table(["Location", "Type", "Region", "Named in"], rows, cls="compact")]
     out += outside_region_notes(site, m, places)
-    out.append(minimap(pts[0][0], pts[0][1], pts[0][2], zoom=2, height=340, markers=pts[1:]))
+    if len(pts) == 1:
+        out.append(minimap(pts[0][0], pts[0][1], pts[0][2], zoom=2, height=340, show=show, region=regions,
+                           focus=pts[0][2]))
+    else:
+        out.append(minimap(pts[0][0], pts[0][1], pts[0][2], zoom=2, height=340, markers=pts[1:], show=show,
+                           region=regions))
     return "\n".join(out)
 
 
@@ -674,7 +807,7 @@ def challenges_for(site, ms, m):
 
 
 def neighbours_html(m):
-    """Previous / next links in the mission list and, for arc missions, in the arc."""
+    """Previous / next links in the pack page's list and, for arc missions, in the arc."""
     rows = [("list", f"{TYPE_NAME[m['type']]} · {PACK_NAME[m['pack']]}")]
     if m.get("arc"):
         rows.insert(0, ("arc", f"{m['arc']} arc"))
@@ -689,7 +822,7 @@ def neighbours_html(m):
 
 
 # ---------------------------------------------------------------------------------------------------------------
-# missions/challenges.html
+# missions/challenges.html: the challenge browser, after the CHALLENGES pane of the Gen0 Editor (DECA tools)
 # ---------------------------------------------------------------------------------------------------------------
 TREE_BLURB = {
     "TRUTH": "Story progress: completing main and side missions in each region of the base game, activating the "
@@ -715,13 +848,35 @@ CHALLENGE_LINKS = [
     (r"Vacation Photos", ("collectible-type", "photos", "Vacation Photos")),
     (r"Love Letters", ("collectible-type", "loveletters", "Love Letters")),
     (r"Survivor's Notes", ("collectible-type", "survivornotes", "Survivor's Notes")),
-    (r"Relay Beacons", ("collectible-type", "relaybeacons", "Relay Beacons")),
 ]
 # Map data counts we can show next to a challenge: challenge key -> (marker sub keys, what)
 MARKER_COUNTS = {"08_04": (["bottles"], "Messages in a Bottle (Resistance Bottles)"),
                  "03_03": (["photos"], "Vacation Photos"),
                  "05_03": (["loveletters", "survivornotes"], "Love Letters and Survivor's Notes"),
                  "01_07": (["relaybeacons"], "Relay Beacons")}
+
+# the tier nodes of the game's challenge screen (as drawn by the Gen0 Editor): a ring per tier, and the scalloped
+# badge with a star for the last tier
+_BADGE = "M" + "L".join(
+    f"{24 + (17.2 if i % 2 else 20.4) * math.cos(i / 20 * 2 * math.pi - math.pi / 2):.2f} "
+    f"{24 + (17.2 if i % 2 else 20.4) * math.sin(i / 20 * 2 * math.pi - math.pi / 2):.2f}" for i in range(20)) + "Z"
+_STAR = "M" + "L".join(
+    f"{24 + (3.5 if i % 2 else 8) * math.cos(i / 10 * 2 * math.pi - math.pi / 2):.2f} "
+    f"{24.4 + (3.5 if i % 2 else 8) * math.sin(i / 10 * 2 * math.pi - math.pi / 2):.2f}" for i in range(10)) + "Z"
+DLC_ICON = ('<svg class="dlcic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10.6" fill="none" '
+            'stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="8" fill="currentColor"/>'
+            '<path d="M10.4 6.6h3.2v5.6h2.6L12 17.4 7.8 12.2h2.6z" fill="#11161b"/></svg>')
+
+
+def node_svg(n, last):
+    if last:
+        return (f'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="23" class="nb"/>'
+                f'<path d="{_BADGE}" class="ns"/><circle cx="24" cy="24" r="14" class="nr1"/>'
+                f'<circle cx="24" cy="24" r="11.6" class="nr2"/><circle cx="24" cy="24" r="10.2" class="nb"/>'
+                f'<path d="{_STAR}" class="ns"/></svg>')
+    return (f'<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="15.6" class="nbg"/>'
+            f'<circle cx="24" cy="24" r="12.6" class="nring"/>'
+            f'<text x="24" y="28.6" text-anchor="middle" class="nnum">{n}</text></svg>')
 
 
 def build_challenges(site, ms):
@@ -730,58 +885,77 @@ def build_challenges(site, ms):
     n_tiers = sum(len(c["tiers"]) for t in trees for c in t["challenges"])
     lead = (f"<p>Challenges are Generation Zero's long-term goals: <b>{n_ch} challenges</b> in {len(trees)} trees, "
             f"each a chain of tiers ({n_tiers} tiers in all). Every tier you complete awards a <b>title</b> for your "
-            f"character. This page lists every challenge with its tiers, the exact numbers the game counts and the "
-            f"title of each tier, straight from the game files.</p>")
+            f"character. Pick a tree, then click a challenge to see its tiers, the exact numbers the game counts and "
+            f"the title of each tier, straight from the game files.</p>")
+    tabs, lists, details = [], [], []
+    for ti, t in enumerate(trees):
+        tabs.append(f'<button type="button" class="chtab{" on" if ti == 0 else ""}" data-tree="{tree_anchor(t)}" '
+                    f'title="{len(t["challenges"])} challenges{" · DLC" if t["dlc"] else ""}">{esc(t["name"])}'
+                    f'{DLC_ICON if t["dlc"] else ""}</button>')
+        tiers = sum(len(c["tiers"]) for c in t["challenges"])
+        pk = (f" {tag(TREE_PACK[t['name']], 'dlc')} Needs the {site.link('dlc', TREE_PACK[t['name']])} expansion."
+              if t["dlc"] else "")
+        rows = []
+        for ci, c in enumerate(t["challenges"]):
+            track = []
+            for n, tier in enumerate(c["tiers"], 1):
+                if n > 1:
+                    track.append('<i class="chseg"></i>')
+                last = n == len(c["tiers"])
+                track.append(f'<span class="chnode{" fin" if last else ""}" data-tier="{n}" '
+                             f'title="Tier {n}: {esc(tier.get("title") or "")}">{node_svg(n, last)}</span>')
+            rows.append(f'<div class="chrow{" sel" if ti == 0 and ci == 0 else ""}" id="{challenge_anchor(c)}" '
+                        f'data-ch="{esc(c["key"])}" tabindex="0" role="button" aria-controls="chd-{esc(c["key"])}">'
+                        f'<span class="chname">{esc(c["name"])}<small>{esc(c["tiers"][-1].get("title") or "")}</small>'
+                        f'</span><span class="chtrack">{"".join(track)}</span></div>')
+            details.append(challenge_detail(site, ms, t, c, ci, on=ti == 0 and ci == 0))
+        lists.append(f'<section class="chtree{" on" if ti == 0 else ""}" id="{tree_anchor(t)}" '
+                     f'data-tree="{tree_anchor(t)}"><p class="chblurb"><b>{esc(t["name"])}</b> · {len(t["challenges"])} '
+                     f'challenges · {tiers} tiers. {esc(TREE_BLURB.get(t["name"], ""))}{pk}</p>{"".join(rows)}</section>')
+    browser = (f'<div class="chb" id="chb"><nav class="chtabs" aria-label="Challenge trees">{"".join(tabs)}</nav>'
+               f'<div class="chgrid"><div class="chlists">{"".join(lists)}</div>'
+               f'<aside class="chdetail" aria-live="polite">{"".join(details)}</aside></div></div>')
     body = [bar("Challenge trees", right=f"{n_ch} challenges · {n_tiers} tiers", id="trees"),
-            "<p>The six trees as the game's challenge screen shows them. The two expansion trees only appear with "
-            "their DLC.</p>",
-            table(["Tree", "Internal no.", "Pack", "Challenges", "Tiers", "About"],
-                  [[f'<a href="#{tree_anchor(t)}">{esc(t["name"])}</a>', f"<code>{esc(t['tree'])}</code>",
-                    tag(TREE_PACK[t["name"]], "dlc") if t["dlc"] else tag("Base game", "base"),
-                    len(t["challenges"]), sum(len(c["tiers"]) for c in t["challenges"]),
-                    esc(TREE_BLURB.get(t["name"], ""))] for t in trees], cls="compact trees", num={3, 4}),
+            "<p>The six trees as the game's challenge screen shows them; the two expansion trees "
+            f"(marked {DLC_ICON}) only appear with their DLC. Each circle is a tier, the star badge the last one. "
+            "Click a challenge (or one of its tiers) for the details.</p>",
+            browser,
             bar("How to read the tiers", id="reading"),
             "<p>A challenge keeps <b>one progress counter</b> for all its tiers. <b>From → to</b> is the counter "
             "at the start and end of a tier, so <b>Needed</b> (to minus from) is how far that tier moves the "
             "counter, and the last tier's <i>to</i> is the challenge's total. For most challenges that is what "
             "the tier asks for. A few (Combat Perfectionist, Eagle Eye and the ones that name missions) count "
             "completed tiers instead, one per tier; there the requirement text gives the real number, and where "
-            "it asks for more than one kill <b>Needed</b> shows that number with <i>tier +1</i>. The tiers come one after another and each has "
-            "its own condition: later tiers often ask for a tougher machine class (for example \"Military or FNIX "
-            "class only\") or a harder feat than the first ones.</p>",
+            "it asks for more than one kill <b>Needed</b> shows that number with <i>tier +1</i>. The tiers come one "
+            "after another and each has its own condition: later tiers often ask for a tougher machine class (for "
+            "example \"Military or FNIX class only\") or a harder feat than the first ones.</p>",
             '<div id="region-note">' +
             note("The tier descriptions are the game's own text. Where they say \"the last N missions\" of a region, "
                  "the total is what the challenge counts; the region may hold more missions than that today, since "
                  "the expansions and later updates added missions. The descriptions don't say whether those count, "
-                 "so we list both numbers below.", "data") + "</div>"]
-    for t in trees:
-        body.append(tree_html(site, ms, t))
-    site.page("missions/challenges.html", "Challenges", "\n".join(body), "missions", lead=lead, head_extra=CSS,
+                 "so the region challenges' details list both numbers.", "data") + "</div>"]
+    site.page("missions/challenges.html", "Challenges", "\n".join(body), "missions", lead=lead, toc=False,
+              head_extra=CSS + JS,
               desc=f"All {n_ch} Generation Zero challenges in {len(trees)} trees: every tier, requirement and title.")
 
 
-def tree_html(site, ms, t):
-    tiers = sum(len(c["tiers"]) for c in t["challenges"])
-    out = [bar(t["name"], right=f"{len(t['challenges'])} challenges · {tiers} tiers", id=tree_anchor(t))]
-    pk = f" {tag(TREE_PACK[t['name']], 'dlc')} Needs the {site.link('dlc', TREE_PACK[t['name']])} expansion." \
-        if t["dlc"] else ""
-    out.append(f"<p>{esc(TREE_BLURB.get(t['name'], ''))}{pk}</p>")
-    for c in t["challenges"]:
-        out.append(challenge_html(site, ms, t, c))
-    return "\n".join(out)
-
-
-def challenge_html(site, ms, t, c):
+def challenge_detail(site, ms, t, c, ci, on=False):
     last = c["tiers"][-1]
-    head = (f'<h3 id="{challenge_anchor(c)}" class="chh">{esc(c["name"])} <small class="dim">'
-            f'<code>{esc(c["key"])}</code> · {len(c["tiers"])} tiers · total {fmt(last["req"])}</small></h3>')
-    rows = []
+    tiers = []
     for n, tier in enumerate(c["tiers"], 1):
-        rows.append([n, f"{fmt(tier['start'])} → {fmt(tier['req'])}", needed_html(tier),
-                     tier_desc_html(ms, tier["desc"]), f'<span class="title">{esc(tier.get("title") or "–")}</span>'])
-    tbl = table(["Tier", "From → to", "Needed", "Requirement", "Title awarded"], rows, sortable=False,
-                cls="chtable", num={1, 2})
-    return head + tbl + challenge_extras(site, ms, c)
+        fin = n == len(c["tiers"])
+        tiers.append(f'<li class="chtier" data-tier="{n}"><span class="chnode{" fin" if fin else ""}">'
+                     f'{node_svg(n, fin)}</span><div><b>Tier {n}</b>'
+                     f'<span class="chtv">{fmt(tier["start"])} → {fmt(tier["req"])} · needed {needed_html(tier)}</span>'
+                     f'<div class="chreq">{tier_desc_html(ms, tier["desc"])}</div>'
+                     f'<small>Title: <em>{esc(tier.get("title") or "–")}</em></small></div></li>')
+    dlc = " · DLC" if t["dlc"] else ""
+    return (f'<div class="chd{" on" if on else ""}" id="chd-{esc(c["key"])}" data-ch="{esc(c["key"])}">'
+            f'<span class="chkicker">{esc(t["name"])}{dlc} · challenge {ci + 1} of {len(t["challenges"])}</span>'
+            f'<div class="chdh">{esc(c["name"])}</div>'
+            f'<div class="chstat">{len(c["tiers"])} tiers · counter total {fmt(last["req"])} · final title '
+            f'<em>{esc(last.get("title") or "–")}</em></div>'
+            f'<ol class="chtiers">{"".join(tiers)}</ol>{challenge_extras(site, ms, c)}</div>')
 
 
 def needed_html(tier):
@@ -790,8 +964,8 @@ def needed_html(tier):
     step = tier["req"] - tier["start"]
     asked = re.match(r"(?:Destroy|Kill) (\d+) ", tier["desc"])
     if step == 1 and asked and int(asked.group(1)) > 1:
-        return f'{asked.group(1)} <small class="dim">tier +1</small>'
-    return step
+        return f'{asked.group(1)} <small class="dim">(tier +1)</small>'
+    return fmt(step)
 
 
 def tier_desc_html(ms, desc):
@@ -816,7 +990,7 @@ def tier_desc_html(ms, desc):
             html.append(sub(mt))
             pos = mt.end()
         html.append(esc(part[pos:]))
-        paras.append("<div>" + "".join(html) + "</div>")
+        paras.append("<p>" + "".join(html) + "</p>")
     return "".join(paras)
 
 
@@ -829,7 +1003,7 @@ def warboard_codes(ms):
 
 
 def challenge_extras(site, ms, c):
-    """Cross-links and map-data counts under a challenge's table."""
+    """Cross-links and map-data counts under a challenge's tiers."""
     text = " ".join(t["desc"] for t in c["tiers"])
     bits = []
     # missions the challenge names or counts
@@ -849,8 +1023,9 @@ def challenge_extras(site, ms, c):
             base = [m for m in in_region if m["pack"] == "base"]
             extra = collections.Counter(PACK_NAME[m["pack"]] for m in in_region if m["pack"] != "base")
             more = "".join(f", plus {n} from {p}" for p, n in extra.items())
-            bits.append(("Region", f"{region_link(site, k)}: the game files list {len(base)} base-game missions "
-                                   f"here{more}; the challenge counts to {fmt(c['tiers'][-1]['req'])}" +
+            bits.append(("Region", f"{region_link(site, k)}: the game files list "
+                                   f"<a href=\"~/{PACK_PAGE['base']}#{fold_id('main', k)}\">{len(base)} base-game "
+                                   f"missions</a> here{more}; the challenge counts to {fmt(c['tiers'][-1]['req'])}" +
                                    (f" and leaves out {', '.join(mlink(ms.by_name[norm(x)]) for x in excluded)}"
                                     if excluded else "") + "."))
     # machine types; "(excluding Ticks)" and "Gas Tank" / "Fuel Tank" are not about those machines
@@ -874,18 +1049,174 @@ def challenge_extras(site, ms, c):
         items = [x for x in ms.markers["items"] if x.get("s") in subs]
         regions = collections.Counter(x.get("r") for x in items)
         where = ", ".join(f"{n} in {esc(REGION_NAME.get(r, r))}" for r, n in regions.most_common())
-        bits.append(("On the map", f"the map data has {len(items)} {esc(what)} ({where}); the challenge counts to "
-                                   f"{fmt(c['tiers'][-1]['req'])}."))
+        bits.append(("On the map", f"the map data has <a href=\"{maplink(show=subs)}\">{len(items)} {esc(what)}</a> "
+                                   f"({where}); the challenge counts to {fmt(c['tiers'][-1]['req'])}."))
     if c["key"] == "03_04":
-        n = sum(1 for l in ms.locs if l["region"] == "alpine")
-        bits.append(("On the map", f"the map data has {n} named locations on {region_link(site, 'alpine')}; the "
-                                   f"challenge counts to {fmt(c['tiers'][-1]['req'])}."))
+        alp = [l for l in ms.locs if l["region"] == "alpine"]
+        kinds = sorted({"loc_" + l["kind"] for l in alp if l.get("kind")})
+        bits.append(("On the map", f"the map data has <a href=\"{maplink(show=kinds, region=['alpine'])}\">{len(alp)} "
+                                   f"named locations</a> on {region_link(site, 'alpine')}; the challenge counts to "
+                                   f"{fmt(c['tiers'][-1]['req'])}."))
     if c["key"] == "05_04":
         outposts = [l for l in ms.locs if l.get("type") == "FNIX Outpost"]
         regions = collections.Counter(l["region"] for l in outposts)
-        bits.append(("On the map", f"the map data has {len(outposts)} FNIX Outposts (" +
+        kinds = sorted({"loc_" + l["kind"] for l in outposts if l.get("kind")})
+        bits.append(("On the map", f"the map data has <a href=\"{maplink(show=kinds, region=sorted(regions))}\">"
+                     f"{len(outposts)} FNIX Outposts</a> (" +
                      ", ".join(f"{n} in {region_link(site, r)}" for r, n in regions.most_common()) +
                      "); tier 1 asks you to discover 5."))
     if not bits:
         return ""
     return kv(bits)
+
+
+# ---------------------------------------------------------------------------------------------------------------
+# missions/achievements.html
+# ---------------------------------------------------------------------------------------------------------------
+ACH_GROUPS = [
+    ("story", "Story", "The base game's missions."),
+    ("alpine", "Alpine Unrest", "Missions, secrets and collectibles of the Alpine Unrest expansion on Himfjäll."),
+    ("fnix", "FNIX Rising", "Missions and collectibles of the FNIX Rising expansion."),
+    ("machines", "Machines", "Destroying machines: counts per type, classes and special kills."),
+    ("combat", "Weapons & combat", "Kills with each kind of weapon, lures, stealth and weapon mods."),
+    ("explore", "Exploration", "Travelling Östertörn: safehouses, locations, bunkers, lighthouses and the homes."),
+    ("collect", "Collectibles & loot", "Collecting things and looting the world."),
+    ("people", "Characters & co-op", "Your characters and playing with others."),
+]
+# achievements that don't name a mission: name -> group
+ACH_GROUP = {
+    "Grey Dawn": "story", "Go-Getter": "story", "It's The Final Countdown": "story",
+    "Vestiges": "alpine", "Here's Pauli!": "alpine", "Room 237": "alpine", "Unorthodox Skiing": "alpine",
+    "The Ones That Came Before Us": "fnix",
+    "First Blood": "machines", "Decimation": "machines", "You're A Disease And I'm The Cure": "machines",
+    "Hasta La Vista Baby": "machines", "All Out Of Bubblegum": "machines", "Go Ahead, Make My Day": "machines",
+    "Yippee-Ki-Yay": "machines", "Say Hello To My Little Friend": "machines", "Adapt and Evolve": "machines",
+    "Not Today, FNIX!": "machines", "From a Distance": "machines", "One Shot": "machines", "Kill Switch": "machines",
+    "Offence Is The Best Defence": "machines",
+    "Marksman": "combat", "Siren Call": "combat", "Splash Damage": "combat", "Gunslinger": "combat",
+    "Operator": "combat", "Gangster": "combat", "Commando": "combat", "Hunter": "combat", "Sapper": "combat",
+    "Hot Property": "combat", "Real Sneaky Like": "combat", "Overkill": "combat", "Modder": "combat",
+    "Lock & Load": "combat", "Running Wild": "combat",
+    "Fika Club": "explore", "Gustafsloppet": "explore", "I Just Called To Say I Love You": "explore",
+    "Light My Fire": "explore", "Folk Wisdom": "explore", "Explorer": "explore", "Tunnel Rat": "explore",
+    "Scavenger": "collect", "Engineer": "collect", "Gardener": "collect", "DJ": "collect", "Tourist": "collect",
+    "Fashionista": "collect", "Spare Parts": "collect", "I Want To Be A Mighty Pirate!": "collect",
+    "Player Two": "people", "Postgraduate": "people", "Assist": "people",
+}
+# related wiki pages per achievement: (kind, key, label) for site.link, or ("map", [show keys], label, [regions])
+ACH_RELATED = {
+    "Siren Call": [("item", "Boombox", "Boombox")],
+    "Hot Property": [("item", "Emergency flare", "Emergency flare")],
+    "Splash Damage": [("weapon", "Granatgevär m/49", "Granatgevär m/49"), ("weapon", "Grenade", "Grenade")],
+    "Overkill": [("weapon", "Granatgevär m/49", "Granatgevär m/49"), ("machine", "Seeker", "Seeker")],
+    "One Shot": [("machine", "Hunter", "Hunter")],
+    "Adapt and Evolve": [("machine", "Apocalypse class", "Apocalypse class")],
+    "Not Today, FNIX!": [("machine", "Rival class", "Rivals")],
+    "Kill Switch": [("map", ["relaybeacons"], "Relay Beacons on the map", [])],
+    "Fika Club": [("map", ["playersafehouses"], "Safehouses on the map", [])],
+    "Light My Fire": [("map", ["loc_lighthouse"], "Lighthouses on the map", [])],
+    "Tunnel Rat": [("map", ["loc_bunker"], "Bunkers on the map", [])],
+    "Engineer": [("collectible-type", "blueprints", "Blueprints"), ("map", ["blueprints"], "on the map", [])],
+    "Gardener": [("collectible-type", "gnomes", "Gnomes"), ("map", ["gnomes"], "on the map", [])],
+    "DJ": [("collectible-type", "mixtapes", "Mixtapes"), ("map", ["mixtapes"], "on the map", [])],
+    "Vestiges": [("collectible-type", "audiologs", "Audio Logs"), ("map", ["audiologs"], "on the map", ["alpine"])],
+    "The Ones That Came Before Us": [("collectible-type", "survivornotes", "Survivor's Notes"),
+                                     ("collectible-type", "loveletters", "Love Letters"),
+                                     ("map", ["survivornotes", "loveletters"], "on the map", [])],
+    "Here's Pauli!": [("location", "Björntunet Hotel", "Björntunet Hotel")],
+    "Room 237": [("location", "Björntunet Hotel", "Björntunet Hotel")],
+    "It's The Final Countdown": [("page", "~/missions/arcs.html", "Warboard arcs")],
+    "Grey Dawn": [("page", "~/" + PACK_PAGE["base"], "Base game missions")],
+}
+ACH_MACHINES = {"Ticks": "Tick", "Seekers": "Seeker", "Runners": "Runner", "Hunters": "Hunter",
+                "Harvesters": "Harvester", "Tanks": "Tank"}
+
+
+def build_achievements(site, ms):
+    data = site.data("achievements")
+    achs = data["achievements"]
+    groups = collections.OrderedDict((g, []) for g, _, _ in ACH_GROUPS)
+    for a in achs:
+        missions = [ms.by_name[norm(q)] for q in re.findall(r'"([^"]+)"', a["desc"]) if norm(q) in ms.by_name]
+        g = ACH_GROUP.get(a["name"])
+        if g is None and missions:
+            g = {"base": "story", "alpine": "alpine", "fnix": "fnix"}.get(missions[0]["pack"], "story")
+        if g is None:
+            site.warn(f"achievement without a group: {a['name']}")
+            g = "people"
+        groups[g].append((a, missions))
+    n_secret = sum(1 for a in achs if a["hidden"])
+    lead = (f"<p>Generation Zero has <b>{len(achs)} Steam achievements</b>, {n_secret} of them secret (Steam hides "
+            f"them until you unlock them). Most come with the base game; the expansions "
+            f"{site.link('dlc', 'Alpine Unrest')} and {site.link('dlc', 'FNIX Rising')} added their own. Unlike "
+            f"<a href=\"~/missions/challenges.html\">challenges</a>, achievements belong to your Steam account, not to "
+            f"a character.</p>")
+    body = ['<div class="filterbar" data-for="achlist"><input placeholder="Filter achievements...">'
+            '<button class="chip on" data-g="s" data-f="*">All</button>'
+            '<button class="chip" data-g="s" data-f="secret">Secret</button><span class="count"></span></div>',
+            '<div id="achlist">']
+    for g, title, blurb in ACH_GROUPS:
+        items = groups[g]
+        if not items:
+            continue
+        rows = []
+        for a, missions in items:
+            rows.append(ach_html(site, ms, a, missions))
+        body.append(f'<section class="achgroup">{bar(title, right=f"{len(items)}", id="g-" + g)}'
+                    f'<p class="small dim">{esc(blurb)}</p><div class="achs">{"".join(rows)}</div></section>')
+    body.append("</div>")
+    body.append(note("The achievement list (names, descriptions, icons and which ones are secret) comes from the "
+                     "<a href=\"https://generation-zero.fandom.com/wiki/Achievements\">Generation Zero Fandom wiki</a> "
+                     "(text and icons CC BY-SA). Its 72 entries match the count on the "
+                     "<a href=\"https://store.steampowered.com/app/704270/\">Steam store</a>. The game files we read "
+                     "don't hold the achievement list, and the global unlock percentages from Steam aren't included.",
+                     "data", "Source"))
+    rows = [("Achievements", str(len(achs))), ("Secret", str(n_secret)), (None, "Groups")]
+    rows += [(title, f'<a href="#g-{g}">{len(groups[g])}</a>') for g, title, _ in ACH_GROUPS if groups[g]]
+    rows += [(None, "Source"), ("List", '<a href="https://generation-zero.fandom.com/wiki/Achievements">Fandom wiki</a>'),
+             ("Steam", '<a href="https://store.steampowered.com/app/704270/">Store page</a>')]
+    ib = infobox("Steam achievements", rows,
+                 image="~/img/achievements/map_gold.webp" if site.has_file("img/achievements/map_gold.webp") else None)
+    site.page("missions/achievements.html", "Achievements", "\n".join(body), "missions", sub="achievements",
+              lead=lead, head_extra=CSS, infobox_html=ib,
+              desc=f"All {len(achs)} Generation Zero Steam achievements, including the {n_secret} secret ones, "
+                   f"grouped and linked to the missions and collectibles they ask for.")
+
+
+def ach_desc_html(site, ms, a):
+    """The description with the missions it names and the machine types linked."""
+    text = a["desc"]
+    out, pos = [], 0
+    pat = re.compile(r'"([^"]+)"|\b(' + "|".join(ACH_MACHINES) + r')\b')
+    for mt in pat.finditer(text):
+        out.append(esc(text[pos:mt.start()]))
+        if mt.group(1):
+            m = ms.by_name.get(norm(mt.group(1)))
+            out.append(f'"{mlink(m)}"' if m else esc(mt.group(0)))
+        else:
+            out.append(site.link("machine", ACH_MACHINES[mt.group(2)], mt.group(2)))
+        pos = mt.end()
+    out.append(esc(text[pos:]))
+    return "".join(out)
+
+
+def ach_html(site, ms, a, missions):
+    rel = []
+    for m in missions:
+        rel.append(f"{TYPE_NAME[m['type']][:-1]} in {region_link(site, m['region'])}")
+    for r in ACH_RELATED.get(a["name"], []):
+        if r[0] == "map":
+            rel.append(f'<a href="{maplink(show=r[1], region=r[3])}">{esc(r[2])}</a>')
+        elif r[0] == "page":
+            rel.append(f'<a href="{r[1]}">{esc(r[2])}</a>')     # only our own pages
+        else:
+            rel.append(site.link(r[0], r[1], r[2]))
+    icon = site.img(a["icon"], alt="", cls="achic")
+    secret = a["hidden"]
+    desc = ach_desc_html(site, ms, a)
+    if secret:
+        desc = f'<span class="spoil" tabindex="0" title="Secret achievement: click to show">{desc}</span>'
+    return (f'<div class="ach fitem" id="{ach_anchor(a)}" data-f="{"secret" if secret else "open"}">{icon}'
+            f'<div class="achb"><div class="achn">{esc(a["name"])}{tag("Secret", "secret") if secret else ""}</div>'
+            f'<div class="achd">{desc}</div>'
+            + (f'<div class="achr">{" · ".join(rel)}</div>' if rel else "") + "</div></div>")

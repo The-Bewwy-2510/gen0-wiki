@@ -23,9 +23,11 @@ import collections
 import math
 import re
 
-from wiki.site import esc, slug, norm, fmt, table, infobox, bar, note, cards, kv, minimap, qbadge, tag, REGIONS, QUALITY
+from wiki.site import (esc, slug, norm, fmt, table, infobox, bar, fold, panel, maplink, note, cards, minimap, qbadge,
+                       tag, REGIONS)
 
-CSS = '<link rel="stylesheet" href="~/assets/world.css">'
+CSS = ('<link rel="stylesheet" href="~/assets/world.css">'
+       '<script src="~/assets/world.js" defer></script>')
 REGION_NAME = dict(REGIONS)
 REGION_KEYS = [k for k, _ in REGIONS]
 
@@ -80,6 +82,8 @@ PHOTO_AT = 50           # m: a house photo this close to a safehouse is that saf
 BEACON_SITE = 100       # m: beacon markers closer than this to each other are one site
 MISSION_SKIP = {"Unknown"}  # location names too generic to search for in mission texts
 
+REGION_TYPE_SHARE = .8  # a collectible type with this share of its markers in one region is that region's own
+REGION_TYPE_MIN = 5
 MARKER_GROUPS = ("collectibles", "schematics", "housephotos", "beacons", "controlpoints")
 
 
@@ -162,51 +166,63 @@ REGION_COLOR = {"archipelago": "#4b9be0", "southcoast": "#5bbf4e", "farmlands": 
                 "mountains": "#a4a7aa", "marshlands": "#a463e0", "northcoast": "#e2507f", "alpine": "#d6c776"}
 
 
-def overview_box(w):
-    """x, z, width, height (world units) that hold every region border and Himfjäll's box."""
-    pts = [p for b in w.borders.values() for p in b] + [(r[0], r[1]) for r in w.alpine_box()]
+def overview_box(w, square=False):
+    """x, z, width, height (world units) that hold every region border; square=True pads the short side."""
+    pts = [p for b in w.borders.values() for p in b]
     x0, x1 = min(p[0] for p in pts) - OV_PAD, max(p[0] for p in pts) + OV_PAD
     z0, z1 = min(p[1] for p in pts) - OV_PAD, max(p[1] for p in pts) + OV_PAD
+    if square:
+        d = (x1 - x0) - (z1 - z0)
+        if d > 0:
+            z0, z1 = z0 - d / 2, z1 + d / 2
+        else:
+            x0, x1 = x0 + d / 2, x1 - d / 2
     return x0, z0, x1 - x0, z1 - z0
 
 
-def overview_map(site, w, dots=(), caption="", label_regions=True):
+def overview_map(site, w, dots=(), caption="", label_regions=True, small=False, href=None):
     """The whole world: the interactive map's level-1 tiles, every region outline (a link to its region page) and
-    optional dots [(x, z, title, href or None, css class)]. Always fits the width of the page."""
-    x0, z0, bw, bh = overview_box(w)
+    optional dots [(x, z, title, href or None, css class)]. Always fits the width of its box. small=True: a square
+    version for small_overview() (bigger dots, no region names); href: the 'Full map' button (a maplink())."""
+    x0, z0, bw, bh = overview_box(w, square=small)
     u = bw / 100                                  # 1 % of the map width, the unit for sizes below
-    out = [f'<figure class="ovmap"><svg viewBox="{x0:.0f} {z0:.0f} {bw:.0f} {bh:.0f}" role="img" '
-           f'aria-label="Map of the world">']
+    out = [f'<figure class="ovmap{" small" if small else ""}"><svg viewBox="{x0:.0f} {z0:.0f} {bw:.0f} {bh:.0f}" '
+           f'role="img" aria-label="Map of the world">']
     for i in (0, 1):
         for j in (0, 1):
             out.append(f'<image href="~/map/map/tiles/1/{i}_{j}.webp" x="{i * OV_TILE - OV_TILE}" '
                        f'y="{j * OV_TILE - OV_TILE}" width="{OV_TILE + 24}" height="{OV_TILE + 24}"/>')
     for key in REGION_KEYS:
-        col = REGION_COLOR[key]
-        out.append(f'<a href="~/world/{key}.html" class="ovreg"><title>{esc(REGION_NAME[key])}</title>')
-        if key in w.borders:
-            pts = " ".join(f"{x:.0f},{z:.0f}" for x, z in w.borders[key])
-            out.append(f'<polygon points="{pts}" style="--c:{col}" stroke-width="{u * .25:.0f}"/>')
-        else:   # Himfjäll has no border in the map data: a box around its locations
-            (ax0, az0), (ax1, az1) = w.alpine_box()
-            out.append(f'<rect x="{ax0:.0f}" y="{az0:.0f}" width="{ax1 - ax0:.0f}" height="{az1 - az0:.0f}" '
-                       f'rx="{u * 2:.0f}" style="--c:{col}" stroke-width="{u * .25:.0f}" stroke-dasharray="{u:.0f}"/>')
-        out.append("</a>")
-    for x, z, title, href, cls in dots:
-        dot = f'<circle cx="{x:.0f}" cy="{z:.0f}" r="{u * (.9 if cls == "main" else .6):.0f}" class="{cls}">' \
+        if key not in w.borders:
+            continue
+        pts = " ".join(f"{x:.0f},{z:.0f}" for x, z in w.borders[key])
+        out.append(f'<a href="~/world/{key}.html" class="ovreg"><title>{esc(REGION_NAME[key])}</title>'
+                   f'<polygon points="{pts}" style="--c:{REGION_COLOR[key]}" stroke-width="{u * (.4 if small else .25):.0f}"/></a>')
+    big, little = (1.9, 1.3) if small else (.9, .6)
+    for x, z, title, link, cls in dots:
+        dot = f'<circle cx="{x:.0f}" cy="{z:.0f}" r="{u * (big if cls == "main" else little):.0f}" class="{cls}">' \
               f'<title>{esc(title)}</title></circle>'
-        out.append(f'<a href="{href}">{dot}</a>' if href else dot)
-    if label_regions:
+        out.append(f'<a href="{link}">{dot}</a>' if link else dot)
+    if label_regions and not small:
         for key in REGION_KEYS:
             c = w.centre[key]
             out.append(f'<text x="{c["x"]:.0f}" y="{c["z"]:.0f}" font-size="{u * (2.6 if not dots else 1.8):.0f}" '
                        f'stroke-width="{u * .5:.0f}" class="ovlabel{" faint" if dots else ""}">'
                        f'{esc(REGION_NAME[key].split(" (")[0])}</text>')
     out.append("</svg>")
+    if href:
+        out.append(f'<a class="mmopen" href="{href}">Full map</a>')
     if caption:
         out.append(f"<figcaption>{caption}</figcaption>")
     out.append("</figure>")
     return "".join(out)
+
+
+def small_overview(site, w, dots, text, href):
+    """A small square map of the whole world with the text on its right, for the end of a page (the same layout as
+    minimap(small=True), which cannot zoom out far enough to show every region)."""
+    return (f'<div class="mmrow ovrow">{overview_map(site, w, dots=dots, small=True, href=href)}'
+            f'<div class="mmtext">{text}</div></div>')
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -234,8 +250,25 @@ class World:
         self._loot(site.data("loot"))
         self._missions(site.data("missions"))
         self._challenges(gd)
+        self._region_collectibles()
         self.centre = {r: self._centre([l for l in self.locs if l["region"] == r]) for r in REGION_KEYS}
         self.world_centre = self._centre(self.locs)
+
+    def _region_collectibles(self):
+        """region -> the collectible types that belong to it: types with at least REGION_TYPE_SHARE of their
+        markers in that region (Love Letters in the Farmlands, Soviet Dolls in the Marshlands ...). The world
+        location lore entries are left out: they sit at one placeholder spot, and every mainland region has one."""
+        self.region_types = collections.defaultdict(list)
+        for key, sub in self.subs.items():
+            if sub["main"] != "collectibles" or key == "worldlocations":
+                continue
+            ms = self.markers_of(key)
+            cnt = collections.Counter(m["r"] for m in ms)
+            if not cnt:
+                continue
+            r, n = cnt.most_common(1)[0]
+            if n >= REGION_TYPE_MIN and n / len(ms) >= REGION_TYPE_SHARE:
+                self.region_types[r].append(key)
 
     @staticmethod
     def _centre(pts):
@@ -258,12 +291,6 @@ class World:
 
     def in_region(self, key):
         return [l for l in self.locs if l["region"] == key]
-
-    def alpine_box(self, pad=400):
-        """Himfjäll has no region border in markers.json: the box around its locations (corners (x, z))."""
-        a = self.in_region("alpine")
-        return ((min(l["x"] for l in a) - pad, min(l["z"] for l in a) - pad),
-                (max(l["x"] for l in a) + pad, max(l["z"] for l in a) + pad))
 
     def crate_ids(self, locs):
         """The distinct crate spawn point ids of these locations. A few ids are listed under two neighbouring
@@ -500,6 +527,37 @@ def sh_link(sh):
     return f'<a href="~/world/safehouses.html#{sh["slug"]}">{esc(sh["name"])}</a>'
 
 
+def short_region(key):
+    return REGION_NAME[key].split(" (")[0]
+
+
+def loc_map(l, zoom=1):
+    """The interactive map with only this location's kind and region on, centred on it with its popup open."""
+    return maplink(show=["loc_" + l["kind"]], region=[l["region"]], at=(l["x"], l["z"]), zoom=zoom, focus=l["name"])
+
+
+def marker_map(m, zoom=1):
+    """The interactive map with only this marker's category and region on, centred on it with its popup open."""
+    return maplink(show=[m["s"]], region=[m["r"]], at=(m["x"], m["z"]), zoom=zoom, focus=m["n"])
+
+
+def sh_map(sh):
+    return maplink(show=["playersafehouses"], region=[sh["map_region"]], at=(sh["x"], sh["z"]), zoom=1,
+                   focus=sh["name"])
+
+
+def coords_link(p, href):
+    """Coordinates that open the interactive map there (sorted by x)."""
+    return (f'<a class="mono" href="{href}" title="Show on the interactive map">{p["x"]:.0f}, {p["z"]:.0f}</a>',
+            round(p["x"]))
+
+
+def with_map_href(mm_html, href):
+    """minimap() html with the 'Open the full map' button pointing at href (for filters minimap() can't set,
+    such as a centre and a focus together with extra pins)."""
+    return re.sub(r'class="mmopen" href="[^"]*"', lambda _m: f'class="mmopen" href="{href}"', mm_html, count=1)
+
+
 def mission_rows(site, missions):
     rows = []
     for m in sorted(missions, key=lambda m: (m["type"] != "main", norm(m["name"]))):
@@ -507,22 +565,6 @@ def mission_rows(site, missions):
                      site.link("region", m["region"]) if m["region"] in REGION_NAME else "Anywhere",
                      esc(m.get("summary") or "")])
     return rows
-
-
-def marker_counts_table(site, w, region=None):
-    """Collectibles, schematic points and house photos per type (markers.json)."""
-    rows = []
-    for key, sub in w.subs.items():
-        if sub["main"] not in ("collectibles", "schematics", "housephotos"):
-            continue
-        n = len(w.markers_of(key, region=region))
-        if not n:
-            continue
-        dlc = sum(1 for m in w.markers_of(key, region=region) if m["d"])
-        rows.append([marker_icon(site, sub) + site.link("collectible-type", key, sub["name"]),
-                     esc(w.mains[sub["main"]]), n, sub["count"],
-                     tag(f"{dlc} Alpine Unrest", "dlc") if dlc else ""])
-    return table(["Type", "Group", "Here" if region else "Markers", "Whole map", "DLC"], rows, cls="compact")
 
 
 def loot_summary_rows(site, w, counter):
@@ -545,10 +587,10 @@ def loot_summary_rows(site, w, counter):
     return rows
 
 
-CRATE_NOTE = ("<b>Two crate numbers.</b> The <i>crate spawn points</i> are the <code>CLootCrateSpawnPoint</code> objects "
-              "listed in the location files: what your save tracks for a location's loot progress. The <i>crate spots "
-              "(map layer)</i> are every crate spot of the interactive map's loot layer {where}, whichever game file "
-              "it comes from, so the two numbers rarely match. Neither means a crate is always there: the game may "
+CRATE_NOTE = ("<b>Two crate numbers.</b> The <i>crate spawn points</i> are the loot crate spawn points listed in the "
+              "location files: what your save tracks for a location's loot progress. The <i>crate spots (map "
+              "layer)</i> are every crate spot of the interactive map's loot layer {where}, whichever game file it "
+              "comes from, so the two numbers rarely match. Neither means a crate is always there: the game may "
               "leave a spot empty.")
 
 
@@ -614,9 +656,8 @@ def build_index(site, w):
 
     body.append(bar("Map of the regions"))
     body.append("<p>The coloured outlines are the region borders from the map data; click a region to open its "
-                "page. Each name sits at the middle of the region (the average position of its locations). "
-                "Himfjäll has no border in the map data, so the dashed box simply frames its locations. For every "
-                'marker, open the <a href="~/map/index.html">interactive map</a>.</p>')
+                "page. Each name sits at the middle of the region (the average position of its locations). For "
+                'every marker, open the <a href="~/map/index.html">interactive map</a>.</p>')
     body.append(overview_map(site, w))
 
     body.append(bar("Regions compared"))
@@ -642,8 +683,8 @@ def build_index(site, w):
 
     body.append(bar("Locations by kind"))
     body.append("<p>How many locations of each kind every region has. The kinds are the groups of the map's location "
-                "filter; the icon is the one the in-game map uses. Click a kind's name in the "
-                f'<a href="~/world/locations.html">full location list</a> to filter by it.</p>')
+                "filter; the icon is the one the in-game map uses. The "
+                f'<a href="~/world/locations.html">location list</a> can filter by kind.</p>')
     rows = []
     per = {k: region_counts(w, k)["kinds"] for k in REGION_KEYS}
     for kind in w.kinds:
@@ -654,12 +695,12 @@ def build_index(site, w):
                     + [per[k].get(kind, 0) or '<span class="dim" data-v="0">–</span>' for k in REGION_KEYS]
                     + [sum(per[k].get(kind, 0) for k in REGION_KEYS)])
     rows.append(["<b>All</b>"] + [len(w.in_region(k)) for k in REGION_KEYS] + [len(w.locs)])
-    body.append(table(["Kind"] + [REGION_NAME[k].split(" (")[0] for k in REGION_KEYS] + ["Total"], rows,
+    body.append(table(["Kind"] + [short_region(k) for k in REGION_KEYS] + ["Total"], rows,
                       cls="compact kinds", num=set(range(1, len(REGION_KEYS) + 2))))
 
     body.append(bar("More about the world"))
     body.append("<ul>"
-                f'<li><a href="~/world/locations.html">All {len(w.locs)} locations</a> in one filterable table.</li>'
+                f'<li><a href="~/world/locations.html">All {len(w.locs)} locations</a>, region by region.</li>'
                 f'<li><a href="~/world/safehouses.html">All {len(w.safehouses)} safehouses</a> with their positions '
                 "and house photos.</li>"
                 f'<li><a href="~/world/control-points.html">Control points and beacons</a>: the {len(w.cps)} bases '
@@ -694,48 +735,129 @@ def region_lead(site, w, key):
             f"<b>{c['main'] + c['side']} missions</b>.{dlc}</p>")
 
 
+def type_icon_link(site, w, key, text=None):
+    sub = w.subs[key]
+    return site.link("collectible-type", key, sub["name"] if text is None else text)
+
+
+def region_collectible_cell(site, w, key):
+    """Infobox row: the region's own collectible type(s) as icon + name; for a region without one, the icons of
+    every collectible type found there. Returns (label, html)."""
+    own = w.region_types.get(key, [])
+    if own:
+        items = "".join(f'<span class="rcoll">{marker_icon(site, w.subs[k], "cic")}{type_icon_link(site, w, k)}</span>'
+                        for k in own)
+        return ("Region collectible" if len(own) == 1 else "Region collectibles", items)
+    found = [k for k, s in w.subs.items() if s["main"] == "collectibles" and k != "worldlocations"
+             and w.markers_of(k, region=key)]
+    icons = "".join(f'<a href="{site.url("collectible-type", k, "#") or "#"}" title="{esc(w.subs[k]["name"])}">'
+                    f'{marker_icon(site, w.subs[k], "cic")}</a>' for k in found)
+    return ("Collectibles", f'<span class="rcicons">{icons}</span>')
+
+
+def collectibles_panel(site, w, key):
+    """Side panel of a region page: map markers per collectible type, schematic point and house photo."""
+    groups = [("collectibles", "Collectibles"), ("schematics", "Schematic points"), ("housephotos", "House photos")]
+    own = set(w.region_types.get(key, []))
+    out = []
+    for main, title in groups:
+        lis = []
+        for k, sub in w.subs.items():
+            if sub["main"] != main:
+                continue
+            ms = w.markers_of(k, region=key)
+            if not ms:
+                continue
+            star = ' <span class="tag green" title="Only found in this region">Region</span>' if k in own else ""
+            lis.append(f'<li>{marker_icon(site, sub, "cic")}<span>{type_icon_link(site, w, k)}{star}</span>'
+                       f'<a class="n" href="{maplink(show=[k], region=[key])}" title="Show them on the map">'
+                       f'{len(ms)}</a></li>')
+        if lis:
+            out.append(f'<h4>{esc(title)}</h4><ul class="splist">{"".join(lis)}</ul>')
+    if not out:
+        return ""
+    out.append('<p class="dim small">The number opens the map with only those markers in this region; the region '
+               "of a marker comes from the map's region borders.</p>")
+    return panel("Collectibles", "".join(out))
+
+
+def loot_panel(site, w, key, crates):
+    counter = w.loot_by_region.get(key, {})
+    if not counter:
+        return ""
+    by_main = collections.defaultdict(list)
+    for sub in w.loot_subs:
+        if counter.get(sub["key"]):
+            by_main[sub["main"]].append(sub)
+    lis = []
+    for main, subs in by_main.items():
+        total = sum(counter[s["key"]] for s in subs)
+        label = "Crate spots" if main == "loot_crates" else w.loot_mains[main]
+        extra = ""
+        if main in ("loot_weapons", "loot_attachments"):
+            extra = '<span class="qrow">' + " ".join(
+                f'<a href="{maplink(show=[s["key"]], region=[key])}" title="Show them on the map">'
+                f'{qbadge(s["q"], short=True)} {fmt(counter[s["key"]])}</a>' for s in subs) + "</span>"
+        lis.append(f'<li><span>{esc(label)}{extra}</span><a class="n" href="'
+                   f'{maplink(show=[s["key"] for s in subs], region=[key])}" title="Show them on the map">'
+                   f'{fmt(total)}</a></li>')
+    out = [f'<ul class="splist loot">{"".join(lis)}</ul>']
+    rare = w.loot_rare.get(key)
+    if rare:
+        rl = []
+        for q, name, x, z in sorted(rare, key=lambda r: (-r[0], norm(r[1]))):
+            p = {"x": x, "z": z}
+            near, d = w.nearest_loc(p)
+            sub = next(s for s in w.loot_subs if s["main"] == "loot_weapons" and s["q"] == q)
+            href = maplink(show=[sub["key"]], region=[key], at=(x, z), zoom=1.5, focus=name)
+            rl.append(f'<li><span>{qbadge(q, short=True)} {loot_item_link(site, "loot_weapons", name)}'
+                      f'<small><a href="{href}">{metres(d)} {compass(near, p)} of {esc(near["name"])}</a></small></span></li>')
+        out.append(f'<h4>Best weapons placed here</h4><ul class="splist rare">{"".join(rl)}</ul>')
+    out.append(f'<p class="dim small">Fixed pickups of the map\'s <i>Extra Locations</i> layer. The crate spots are '
+               f"that layer's; the location files list {fmt(crates)} crate spawn points, which is what your save "
+               "tracks.</p>")
+    return panel("Placed loot", "".join(out))
+
+
 def build_region(site, w, key):
     name = REGION_NAME[key]
     c = region_counts(w, key)
     locs = w.in_region(key)
+    kinds_here = [k for k in w.kinds if any(l["kind"] == k for l in locs)]
+    cen = w.centre[key]
     body = []
 
     body.append(bar("Map"))
     body.append("<p>Every location in the region (yellow pins; hover for the name). Drag to pan and zoom with the "
                 "buttons or the mouse wheel.</p>")
-    cen = w.centre[key]
-    body.append(minimap(cen["x"], cen["z"], name, zoom=2, height=560,
-                        markers=[(l["x"], l["z"], l["name"]) for l in locs]))
+    body.append(with_map_href(
+        minimap(cen["x"], cen["z"], name, zoom=2, height=560, markers=[(l["x"], l["z"], l["name"]) for l in locs]),
+        maplink(show=["loc_" + k for k in kinds_here], region=[key], at=(cen["x"], cen["z"]), zoom=0.5)))
 
-    # ---- locations by kind
+    # ---- locations by kind: one closed fold per kind
     body.append(bar("Locations", f"{len(locs)} in total"))
-    body.append("<p>Grouped by the kind the map filters by. The small line under each name is the type the game "
-                "shows for it; <b>crates</b> is the number of loot crate spawn points in its files, and "
-                "<b>safehouse</b> marks a location with a safehouse.</p>")
-    for kind in w.kinds:
+    body.append("<p>Grouped by the kind the map filters by; open a group to see its locations. The small line under "
+                "each name is the type the game shows for it, and <b>safehouse</b> marks a location with a "
+                "safehouse.</p>")
+    body.append('<div class="foldall" data-for="reglocs"></div><div id="reglocs">')
+    for kind in kinds_here:
         group = [l for l in locs if l["kind"] == kind]
-        if not group:
-            continue
-        body.append(f'<h3>{loc_icon(site, group[0], "lic big")}{esc(w.kind_plural[kind])} <small class="dim">'
-                    f"{len(group)}</small></h3>")
-        body.append('<ul class="loclist">')
+        lis = []
         for l in group:
-            n = len(w.crates.get(str(l["hash"]), []))
-            extra = []
-            if n:
-                extra.append(f"{n} crate{'s' if n != 1 else ''}")
-            if w.safehouses_at.get(l["hash"]):
-                extra.append('<span class="shmark">safehouse</span>')
-            body.append(f'<li><a href="~/{l["path"]}">{loc_icon(site, l)}<span><b>{esc(l["name"])}</b>'
-                        f'<small>{esc(l["type"] or KIND_ONE[l["kind"]])}{" · " if extra else ""}{" · ".join(extra)}'
-                        f"</small></span></a></li>")
-        body.append("</ul>")
+            extra = ' · <span class="shmark">safehouse</span>' if w.safehouses_at.get(l["hash"]) else ""
+            lis.append(f'<li><a href="~/{l["path"]}">{loc_icon(site, l)}<span><b>{esc(l["name"])}</b>'
+                       f'<small>{esc(l["type"] or KIND_ONE[l["kind"]])}{extra}</small></span></a></li>')
+        body.append(fold(w.kind_plural[kind], f'<ul class="loclist">{"".join(lis)}</ul>', level=3,
+                         right=str(len(group)), id=f"kind-{kind}"))
+    body.append("</div>")
+    loc_end = len(body)
 
     # ---- safehouses
     shs = [s for s in w.safehouses if s["region"] == key]
     body.append(bar("Safehouses", f"{len(shs)}"))
     body.append("<p>Safehouses are where you can respawn and fast travel to once they are unlocked. "
-                f'See <a href="~/world/safehouses.html">all safehouses</a> for the whole map.</p>')
+                f'See <a href="~/world/safehouses.html#{key}">all safehouses</a> for the house photos and the whole '
+                "map. The coordinates open the interactive map there.</p>")
     body.append(safehouse_table(site, w, shs))
 
     # ---- control points
@@ -743,79 +865,48 @@ def build_region(site, w, key):
     if cps:
         body.append(bar("Control points", f"{len(cps)}"))
         body.append('<p>Bases you can capture and make your home base. How they work is explained on the '
-                    '<a href="~/world/control-points.html">control points page</a>.</p>')
+                    f'<a href="~/world/control-points.html">control points page</a>.</p>')
         body.append(table(["Control point", "Nearest other location", "Coordinates"],
                           [[cp_name(site, cp), loc_link(site, cp["near"]) + f' <span class="dim">{metres(cp["near_d"])}'
-                            f"</span>", coords(cp)] for cp in cps], cls="compact"))
+                            f"</span>", coords_link(cp, marker_map(cp))] for cp in cps], cls="compact"))
 
-    # ---- missions
-    ms = w.missions_in.get(key, [])
+    # ---- missions: the missions pages have them; one line and a link
+    n = c["main"] + c["side"]
     body.append(bar("Missions", f"{c['main']} main · {c['side']} side"))
-    body.append("<p>Missions whose briefing places them in this region, main missions first.</p>")
-    if ms:
-        rows = [[r[0], r[1], r[3]] for r in mission_rows(site, ms)]   # the region column is this page
-        body.append(table(["Mission", "Type", "Summary"], rows, cls="missions"))
+    if n:
+        txt = (f"<p>{n} missions take place in the {esc(name)} region: {c['main']} main and {c['side']} side "
+               f"missions. {site.link('mission-region', key, 'See them on the missions page')}.")
     else:
-        body.append("<p>No missions are listed for this region.</p>")
+        txt = "<p>No missions are listed for this region."
+    body.append(txt + "</p>")
     ch = w.region_challenge.get(key)
     if ch:
         c0, tree = ch
-        last = c0["tiers"][-1]
-        body.append(note(f"The challenge {site.link('challenge', c0['name'])} ({esc(tree['name'].title())} tree) "
-                         f"has {len(c0['tiers'])} tiers here; the last one reads: “{esc(last['desc'])}”."))
+        ch_note = note(f"The challenge {site.link('challenge', c0['name'])} ({esc(tree['name'].title())} tree) has "
+                       f"{len(c0['tiers'])} tiers here; the last one reads: “{esc(c0['tiers'][-1]['desc'])}”.")
+        if "Missions" in c0["tiers"][-1]["desc"]:
+            body.append(ch_note)
+        else:            # Himfjäll's challenge is about discovering locations
+            body.insert(loc_end, ch_note)
 
-    # ---- collectibles
-    body.append(bar("Collectibles"))
-    body.append("<p>Map markers of each collectible type, schematic point and house photo in this region. "
-                "<b>Here</b> is the count in this region, <b>whole map</b> the total of that type. The region of a "
-                "marker comes from the region borders of the map.</p>")
-    body.append(marker_counts_table(site, w, region=key))
-
-    # ---- loot overview
-    counter = w.loot_by_region.get(key, {})
-    if counter:
-        body.append(bar("Placed loot"))
-        body.append("<p>Loot that the game files put at fixed spots in this region (the <i>Extra Locations</i> layer "
-                    "of the interactive map). Weapons and attachments are split by quality.</p>")
-        body.append(table(["Category", "Count", "Breakdown"], loot_summary_rows(site, w, counter), cls="compact"))
-        body.append(note(CRATE_NOTE.format(where="in this region") +
-                         f" This region's location files list {fmt(c['crates'])} distinct crate spawn points.", "data"))
-    rare = w.loot_rare.get(key)
-    if rare:
-        body.append("<p>The Exceptional and Special quality weapons placed in the region, with the location each one "
-                    "is nearest to. These are the best fixed weapon pickups here, worth a detour early on.</p>")
-        body.append(rare_table(site, w, rare))
-
+    own_label, own_html = region_collectible_cell(site, w, key)
     ib = infobox(name, [
-        ("Internal key", f"<code>{esc(key)}</code>"),
-        ("Region hash", f"<code>{w.region_hash.get(norm('Alpine Unrest' if key == 'alpine' else name), '')}</code>"),
-        ("Map name", esc(w.marker_region_name.get(key, ""))),
+        ("Name on the map", esc(w.marker_region_name.get(key, ""))),
+        ("Content", region_tag(key) or "Base game"),
+        (own_label, own_html),
         ("Locations", fmt(c["locations"])),
         ("Safehouses", fmt(c["safehouses"])),
         ("Control points", fmt(c["controlpoints"])),
         ("Missions", f"{c['main']} main, {c['side']} side"),
-        ("Collectibles", fmt(c["collectibles"])),
+        ("Collectibles", fmt(c["collectibles"])) if own_label != "Collectibles" else ("Collectible markers", fmt(c["collectibles"])),
         ("Relay beacon markers", fmt(c["relay"])),
         ("Crate spawn points", fmt(c["crates"])),
-        ("Content", region_tag(key) or "Base game"),
     ], subtitle="Region")
-    nav = region_nav(key)
-    site.page(f"world/{key}.html", name, "\n".join(body) + nav, "world", sub="regions",
-              crumbs=[("Regions", "~/world/index.html")], lead=region_lead(site, w, key), infobox_html=ib,
+    side = [collectibles_panel(site, w, key), loot_panel(site, w, key, c["crates"])]
+    site.page(f"world/{key}.html", name, "\n".join(body) + region_nav(key), "world", sub="regions",
+              crumbs=[("Regions", "~/world/index.html")], lead=region_lead(site, w, key), infobox_html=ib, side=side,
               kind="Region", head_extra=CSS, desc=f"{name}: {c['locations']} locations, {c['safehouses']} safehouses, "
                                                   f"{c['main'] + c['side']} missions.")
-
-
-def rare_table(site, w, rare):
-    """Q4+ placed weapons [(q, name, x, z)]: where each one is."""
-    rows = []
-    for q, name, x, z in sorted(rare, key=lambda r: (-r[0], norm(r[1]))):
-        p = {"x": x, "z": z}
-        near, d = w.nearest_loc(p)
-        rows.append([loot_item_link(site, "loot_weapons", name), qbadge(q),
-                     loc_link(site, near) + f' <span class="dim">{metres(d)} {compass(near, p)}</span>', coords(p)])
-    return table(["Weapon", "Quality", "Nearest location (distance, direction from it)", "Coordinates"], rows,
-                 cls="compact")
 
 
 def region_nav(key):
@@ -828,40 +919,42 @@ def region_nav(key):
 # ---------------------------------------------------------------------------------------------------------------
 # world/locations.html
 # ---------------------------------------------------------------------------------------------------------------
+def rows_with_attrs(html, attrs):
+    """Add attributes to the body rows of table() output, in order (table() has no row attributes)."""
+    parts = html.split("<tr>")
+    out = [parts[0], "<tr>" + parts[1]]       # parts[1] is the header row
+    for a, p in zip(attrs, parts[2:]):
+        out.append(f"<tr {a}>" + p)
+    return "".join(out)
+
+
 def build_locations(site, w):
     body = []
     chips_k = "".join(f'<button class="chip" data-g="kind" data-f="{k}">{esc(w.kind_plural[k])}</button>'
                       for k in w.kinds if any(l["kind"] == k for l in w.locs))
-    chips_r = "".join(f'<button class="chip" data-g="region" data-f="{k}">{esc(n.split(" (")[0])}</button>'
-                      for k, n in REGIONS)
-    body.append("<p>Type to filter by name, type or internal id, and use the chips to pick kinds and regions (several "
-                "chips of one row can be on at once). Coordinates are world positions in metres as the interactive "
-                "map shows them: x grows to the east, z to the south. <b>Crates</b> is the number of loot crate "
-                "spawn points in the location's files.</p>")
-    body.append('<div class="filterbar" data-for="loctable"><input placeholder="Filter locations...">'
-                '<button class="chip on" data-g="kind" data-f="*">All kinds</button>' + chips_k + "</div>")
-    body.append('<div class="filterbar" data-for="loctable"><button class="chip on" data-g="region" data-f="*">'
-                'All regions</button>' + chips_r + '<span class="count"></span></div>')
-    rows = []
-    for l in w.locs:
-        rows.append((l, [loc_link(site, l), esc(KIND_ONE[l["kind"]]), esc(l["type"]),
-                         site.link("region", l["region"], REGION_NAME[l["region"]].split(" (")[0]),
-                         round(l["x"]), round(l["z"]), len(w.crates.get(str(l["hash"]), [])),
-                         f'<code>{esc(l["id"])}</code>']))
-    html = table(["Location", "Kind", "In-game type", "Region", "X", "Z", "Crates", "Internal id"], [r for _, r in rows],
-                 cls="compact loctable")
-    # data-f on each row for the chips (table() has no row attributes, so add them afterwards in order)
-    parts = html.split("<tr>")
-    out = [parts[0], "<tr>" + parts[1]]       # parts[1] is the header row
-    for (l, _), p in zip(rows, parts[2:]):
-        out.append(f'<tr data-f="{l["kind"]} {l["region"]}" data-w="{esc(l["id"])}">' + p)
-    body.append('<div id="loctable">' + "".join(out) + "</div>")
-    lead = (f"<p>All <b>{len(w.locs)}</b> named locations of the map in one table: farms, villages, bunkers, military "
-            f"bases, FNIX and Soviet sites and the control points. Each name opens the location's own page with a map, "
-            f"the locations around it, collectibles, loot and missions.</p>")
+    body.append("<p>One section per region; open one to see its locations. Type a name to search every region at "
+                "once, or pick kinds with the chips. The coordinates are world positions in metres as the "
+                "interactive map shows them (x grows to the east, z to the south); click them to open the map "
+                "there.</p>")
+    body.append('<div class="filterbar" data-for="loclist"><input placeholder="Filter locations...">'
+                '<button class="chip on" data-g="kind" data-f="*">All kinds</button>' + chips_k +
+                '<span class="count"></span></div>')
+    body.append('<div class="foldall" data-for="loclist"></div><div id="loclist" data-chipfold>')
+    for key, name in REGIONS:
+        locs = w.in_region(key)
+        rows = [[loc_link(site, l), esc(KIND_ONE[l["kind"]]), coords_link(l, loc_map(l))] for l in locs]
+        tbl = rows_with_attrs(table(["Location", "Kind", "Coordinates"], rows, cls="compact loctable"),
+                              [f'data-f="{l["kind"]}"' for l in locs])
+        intro = (f'<p class="small">{site.link("region", key, "The " + short_region(key) + " region page")} has '
+                 f"the map of all of them{' (' + tag(REGION_DLC[key], 'dlc') + ')' if key in REGION_DLC else ''}.</p>")
+        body.append(fold(name, intro + tbl, right=f"{len(locs)} locations", id=key))
+    body.append("</div>")
+    lead = (f"<p>All <b>{len(w.locs)}</b> named locations of the map, region by region: farms, villages, bunkers, "
+            f"military bases, FNIX and Soviet sites and the control points. Each name opens the location's own page "
+            f"with a map, the locations around it, collectibles, loot and missions.</p>")
     site.page("world/locations.html", "All locations", "\n".join(body), "world", sub="locations", lead=lead,
-              wide=True, head_extra=CSS, desc=f"Every one of the {len(w.locs)} locations in Generation Zero with "
-                                              "kind, region and coordinates.", search={"k": "World", "w": "locations"})
+              head_extra=CSS, desc=f"Every one of the {len(w.locs)} locations in Generation Zero by region, with kind "
+                                   "and coordinates.", search={"k": "World", "w": "locations"})
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -886,6 +979,30 @@ def location_lead(site, w, l, nearby):
     return out
 
 
+def nearby_panel(site, w, l):
+    """Side panel: collectibles, schematic points, house photos, control points and beacons within NEAR_MARKERS."""
+    near_m = sorted(((m, dist(l, m)) for m in w.markers if w.subs[m["s"]]["main"] in MARKER_GROUPS
+                     and dist(l, m) <= NEAR_MARKERS), key=lambda x: x[1])
+    if not near_m:
+        return panel("Collectibles and markers nearby",
+                     f"<p class=\"dim\">No collectibles, schematic points, house photos or beacons within "
+                     f"{NEAR_MARKERS} m.</p>")
+    lis = []
+    for m, dm in near_m:
+        sub = w.subs[m["s"]]
+        if sub["main"] in ("collectibles", "schematics", "housephotos"):
+            kind = site.link("collectible-type", m["s"], sub["name"])
+        else:
+            kind = f'<a href="~/world/control-points.html">{esc(sub["name"])}</a>'
+        dlc = " " + tag("Alpine Unrest", "dlc") if m["d"] else ""
+        where = "here" if dm < 1 else f"{metres(dm)} {compass(l, m)}"
+        lis.append(f'<li>{marker_icon(site, sub, "cic")}<span><a href="{marker_map(m, zoom=1.5)}" '
+                   f'title="Show it on the map">{esc(m["n"])}</a>{dlc}<small>{kind} · {where}</small></span></li>')
+    return panel("Collectibles and markers nearby",
+                 f'<ul class="splist near">{"".join(lis)}</ul><p class="dim small">Within {NEAR_MARKERS} m of the '
+                 "location marker, nearest first. A name opens the map on that marker.</p>")
+
+
 def build_location(site, w, l):
     others = sorted(((o, dist(l, o)) for o in w.locs if o is not l), key=lambda x: x[1])
     nearby = others[:NEARBY_COUNT]
@@ -894,8 +1011,8 @@ def build_location(site, w, l):
     # ---- map
     body.append(bar("Map"))
     close = [(o, d) for o, d in nearby if d <= 1000][:6]
-    body.append(minimap(l["x"], l["z"], l["name"], zoom=3, height=320,
-                        markers=[(o["x"], o["z"], o["name"]) for o, _ in close]))
+    body.append(with_map_href(minimap(l["x"], l["z"], l["name"], zoom=3, height=320,
+                                      markers=[(o["x"], o["z"], o["name"]) for o, _ in close]), loc_map(l)))
 
     # ---- nearby locations
     body.append(bar("Nearby locations"))
@@ -903,7 +1020,7 @@ def build_location(site, w, l):
                 "(1 world unit is 1 metre), with the direction to go from here.</p>")
     body.append(table(["Location", "Kind", "Region", "Distance", "Direction"],
                       [[loc_link(site, o), esc(KIND_ONE[o["kind"]]), site.link("region", o["region"],
-                        REGION_NAME[o["region"]].split(" (")[0]), f'<span data-v="{d:.0f}">{metres(d)}</span>',
+                        short_region(o["region"])), f'<span data-v="{d:.0f}">{metres(d)}</span>',
                         compass(l, o)] for o, d in nearby], cls="compact", num={3}))
 
     # ---- safehouse
@@ -923,39 +1040,13 @@ def build_location(site, w, l):
         body.append(f"<p>No safehouse here. The nearest one is {sh_link(sh)} ({site.link('region', sh['region'], REGION_NAME[sh['region']])}), "
                     f"{metres(d)} to the {COMPASS_WORD[compass(l, sh)]}.</p>")
 
-    # ---- map markers within NEAR_MARKERS
-    near_m = sorted(((m, dist(l, m)) for m in w.markers if w.subs[m["s"]]["main"] in MARKER_GROUPS
-                     and dist(l, m) <= NEAR_MARKERS), key=lambda x: x[1])
-    body.append(bar("Collectibles and markers nearby"))
-    if near_m:
-        body.append(f"<p>Collectibles, schematic points, house photos, control points and beacons within "
-                    f"{NEAR_MARKERS} m of the location marker, nearest first. The last column is the internal place "
-                    f"name the game files give the marker.</p>")
-        rows = []
-        for m, dm in near_m:
-            sub = w.subs[m["s"]]
-            name = esc(m["n"])
-            if m["s"] == "controlpoints":
-                name = cp_name(site, next(c for c in w.cps if c["n"] == m["n"]))
-            rows.append([marker_icon(site, sub) + site.link("collectible-type", m["s"], sub["name"])
-                         if sub["main"] in ("collectibles", "schematics", "housephotos") else
-                         marker_icon(site, sub) + f'<a href="~/world/control-points.html">{esc(sub["name"])}</a>',
-                         name + (" " + tag("Alpine Unrest", "dlc") if m["d"] else ""),
-                         f'<span data-v="{dm:.0f}">{metres(dm)}</span>', compass(l, m),
-                         f'<span class="dim">{esc(m["l"])}</span>' if m["l"] else ""])
-        body.append(table(["Type", "Name", "Distance", "Direction", "Place"], rows, cls="compact", num={2}))
-    else:
-        body.append(f"<p>No collectibles, schematic points, house photos or beacons within {NEAR_MARKERS} m.</p>")
-
     # ---- loot
     body.append(bar("Loot"))
     n = len(w.crates.get(str(l["hash"]), []))
     loot = w.loot_at.get(l["hash"], [])
-    txt = (f"<p>The location's files list <b>{n}</b> loot crate spawn point{'s' if n != 1 else ''} "
-           f"(<code>CLootCrateSpawnPoint</code>). These are the crates your save counts for this location's loot "
-           f"progress. </p>" if n else
-           "<p>The location's files list no loot crate spawn points of their own.</p>")
-    body.append(txt)
+    body.append(f"<p>The location's files list <b>{n}</b> loot crate spawn point{'s' if n != 1 else ''}. These are "
+                f"the crates your save counts for this location's loot progress.</p>" if n else
+                "<p>The location's files list no loot crate spawn points of their own.</p>")
     if loot:
         counter = collections.Counter(s["key"] for s, _ in loot)
         body.append(f"<p>Placed loot within {LOOT_RADIUS} m that is closer to {esc(l['name'])} than to any other "
@@ -985,33 +1076,30 @@ def build_location(site, w, l):
         body.append(table(["Mission", "Type", "Region", "Summary"], mission_rows(site, ms), cls="missions"))
     else:
         body.append(f"<p>No mission text mentions {esc(l['name'])} by name. See the "
-                    f"{site.link('region', l['region'], REGION_NAME[l['region']] + ' region page')} for the missions "
-                    "of the region.</p>")
+                    f"{site.link('mission-region', l['region'], 'missions of the ' + REGION_NAME[l['region']] + ' region')}"
+                    ".</p>")
 
     body.append(note(f"Distances are straight lines on the map between marker positions. A location's area in the game "
-                     f"is not a circle, so the {NEAR_MARKERS} m and {LOOT_RADIUS} m radii above are a practical "
+                     f"is not a circle, so the {NEAR_MARKERS} m and {LOOT_RADIUS} m radii on this page are a practical "
                      f"approximation, not the game's own borders.", "data"))
 
     ib_rows = [
         ("Kind", esc(KIND_ONE[l["kind"]])),
-        ("In-game type", esc(l["type"]) or "–"),
         ("Region", site.link("region", l["region"], REGION_NAME[l["region"]]) + " " + region_tag(l["region"])),
-        ("Coordinates", coords(l)),
-        ("Internal id", f"<code>{esc(l['id'])}</code>"),
-        ("Hash", f"<code>{l['hash']}</code>"),
+        ("Coordinates", f'<a class="mono" href="{loc_map(l)}" title="Show it on the interactive map">'
+                        f'{l["x"]:.0f}, {l["z"]:.0f}</a>'),
         ("Crate spawn points", fmt(n)),
         ("Safehouse", sh_link(here[0]) if here else f"Nearest: {sh_link(sh)}, {metres(d)}"),
-        ("Map icon", f"<code>{esc(l['icon'])}</code>"),
     ]
     cp = next((c for c in w.cps if c["loc"] is l), None)
     if cp:
-        ib_rows.insert(3, ("Control point", cp_name(site, cp)))
+        ib_rows.insert(2, ("Control point", "Yes, a base you can take"))
     ib = infobox(l["name"], ib_rows, image=f"~/img/locations/{l['icon']}.png", subtitle=esc(l["type"] or KIND_ONE[l["kind"]]),
                  cls="locbox")
     site.page(l["path"], l["name"], "\n".join(body), "world", sub="locations",
               crumbs=[("Locations", "~/world/locations.html"),
-                      (REGION_NAME[l["region"]], f"~/world/{l['region']}.html")],
-              lead=location_lead(site, w, l, nearby), infobox_html=ib, toc=False,
+                      (REGION_NAME[l["region"]], f"~/world/locations.html#{l['region']}")],
+              lead=location_lead(site, w, l, nearby), infobox_html=ib, side=[nearby_panel(site, w, l)],
               kind=f"Location · {KIND_ONE[l['kind']]}", head_extra=CSS,
               desc=f"{l['name']}: {l['type'] or KIND_ONE[l['kind']]} in {REGION_NAME[l['region']]}, Generation Zero.")
 
@@ -1030,31 +1118,26 @@ def loot_item_link(site, main, name):
 # ---------------------------------------------------------------------------------------------------------------
 # world/safehouses.html
 # ---------------------------------------------------------------------------------------------------------------
-def safehouse_table(site, w, shs):
+def safehouse_table(site, w, shs, photo=False):
+    """Safehouse, location, (house photo), coordinates (a link to the map)."""
     rows = []
     for s in sorted(shs, key=lambda s: norm(s["name"])):
         name = f'<span id="{s["slug"]}"></span><b>{esc(s["name"])}</b>'
         if s["start"]:
             name += " " + tag("Start", "green")
-        rows.append([name, loc_link(site, s["loc"]) if s["loc"] else '<span class="dim">–</span>',
-                     "Yes" if s["photo"] else '<span class="dim">No</span>',
-                     coords(s) if s["x"] is not None else "–", f'<code>{esc(s["id"])}</code>'])
-    return table(["Safehouse", "Location", "House photo", "Coordinates", "Object id"], rows, cls="compact")
+        r = [name, loc_link(site, s["loc"]) if s["loc"] else '<span class="dim">–</span>']
+        if photo:
+            r.append("Yes" if s["photo"] else '<span class="dim">No</span>')
+        r.append(coords_link(s, sh_map(s)) if s["x"] is not None else "–")
+        rows.append(r)
+    return table(["Safehouse", "Location"] + (["House photo"] if photo else []) + ["Coordinates"], rows,
+                 cls="compact")
 
 
 def build_safehouses(site, w):
     body = []
     start = [s for s in w.safehouses if s["start"]]
     photos = sum(1 for s in w.safehouses if s["photo"])
-    body.append(bar("Map of all safehouses"))
-    body.append("<p>Every safehouse on one map; hover a dot for its name and click it to jump to its row. "
-                "Click inside a region to open the region page. The maps further down zoom in on each region.</p>")
-    dots = [(s["x"], s["z"], s["name"] + (" (starting safehouse)" if s["start"] else ""), f'#{s["slug"]}',
-             "main" if s["start"] else "dot") for s in w.safehouses if s["x"] is not None]
-    body.append(overview_map(site, w, dots=sorted(dots, key=lambda d: d[4] == "main"),
-                             caption=f"Large pink dot: {', '.join(esc(s['name']) for s in start)}, the starting "
-                                     "safehouse."))
-
     body.append(bar("How safehouses work"))
     body.append("<ul>"
                 "<li>An unlocked safehouse is a respawn point and a fast travel destination.</li>"
@@ -1064,22 +1147,33 @@ def build_safehouses(site, w):
                 f"{site.link('collectible-type', 'safehousehints', 'house photo')} collectible placed right next to "
                 f"them (within {PHOTO_AT} m); the Himfjäll safehouses have none.</li>"
                 "<li>The <b>Location</b> column links the map location the safehouse sits in (same name, or within "
-                f"{SAFEHOUSE_AT} m); hidden camps and caves are often not a named location of their own.</li></ul>")
+                f"{SAFEHOUSE_AT} m); hidden camps and caves are often not a named location of their own.</li>"
+                "<li>The coordinates open the interactive map on that safehouse.</li></ul>")
     others = [i for i in w.start_ids if i not in {s["id"] for s in w.safehouses}]
     if others:
-        body.append(note("The game data lists one more start spawn point, " + ", ".join(f"<code>{esc(i)}</code>" for i in others)
-                         + ", that is not one of the map's safehouses.", "data"))
+        body.append(note(f"The game data lists {len(others)} more start spawn point{'s' if len(others) > 1 else ''} "
+                         "that is not one of the map's safehouses.", "data"))
 
     for key, name in REGIONS:
         shs = [s for s in w.safehouses if s["region"] == key]
         body.append(bar(name, f"{len(shs)} safehouses", id=key))
         body.append(table_intro(site, key, shs))
-        body.append(safehouse_table(site, w, shs))
+        body.append(safehouse_table(site, w, shs, photo=True))
         body.append(region_safehouse_map(w, key, shs))
+
+    body.append(bar("Map of all safehouses"))
+    dots = [(s["x"], s["z"], s["name"] + (" (starting safehouse)" if s["start"] else ""), f'#{s["slug"]}',
+             "main" if s["start"] else "dot") for s in w.safehouses if s["x"] is not None]
+    cnt = collections.Counter(s["region"] for s in w.safehouses)
+    text = (f"<p>All {len(w.safehouses)} safehouses on one map. Hover a dot for its name and click it to jump to its "
+            f"row; click inside a region to open the region page.</p><p>The large pink dot is "
+            f"{', '.join(esc(s['name']) for s in start)}, the starting safehouse.</p>"
+            "<p>" + " · ".join(f'<a href="#{k}">{esc(short_region(k))}</a> {cnt[k]}' for k in REGION_KEYS) + "</p>")
+    body.append(small_overview(site, w, sorted(dots, key=lambda d: d[4] == "main"), text,
+                               maplink(show=["playersafehouses"])))
     lead = (f"<p>Generation Zero has <b>{len(w.safehouses)} safehouses</b> in {len(REGIONS)} regions. This page lists "
-            f"them all with their positions, the location they belong to, whether a house photo marks them and the "
-            f"object id the save uses. The starting safehouse is {', '.join(esc(s['name']) for s in start)} in the "
-            f"Archipelago.</p>")
+            f"them all with their positions, the location they belong to and whether a house photo marks them. The "
+            f"starting safehouse is {', '.join(esc(s['name']) for s in start)} in the Archipelago.</p>")
     site.page("world/safehouses.html", "Safehouses", "\n".join(body), "world", sub="safehouses", lead=lead,
               head_extra=CSS, desc=f"All {len(w.safehouses)} safehouses in Generation Zero by region, with coordinates.",
               search={"k": "World", "w": "safehouses fast travel respawn"})
@@ -1094,7 +1188,10 @@ def region_safehouse_map(w, key, shs):
     first = next((s for s in placed if s["start"]), None) or min(placed, key=lambda s: dist(s, w.centre[key]))
     why = "the starting safehouse" if first["start"] else "the safehouse nearest the middle of the region"
     pts = [(s["x"], s["z"], s["name"]) for s in [first] + [s for s in placed if s is not first]]
-    return (minimap(pts[0][0], pts[0][1], pts[0][2], zoom=2, height=460, markers=pts[1:])
+    regs = sorted({s["map_region"] for s in placed}, key=REGION_KEYS.index)
+    cx, cz = sum(s["x"] for s in placed) / len(placed), sum(s["z"] for s in placed) / len(placed)
+    href = maplink(show=["playersafehouses"], region=regs, at=(cx, cz), zoom=0.5)
+    return (with_map_href(minimap(pts[0][0], pts[0][1], pts[0][2], zoom=2, height=420, markers=pts[1:]), href)
             + f'<p class="dim mmcap">Pink pin: {esc(first["name"])}, {why}. Yellow pins: the other safehouses.</p>')
 
 
@@ -1128,29 +1225,38 @@ def build_control_points(site, w):
                     "whose last steps are “Claim the Control Point” and “Start building your own base”. "
                     f"The defence missions of the {site.link('mission', 'Our New Home [Home Base Defense · Easy]', 'Our New Home')} "
                     "series take place at a home base.</p>")
+    body.append("<p>Open a region to see its control points. The <b>nearest location</b> column helps you find each "
+                "one; the nearest safehouse is where you would fast travel to before an attack, and the coordinates "
+                "open the interactive map on the control point.</p>")
     cnt = collections.Counter(cp["region"] for cp in w.cps)
-    body.append("<p>By region: " + ", ".join(f"{site.link('region', k, REGION_NAME[k])} {cnt[k]}"
-                                            for k in REGION_KEYS if cnt[k]) + ". "
-                + ", ".join(esc(REGION_NAME[k]) for k in REGION_KEYS if not cnt[k]) + " have none.</p>")
-    body.append(overview_map(site, w, dots=[(cp["x"], cp["z"], cp["n"], f'#{cp["slug"]}', "dot") for cp in w.cps],
-                             caption="Every control point; hover a dot for its name and click it to jump to its row."))
-    rows = []
-    for cp in w.cps:
-        sh, d = w.nearest_safehouse(cp)
-        rows.append([f'<span id="{cp["slug"]}"></span>' + (loc_link(site, cp["loc"]) if cp["loc"] else
-                     f'{site.img("img/locations/cp_resistance.png", cls="lic")}<b>{esc(cp["n"])}</b>'),
-                     site.link("region", cp["region"], REGION_NAME[cp["region"]]),
-                     loc_link(site, cp["near"]) + f' <span class="dim">{metres(cp["near_d"])}</span>',
-                     sh_link(sh) + f' <span class="dim">{metres(d)}</span>', coords(cp)])
-    body.append("<p>The <b>nearest location</b> column helps you find each one; the nearest safehouse is where you "
-                "would fast travel to before an attack.</p>")
-    body.append(table(["Control point", "Region", "Nearest location", "Nearest safehouse", "Coordinates"], rows,
-                      cls="compact"))
+    body.append('<div class="foldall" data-for="cplist"></div><div id="cplist">')
+    for key in REGION_KEYS:
+        cps = [cp for cp in w.cps if cp["region"] == key]
+        if not cps:
+            continue
+        rows = []
+        for cp in cps:
+            sh, d = w.nearest_safehouse(cp)
+            rows.append([f'<span id="{cp["slug"]}"></span>' + (loc_link(site, cp["loc"]) if cp["loc"] else
+                         f'{site.img("img/locations/cp_resistance.png", cls="lic")}<b>{esc(cp["n"])}</b>'),
+                         loc_link(site, cp["near"]) + f' <span class="dim">{metres(cp["near_d"])}</span>',
+                         sh_link(sh) + f' <span class="dim">{metres(d)}</span>', coords_link(cp, marker_map(cp))])
+        tbl = table(["Control point", "Nearest location", "Nearest safehouse", "Coordinates"], rows, cls="compact")
+        body.append(fold(REGION_NAME[key], tbl, level=3, right=f"{len(cps)} control points", id=f"cp-{key}"))
+    body.append("</div>")
     nol = [cp for cp in w.cps if not cp["loc"]]
     if nol:
         body.append(note(f"{len(nol)} control points ({', '.join(esc(c['n']) for c in nol)}) have a map marker but no "
                          f"map location of their own, so they don't count as locations to discover. The region of "
                          f"these comes from the map's region borders.", "data"))
+    none = [k for k in REGION_KEYS if not cnt[k]]
+    text = ("<p>Every control point on one map: hover a dot for its name and click it to open its row.</p>"
+            "<p>By region: " + ", ".join(f'<a href="#cp-{k}">{esc(short_region(k))}</a> {cnt[k]}'
+                                         for k in REGION_KEYS if cnt[k]) + ". "
+            + (", ".join(esc(short_region(k)) for k in none) + (" has" if len(none) == 1 else " have") + " none."
+               if none else "") + "</p>")
+    body.append(small_overview(site, w, [(cp["x"], cp["z"], cp["n"], f'#{cp["slug"]}', "dot") for cp in w.cps], text,
+                               maplink(show=["controlpoints"])))
 
     # ---- relay beacons
     bounty = [b for b in relay if "Bounty" in b["l"]]
@@ -1165,40 +1271,52 @@ def build_control_points(site, w):
     sites = w.beacon_sites["relaybeacons"]
     body.append(f"<p>The map data has <b>{len(relay)} relay beacon markers</b> at <b>{len(sites)} sites</b>: markers "
                 f"within {BEACON_SITE} m of each other are counted as one site below. {len(bounty)} of the markers come "
-                "from the bounty nest files (marked <b>Bounty</b>). The sites are listed by region, with the nearest "
+                "from the bounty nest files (marked <b>Bounty</b>). Open a region to see its sites, with the nearest "
                 "location to help you find them.</p>")
+    body.append('<div class="foldall" data-for="rblist"></div><div id="rblist">')
+    for key in REGION_KEYS:
+        rs = [g for g in sites if g[0]["r"] == key]
+        if not rs:
+            continue
+        nm = sum(len(g) for g in rs)
+        inner = beacon_table(site, w, rs, bounty=True)
+        for g in rs:
+            if len(g) > 1:
+                span = max(dist(a, b) for a in g for b in g)
+                inner += note(f"{len(g)} {'bounty-nest ' if all('Bounty' in b['l'] for b in g) else ''}markers sit "
+                              f"within {span:.0f} m of each other at {site.link('location', g[0]['near']['name'])}: "
+                              "on the ground that is one nest site, so the table shows it as one row.", "data")
+        right = f"{len(rs)} sites" + (f" · {nm} markers" if nm != len(rs) else "")
+        body.append(fold(REGION_NAME[key], inner, level=3, right=right, id=f"rb-{key}"))
+    body.append("</div>")
     mc = collections.Counter(b["r"] for b in relay)
-    sc = collections.Counter(g[0]["r"] for g in sites)
-    body.append("<p>Markers by region (sites in brackets where they differ): " + ", ".join(
-        f"{site.link('region', k, REGION_NAME[k])} {mc[k]}" + (f" ({sc[k]} sites)" if sc[k] != mc[k] else "")
-        for k in REGION_KEYS if mc[k]) + ".</p>")
-    body.append(overview_map(site, w, dots=[(b["x"], b["z"], "Relay beacon" + (" (bounty nest)" if "Bounty" in b["l"]
-                                                                                 else ""), None,
-                                             "main" if "Bounty" in b["l"] else "dot") for b in relay],
-                             caption="Every relay beacon marker. Large pink dots: bounty nests."))
-    body.append(beacon_table(site, w, sites, bounty=True))
-    for g in sites:
-        if len(g) > 1:
-            span = max(dist(a, b) for a in g for b in g)
-            body.append(note(f"{len(g)} {'bounty-nest ' if all('Bounty' in b['l'] for b in g) else ''}markers sit "
-                             f"within {span:.0f} m of each other at {site.link('location', g[0]['near']['name'])}: on "
-                             "the ground that is one nest site, so the table shows it as one row.", "data"))
+    text = ("<p>Every relay beacon marker on one map. The large pink dots are bounty nests.</p><p>Markers by region: "
+            + ", ".join(f'<a href="#rb-{k}">{esc(short_region(k))}</a> {mc[k]}' for k in REGION_KEYS if mc[k]) + ".</p>")
+    body.append(small_overview(site, w, sorted([(b["x"], b["z"], "Relay beacon" + (" (bounty nest)" if "Bounty" in b["l"]
+                                                                                    else ""), None,
+                                                 "main" if "Bounty" in b["l"] else "dot") for b in relay],
+                                               key=lambda d: d[4] == "main"), text, maplink(show=["relaybeacons"])))
 
     # ---- soviet beacons
     body.append(bar("Soviet beacons", f"{len(soviet)}"))
     dfa = site.find("mission", "Death from above")
-    body.append(f"<p>Three Soviet beacons on the North Coast are marked <i>Broadcasting to Soviet forces</i>. "
+    sregs = sorted({b["r"] for b in soviet}, key=REGION_KEYS.index)
+    body.append(f"<p>{len(soviet)} Soviet beacons on the {' and '.join(esc(REGION_NAME[r]) for r in sregs)} are marked "
+                "<i>Broadcasting to Soviet forces</i>. "
                 + (f"The side mission {site.link('mission', 'Death from above')} has the step “Take out the Soviet "
                    "beacons”, right after reaching the planned landing point of Firebird reinforcements. " if dfa
                    else "") + "</p>")
-    pts = [(b["x"], b["z"], "") for b in soviet]
-    body.append(minimap(pts[0][0], pts[0][1], "Soviet beacon", zoom=3, height=300, markers=pts[1:]))
     body.append(beacon_table(site, w, w.beacon_sites["sovietbeacons"]))
+    pts = [(b["x"], b["z"], "") for b in soviet]
+    body.append(minimap(pts[0][0], pts[0][1], "Soviet beacon", zoom=3, markers=pts[1:], show=["sovietbeacons"],
+                        region=sregs, small=True,
+                        text=f"<p>The {len(soviet)} Soviet beacons. The full map opens with only the Soviet beacons "
+                             "shown.</p>"))
 
     lead = ("<p>Control points are the bases of the Resistance war against FNIX: places you capture, turn into a home "
             "base and defend. Beacons are the machines' own markers on the map: relay beacons (machine nests) you "
-            "destroy, and the Soviet beacons on the North Coast. This page lists every one from the game files, with "
-            "maps.</p>")
+            "destroy, and the Soviet beacons on the North Coast. This page lists every one from the game files, "
+            "region by region.</p>")
     site.page("world/control-points.html", "Control points & beacons", "\n".join(body), "world", sub="controlpoints",
               lead=lead, head_extra=CSS, desc="Every control point, relay beacon and Soviet beacon in Generation Zero.",
               search={"k": "World", "w": "control points home base relay beacons nests soviet beacons"})
@@ -1209,12 +1327,12 @@ def beacon_table(site, w, sites, bounty=False):
     out = []
     for g in sites:
         b = g[0]
-        r = [site.link("region", b["r"], REGION_NAME[b["r"]]), loc_link(site, b["near"]) +
-             f' <span class="dim">{metres(b["near_d"])} {compass(b["near"], b)}</span>', coords(b), len(g)]
+        r = [loc_link(site, b["near"]) + f' <span class="dim">{metres(b["near_d"])} {compass(b["near"], b)}</span>',
+             coords_link(b, marker_map(b)), len(g)]
         if bounty:
             r.append(tag("Bounty", "soviet") if "Bounty" in b["l"] else "")
         out.append(r)
-    return table(["Region", "Nearest location (distance, direction from it)", "Coordinates", "Markers"] +
+    return table(["Nearest location (distance, direction from it)", "Coordinates", "Markers"] +
                  (["Nest"] if bounty else []), out, cls="compact")
 
 

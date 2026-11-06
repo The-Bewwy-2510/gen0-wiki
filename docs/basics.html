@@ -8,7 +8,7 @@
 <link rel="icon" href="assets/app.ico">
 <link rel="preload" href="assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/wiki.css?v=1">
+<link rel="stylesheet" href="assets/wiki.css?v=2">
 
 </head>
 <body data-section="home" style="--bar:#1c5777" data-root="">
@@ -16,16 +16,15 @@
 <header class="topbar">
   <a class="brand" href="index.html"><img src="assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
-  <nav class="tabs" id="tabs"><a class="tab on" href="index.html">Home</a><a class="tab" href="weapons/index.html">Weapons</a><a class="tab" href="machines/index.html">Machines</a><a class="tab" href="world/index.html">World</a><a class="tab" href="missions/index.html">Missions</a><a class="tab" href="items/index.html">Items &amp; crafting</a><a class="tab" href="character/skills.html">Character</a><a class="tab" href="modding/index.html">Modding</a></nav>
+  <nav class="tabs" id="tabs"><a class="tab on" href="index.html">Home</a><a class="tab" href="weapons/index.html">Weapons</a><a class="tab" href="machines/index.html">Machines</a><a class="tab" href="world/index.html">World</a><a class="tab" href="missions/index.html">Missions</a><a class="tab" href="items/index.html">Items &amp; crafting</a><a class="tab" href="character/skills.html">Character</a></nav>
   <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
 </header>
-<nav class="subbar"><a class="stab" href="index.html">Main page</a><a class="stab on" href="basics.html">Game basics</a><a class="stab" href="dlc.html">DLC &amp; updates</a><a class="stab" href="about.html">About this wiki</a></nav>
-<main class="content">
-  <div class="crumbs"><a href="index.html">Home</a></div>
+<nav class="subbar"><a class="stab" href="index.html">Main page</a><a class="stab on" href="basics.html">Game basics</a><a class="stab" href="dlc.html">DLC</a><a class="stab" href="about.html">About this wiki</a></nav>
+<main class="content hasrail">
+  <div class="head"><div class="crumbs"><a href="index.html">Home</a></div>
   <h1>Game basics</h1>
-  
-  <div class="lead"><p>Generation Zero is an open-world shooter for one to four players, made by Systemic Reaction (Avalanche Studios Group). It is set in an alternative-history Sweden in the late 1980s: you return from a weekend away to find the country deserted and patrolled by hostile machines. This page is a quick tour of how the game works, with links to the detailed pages.</p></div>
-  <nav class="toc"><div class="toch">Contents</div><a href="#the-world">The world</a><a href="#the-machines">The machines</a><a href="#weapons-ammo-and-quality">Weapons, ammo and quality</a><a href="#progression">Progression</a><a href="#difficulty-and-co-op">Difficulty and co-op</a></nav>
+  <div class="lead"><p>Generation Zero is an open-world shooter for one to four players, made by Systemic Reaction (Avalanche Studios Group). It is set in an alternative-history Sweden in the late 1980s: you return from a weekend away to find the country deserted and patrolled by hostile machines. This page is a quick tour of how the game works, with links to the detailed pages.</p></div></div>
+  <aside class="rail"><div class="railtop"></div><nav class="toc" aria-label="Contents"><div class="toch">Contents</div><a href="#the-world">The world</a><a href="#the-machines">The machines</a><a href="#weapons-ammo-and-quality">Weapons, ammo and quality</a><a href="#progression">Progression</a><a href="#difficulty-and-co-op">Difficulty and co-op</a></nav></aside>
   <article class="body">
 <h2 class="wbar" id="the-world"><span>The world</span></h2>
 <p>The map is one continuous world split into 8 regions. You start on the islands of the <a href="world/archipelago.html">Archipelago</a> and work your way north. <b>Himfjäll</b>, the snowy mountain region, comes with the <a href="dlc.html#alpine-unrest">Alpine Unrest</a> expansion.</p>
@@ -35,7 +34,7 @@
 <p>The machines are the enemies. The Swedish-built types (Ticks, Seekers, Runners, Hunters, Harvesters and Tanks) come in classes that get tougher and better armed: <b>Prototype</b>, <b>Military</b>, <b>FNIX</b> and <b>Apocalypse</b>. Soviet machines (Firebirds, Lynxes and Wolves) use the classes Scout, Soldier and Spetsnaz. <b>Rivals</b> are named machines that level up each time they beat you, and the Reaper and Vulture are special rival machines.</p>
 <p>Machines are not one health bar: each one is made of components (weapons, joints, fuel tanks, sensors) and armour plates, each with its own hit points. Shooting off a weapon disarms it; hitting a fuel tank can set it on fire. The <a href="machines/index.html">machine pages</a> list every component of every layout.</p>
 <h2 class="wbar" id="weapons-ammo-and-quality"><span>Weapons, ammo and quality</span></h2>
-<p>Each weapon comes in up to five qualities you can find (Dilapidated, Worn, Good, Exceptional, Special); a higher quality does more damage and is more accurate. <b>Experimental</b> weapons are a sixth tier with unique ammo. Ammo types matter as much as the gun: armour-piercing rounds hit armour harder, hollow-points tear up components, and special rounds burn, shock or explode. See <a href="weapons/quality.html">quality</a> and <a href="weapons/ammo.html">ammo</a>.</p>
+<p>Each weapon comes in up to five qualities you can find (Dilapidated, Worn, Good, Exceptional, Special); a higher quality does more damage and is more accurate. <a href="weapons/experimental.html">Experimental</a> weapons are a sixth tier with unique ammo. Ammo types matter as much as the gun: armour-piercing rounds hit armour harder, hollow-points tear up components, and special rounds burn, shock or explode. See <a href="weapons/index.html">all weapons</a> and <a href="weapons/ammo.html">ammo</a>.</p>
 <p><a href="weapons/attachments.html">Attachments</a> (scopes, silencers, compensators, extended magazines) and <a href="weapons/augments.html">augments</a> (perks you unlock by research) change how a weapon handles.</p>
 <h2 class="wbar" id="progression"><span>Progression</span></h2>
 <p>You earn experience by fighting and exploring. Each level gives a skill point to spend in the 4 <a href="character/skills.html">skill trees</a> (Combat, Support, Survival, Tech). <a href="items/schematics.html">Schematics</a> let you craft ammo, equipment and apparel from <a href="items/materials.html">materials</a>; each schematic tree has its own points that you earn by doing related things.</p>
@@ -47,8 +46,8 @@
 </main>
 <footer class="hintbar">
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
-  <span class="fine">Fan-made. Data read from the game files with the <a href="https://github.com/The-Bewwy-2510/gen0-tools">Gen0 tools</a>. Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
+  <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="assets/wiki.js?v=1"></script>
+<script src="assets/wiki.js?v=2"></script>
 </body>
 </html>
