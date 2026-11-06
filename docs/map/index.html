@@ -6,10 +6,11 @@
 <title>Gen0 Map</title>
 <meta name="description" content="Interactive map of Generation Zero: collectibles, safehouses, locations and placed loot, with filters.">
 <link rel="icon" href="assets/app.ico">
-<link rel="stylesheet" href="map.css?v=6">
+<link rel="stylesheet" href="map.css?v=7">
 <!-- start the map data and the coarsest map image (always on screen first) downloading with the page, not after map.js -->
 <link rel="preload" href="map/markers.json" as="fetch" crossorigin>
 <link rel="preload" href="map/locations.json" as="fetch" crossorigin>
+<link rel="preload" href="map/side_missions.json" as="fetch" crossorigin>
 <link rel="preload" href="map/tiles/1/0_0.webp" as="image" type="image/webp">
 <link rel="preload" href="map/tiles/1/1_0.webp" as="image" type="image/webp">
 <link rel="preload" href="map/tiles/1/0_1.webp" as="image" type="image/webp">
@@ -54,6 +55,6 @@
   <div class="maphints"><span><b>[Scroll]</b> ZOOM</span><span><b>[Drag]</b> PAN</span><span><b>[Click]</b> DETAILS</span><span><b>[0]</b> WHOLE MAP</span><span><b>[B]</b> BORDERS</span><span><b>[F]</b> FILTERS</span><span><b>[S]</b> ICON SIZE</span><span><b>[G]</b> ICON STYLE</span></div>
 </footer>
 
-<script src="map.js?v=7"></script>
+<script src="map.js?v=8"></script>
 </body>
 </html>

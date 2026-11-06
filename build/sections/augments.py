@@ -85,7 +85,8 @@ def model(site):
     hidden = [r for r in site.data("gamedata")["research"] if r["name"] not in by_name]
     used = {a["icon"] for a in augs} | {r["slug"] + ".png" for r in hidden}
     folder = os.path.join(site.out, "img", "augments")
-    unused = sorted(f for f in os.listdir(folder) if f.endswith(".png") and f not in used) \
+    # the icons are .webp on disk (see tools/optimize.py); the data still names them .png
+    unused = sorted(f[:-5] + ".png" for f in os.listdir(folder) if f.endswith(".webp") and f[:-5] + ".png" not in used) \
         if os.path.isdir(folder) else []
     m = {"weapons": weapons, "augs": augs, "by_name": by_name, "hidden": hidden, "unused_icons": unused}
     _CACHE[id(site)] = m

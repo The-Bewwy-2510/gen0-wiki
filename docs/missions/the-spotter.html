@@ -8,16 +8,17 @@
 <link rel="icon" href="../assets/app.ico">
 <link rel="preload" href="../assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../assets/wiki.css?v=2">
+<link rel="preload" href="../assets/OpenSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/wiki.css?v=3">
 <link rel="stylesheet" href="../assets/missions.css">
 </head>
 <body data-section="missions" style="--bar:#1d4039" data-root="../">
 <div class="bg"></div>
 <header class="topbar">
-  <a class="brand" href="../index.html"><img src="../assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
+  <a class="brand" href="../index.html"><img src="../assets/logo.webp" alt="Generation Zero" width="120" height="19"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
   <nav class="tabs" id="tabs"><a class="tab" href="../index.html">Home</a><a class="tab" href="../weapons/index.html">Weapons</a><a class="tab" href="../machines/index.html">Machines</a><a class="tab" href="../world/index.html">World</a><a class="tab on" href="../missions/index.html">Missions</a><a class="tab" href="../items/index.html">Items &amp; crafting</a><a class="tab" href="../character/skills.html">Character</a><a class="tab" href="../map/index.html">Map</a></nav>
-  <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
+  <div class="search" id="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search the wiki"><button class="searchbtn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false" aria-controls="q" title="Search ( / )"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.6"/><path d="M12.7 12.7 17.5 17.5"/></svg></button><div class="results" id="results" hidden></div></div>
 </header>
 <nav class="subbar"><a class="stab" href="../missions/index.html">Overview</a><a class="stab" href="../missions/arcs.html">Warboard arcs</a><a class="stab on" href="../missions/base-game.html">Base game</a><a class="stab" href="../missions/alpine-unrest.html">Alpine Unrest</a><a class="stab" href="../missions/fnix-rising.html">FNIX Rising</a><a class="stab" href="../missions/unreleased.html">Unreleased</a><a class="stab" href="../missions/challenges.html">Challenges</a><a class="stab" href="../missions/achievements.html">Achievements</a></nav>
 <main class="content hasrail">
@@ -33,7 +34,7 @@
 <p>The objectives in the order of the mission log. <b>After</b> names the objectives that have to be done first, <b>opens with</b> the ones that become available at the same time (they can be done in any order); <b>×N</b> is how many times the game counts the objective. Some objectives also wait on hidden script steps (cut scenes, radio calls, spawns) that are not listed, so a step without an <i>after</i> may still have to wait for one of those.</p><ol class="objectives"><li id="obj-1" class=""><span class="otext">Locate <a href="../world/locations/arkelstorp.html">Arkelstorp</a> lighthouse</span></li><li id="obj-2" class=""><span class="otext">Search for the soldier at the top of the lighthouse</span></li></ol>
 <h2 class="wbar" id="places"><span>Places</span><small>1 named</small></h2>
 <p>The map locations the summary, briefing or objectives mention by name, in order of first mention. They are where the mission sends you or what it talks about; the exact objective markers are not in the data.</p>
-<div class="tablewrap"><table class="wt compact sortable"><thead><tr><th>Location</th><th>Type</th><th>Region</th><th>Named in</th></tr></thead><tbody><tr><td><a href="../world/locations/arkelstorp.html"><img class="li" src="../img/locations/location_lighthouse.png" alt="" loading="lazy">Arkelstorp</a></td><td>Lighthouse</td><td><a href="../world/northcoast.html">North Coast</a></td><td>Briefing, Objectives</td></tr></tbody></table></div>
+<div class="tablewrap"><table class="wt compact sortable"><thead><tr><th>Location</th><th>Type</th><th>Region</th><th>Named in</th></tr></thead><tbody><tr><td><a href="../world/locations/arkelstorp.html"><img class="li" src="../img/locations/location_lighthouse.webp" alt="" loading="lazy">Arkelstorp</a></td><td>Lighthouse</td><td><a href="../world/northcoast.html">North Coast</a></td><td>Briefing, Objectives</td></tr></tbody></table></div>
 <div class="minimap" data-pts="[[2481.3, -3845.3, &quot;Arkelstorp&quot;]]" data-zoom="2" style="height:340px"><a class="mmopen" href="../map/index.html?show=loc_lighthouse&amp;region=northcoast&amp;at=2481.3,-3845.3&amp;zoom=0.6&amp;focus=Arkelstorp">Open the full map</a></div>
 <h2 class="wbar" id="challenges"><span>Challenges</span></h2><p>Challenges whose description names this mission, its region or its expansion. Each tier of a challenge awards a title.</p><ul class="chlist"><li><a href="../missions/challenges.html#brain-power">Brain Power</a> <small class="dim">(TRUTH)</small>: counts completed main and side missions in North Coast (9 in all).</li></ul>
 <nav class="msnav"><div class="msnrow"><small>Side missions · Base game</small><a class="prev" href="../missions/one-last-excursion.html">← One Last Excursion</a><a class="next" href="../missions/history-repeats-itself.html">History Repeats Itself →</a></div></nav>
@@ -43,6 +44,6 @@
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
   <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="../about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="../assets/wiki.js?v=2"></script>
+<script src="../assets/wiki.js?v=3"></script>
 </body>
 </html>

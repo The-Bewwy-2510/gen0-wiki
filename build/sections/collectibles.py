@@ -569,11 +569,11 @@ def static_map(site, pts, href):
         v0, v1 = _span(v0, v1, su / 2.2)
     su, sv = u1 - u0, v1 - v0
     level = 1 if su > 0.3 else 2 if su > 0.12 else 3
-    n = {1: 2, 2: 4, 3: 8}[level]
+    n = {1: 4, 2: 8, 3: 16}[level]        # img/mm: the map's tiles cut to 1024 px (tools/optimize.py)
     tiles = []
     for i in range(int(u0 * n), min(n - 1, int(u1 * n)) + 1):
         for j in range(int(v0 * n), min(n - 1, int(v1 * n)) + 1):
-            path = f"map/map/tiles/{level}/{i}_{j}.webp"
+            path = f"img/mm/{level}/{i}_{j}.webp"
             if site.has_file(path):
                 tiles.append(f'<img src="~/{path}" alt="" style="left:{i / n * 100:.3f}%;'
                              f'top:{j / n * 100:.3f}%;width:{100 / n:.3f}%;height:{100 / n:.3f}%">')

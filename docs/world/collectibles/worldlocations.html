@@ -8,16 +8,17 @@
 <link rel="icon" href="../../assets/app.ico">
 <link rel="preload" href="../../assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../../assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../../assets/wiki.css?v=2">
+<link rel="preload" href="../../assets/OpenSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../../assets/wiki.css?v=3">
 <link rel="stylesheet" href="../../assets/collectibles.css">
 </head>
 <body data-section="world" style="--bar:#5f4258" data-root="../../">
 <div class="bg"></div>
 <header class="topbar">
-  <a class="brand" href="../../index.html"><img src="../../assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
+  <a class="brand" href="../../index.html"><img src="../../assets/logo.webp" alt="Generation Zero" width="120" height="19"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
   <nav class="tabs" id="tabs"><a class="tab" href="../../index.html">Home</a><a class="tab" href="../../weapons/index.html">Weapons</a><a class="tab" href="../../machines/index.html">Machines</a><a class="tab on" href="../../world/index.html">World</a><a class="tab" href="../../missions/index.html">Missions</a><a class="tab" href="../../items/index.html">Items &amp; crafting</a><a class="tab" href="../../character/skills.html">Character</a><a class="tab" href="../../map/index.html">Map</a></nav>
-  <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
+  <div class="search" id="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search the wiki"><button class="searchbtn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false" aria-controls="q" title="Search ( / )"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.6"/><path d="M12.7 12.7 17.5 17.5"/></svg></button><div class="results" id="results" hidden></div></div>
 </header>
 <nav class="subbar"><a class="stab" href="../../world/index.html">Regions</a><a class="stab" href="../../world/locations.html">Locations</a><a class="stab" href="../../world/safehouses.html">Safehouses</a><a class="stab" href="../../world/control-points.html">Control points &amp; beacons</a><a class="stab on" href="../../world/collectibles.html">Collectibles</a><a class="stab" href="../../world/keys.html">Keys &amp; barcodes</a></nav>
 <main class="content hasrail">
@@ -36,6 +37,6 @@
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
   <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="../../about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="../../assets/wiki.js?v=2"></script>
+<script src="../../assets/wiki.js?v=3"></script>
 </body>
 </html>

@@ -27,7 +27,7 @@
 html { scroll-padding-top: 110px; }
 body { margin: 0; min-height: 100vh; color: var(--ink); font: 15px/1.5 var(--font); background: #05070a;
        display: flex; flex-direction: column; }
-.bg { position: fixed; inset: 0; z-index: -1; background: url(bg.jpg) center / cover no-repeat, #05070a; }
+.bg { position: fixed; inset: 0; z-index: -1; background: url(bg.webp) center / cover no-repeat, #05070a; }
 .bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,6,9,.4), rgba(4,6,9,.78)); }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -58,14 +58,24 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .menubtn svg { width: 22px; height: 22px; fill: currentColor; }
 
 /* search */
-.search { flex: none; position: relative; padding: 0 16px; }
-.search input { width: 240px; height: 34px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.55); color: #fff; padding: 0 12px; font: inherit; font-size: 14px; outline: none; }
-.search input:focus { border-color: #fff; background: rgba(0,0,0,.6); }
+/* search: an icon that opens the field (the field slides out to the left, over the tabs) */
+.search { flex: none; position: relative; padding: 0 16px; display: flex; align-items: center; height: 100%; }
+.searchbtn { position: relative; z-index: 2; width: 38px; height: 34px; display: grid; place-items: center; padding: 0; cursor: pointer;
+  background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.55); color: #fff; }
+.searchbtn:hover { border-color: #fff; background: rgba(0,0,0,.6); }
+.searchbtn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; }
+.search.open .searchbtn { background: none; border-color: transparent; }
+.search input { position: absolute; z-index: 1; right: 16px; top: 50%; transform: translateY(-50%); width: 38px; height: 34px;
+  background: rgba(0,0,0,.6); border: 1px solid #fff; color: #fff; padding: 0 42px 0 12px; font: inherit; font-size: 14px; outline: none;
+  opacity: 0; visibility: hidden; transition: width .18s ease, opacity .18s ease, visibility 0s linear .18s; }
+.search.open input { width: min(340px, calc(100vw - 110px)); opacity: 1; visibility: visible; transition: width .18s ease, opacity .18s ease, visibility 0s; background: rgba(8,10,12,.98); }
+.search input::-webkit-search-cancel-button { display: none; }
 .search input::placeholder { color: rgba(255,255,255,.6); }
 .results { position: absolute; right: 16px; top: 44px; width: min(520px, 92vw); max-height: 70vh; overflow-y: auto; background: rgba(8,10,12,.98); border: 1px solid rgba(255,255,255,.5); box-shadow: 0 10px 40px rgba(0,0,0,.6); }
 .results a { display: flex; gap: 10px; align-items: center; padding: 8px 12px; color: var(--ink); border-bottom: 1px solid var(--line); }
 .results a:hover, .results a.sel { background: var(--bar); text-decoration: none; }
 .results img { width: 34px; height: 34px; object-fit: contain; flex: none; }
+.results .rk, .results .rt, .results .rd { display: block; }
 .results .rk { font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
 .results .rt { font-weight: 600; }
 .results .rd { font-size: 12.5px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -225,7 +235,7 @@ dl.kv dt { color: var(--dim); font-size: 13.5px; } dl.kv dd { margin: 0; }
 /* mini map */
 .minimap { position: relative; overflow: hidden; background: #0d1419; margin: 12px 0 16px; border: 1px solid var(--line); cursor: grab; touch-action: none; }
 .minimap .mmlayer { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
-.minimap .mmlayer img { position: absolute; width: 2048px; height: 2048px; max-width: none; user-select: none; -webkit-user-drag: none; }
+.minimap .mmlayer img { position: absolute; max-width: none; user-select: none; -webkit-user-drag: none; }
 .minimap .mmpin { position: absolute; width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: #e2507f; border: 2px solid #fff; box-shadow: 0 0 0 3px rgba(0,0,0,.4); }
 .minimap .mmpin.sec { background: #e8bd3f; width: 10px; height: 10px; margin: -5px 0 0 -5px; }
 .minimap .mmlabel { position: absolute; transform: translate(10px, -50%); font-size: 12px; font-weight: 700; background: rgba(0,0,0,.7); padding: 1px 6px; white-space: nowrap; pointer-events: none; }
@@ -314,8 +324,9 @@ details.fold.l3 > summary:hover > .wbar3 { background: rgba(255,255,255,.14); }
   .tab { padding: 12px 22px; }
   .tab.on::after { left: 0; right: auto; width: 5px; height: auto; top: 8px; bottom: 8px; background: #fff; }
   .brand { padding: 0 6px 0 14px; }
-  .search { flex: 1; padding: 0 12px 0 0; display: flex; justify-content: flex-end; }
-  .search input { width: 100%; max-width: 260px; }
+  .search { flex: 1; padding: 0 12px 0 0; justify-content: flex-end; }
+  .search input { right: 12px; }
+  .search.open input { width: min(340px, calc(100vw - 24px)); }
   .results { right: 12px; }
   .subbar { padding: 0 8px; }
   .content { padding: 16px 16px 30px; }

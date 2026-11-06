@@ -308,6 +308,9 @@ def minimap(x, z, label="", zoom=3, height=260, markers=None, show=(), region=()
 
 
 # ---------------------------------------------------------------------------------------------------------------
+PNG_REF = re.compile(r'(?:~/)?img/[^"\'()\s<>,;]+\.(?:png|jpg)')   # icon references in a page, see Site.asset()
+
+
 def split_9mm(stock):
     """stock.json files the handgun and the SMG 9mm rounds under one '9mm' group, but they are separate items that
     no gun shares, so the wiki treats them as two calibres: '9mm Handgun' and '9mm SMG'."""
@@ -383,11 +386,21 @@ class Site:
         c = f' class="{cls}"' if cls else ""
         return f'<a href="~/{esc(e["path"])}"{c}>{ic}{label}</a>'
 
+    def asset(self, path):
+        """'img/x.png' (or .jpg) -> 'img/x.webp' when only the .webp exists (tools/optimize.py turns the icons into lossless
+        WebP; the data files keep naming the .png). Other paths are returned as they are."""
+        if path and path.endswith((".png", ".jpg")) and "img/" in path:
+            bare = path[2:] if path.startswith("~/") else path
+            if not os.path.exists(os.path.join(self.out, bare)) and os.path.exists(os.path.join(self.out, bare[:-4] + ".webp")):
+                return path[:-4] + ".webp"
+        return path
+
     def img(self, path, alt="", cls="", title=None):
         """<img> for a file under docs/ (path relative to the site root, e.g. 'img/items/weapons/x.png').
         Returns '' (and warns) when the file doesn't exist, so a missing icon never shows as a broken image."""
         if not path:
             return ""
+        path = self.asset(path)
         if not os.path.exists(os.path.join(self.out, path)):
             self.warn(f"missing image {path}")
             return ""
@@ -395,7 +408,7 @@ class Site:
         return f'<img class="{esc(cls)}" src="~/{esc(path)}" alt="{esc(alt)}"{t} loading="lazy">'
 
     def has_file(self, path):
-        return os.path.exists(os.path.join(self.out, path))
+        return os.path.exists(os.path.join(self.out, self.asset(path)))
 
     # ---------------------------------------------------------------- pages
     def page(self, path, title, body, section, sub=None, crumbs=None, desc="", infobox_html="", toc=True,
@@ -448,6 +461,7 @@ class Site:
             tabs=tabs, subs=subs, crumbs=crumb_html, kind=kind_html, h1=esc(title), lead=lead,
             infobox=infobox_html, side=side, toc=toc_html, body=body, wide=" wide" if wide else "",
             hasbox=" hasrail" if has_rail else "", head_extra=head_extra, section=section)
+        doc = PNG_REF.sub(lambda m: self.asset(m.group(0)), doc)
         doc = re.sub(r'(href|src|data-src|data-root|action)="~/', lambda m: f'{m.group(1)}="{root}', doc)
         doc = doc.replace("url(~/", f"url({root}")
         dst = os.path.join(self.out, path)
@@ -480,6 +494,8 @@ class Site:
             if k in seen:
                 continue
             seen.add(k)
+            if s.get("i"):
+                s = dict(s, i=self.asset(s["i"]))
             out.append(s)
         with open(os.path.join(self.out, "assets", "search.json"), "w", encoding="utf-8") as f:
             json.dump(out, f, ensure_ascii=False, separators=(",", ":"))
@@ -515,16 +531,17 @@ TEMPLATE = """<!doctype html>
 <link rel="icon" href="~/assets/app.ico">
 <link rel="preload" href="~/assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="~/assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="~/assets/wiki.css?v=2">
+<link rel="preload" href="~/assets/OpenSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="~/assets/wiki.css?v=3">
 {head_extra}
 </head>
 <body data-section="{section}" style="--bar:{color}" data-root="~/">
 <div class="bg"></div>
 <header class="topbar">
-  <a class="brand" href="~/index.html"><img src="~/assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
+  <a class="brand" href="~/index.html"><img src="~/assets/logo.webp" alt="Generation Zero" width="120" height="19"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
   <nav class="tabs" id="tabs">{tabs}</nav>
-  <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
+  <div class="search" id="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search the wiki"><button class="searchbtn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false" aria-controls="q" title="Search ( / )"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.6"/><path d="M12.7 12.7 17.5 17.5"/></svg></button><div class="results" id="results" hidden></div></div>
 </header>
 <nav class="subbar">{subs}</nav>
 <main class="content{wide}{hasbox}">
@@ -540,7 +557,7 @@ TEMPLATE = """<!doctype html>
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
   <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="~/about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="~/assets/wiki.js?v=2"></script>
+<script src="~/assets/wiki.js?v=3"></script>
 </body>
 </html>
 """

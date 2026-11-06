@@ -8,16 +8,17 @@
 <link rel="icon" href="../assets/app.ico">
 <link rel="preload" href="../assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../assets/wiki.css?v=2">
+<link rel="preload" href="../assets/OpenSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/wiki.css?v=3">
 <link rel="stylesheet" href="../assets/missions.css">
 </head>
 <body data-section="missions" style="--bar:#1d4039" data-root="../">
 <div class="bg"></div>
 <header class="topbar">
-  <a class="brand" href="../index.html"><img src="../assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
+  <a class="brand" href="../index.html"><img src="../assets/logo.webp" alt="Generation Zero" width="120" height="19"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
   <nav class="tabs" id="tabs"><a class="tab" href="../index.html">Home</a><a class="tab" href="../weapons/index.html">Weapons</a><a class="tab" href="../machines/index.html">Machines</a><a class="tab" href="../world/index.html">World</a><a class="tab on" href="../missions/index.html">Missions</a><a class="tab" href="../items/index.html">Items &amp; crafting</a><a class="tab" href="../character/skills.html">Character</a><a class="tab" href="../map/index.html">Map</a></nav>
-  <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
+  <div class="search" id="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search the wiki"><button class="searchbtn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false" aria-controls="q" title="Search ( / )"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.6"/><path d="M12.7 12.7 17.5 17.5"/></svg></button><div class="results" id="results" hidden></div></div>
 </header>
 <nav class="subbar"><a class="stab" href="../missions/index.html">Overview</a><a class="stab" href="../missions/arcs.html">Warboard arcs</a><a class="stab" href="../missions/base-game.html">Base game</a><a class="stab on" href="../missions/alpine-unrest.html">Alpine Unrest</a><a class="stab" href="../missions/fnix-rising.html">FNIX Rising</a><a class="stab" href="../missions/unreleased.html">Unreleased</a><a class="stab" href="../missions/challenges.html">Challenges</a><a class="stab" href="../missions/achievements.html">Achievements</a></nav>
 <main class="content hasrail">
@@ -33,7 +34,7 @@
 <p>The objectives in the order of the mission log. <b>After</b> names the objectives that have to be done first, <b>opens with</b> the ones that become available at the same time (they can be done in any order); <b>×N</b> is how many times the game counts the objective. Some objectives also wait on hidden script steps (cut scenes, radio calls, spawns) that are not listed, so a step without an <i>after</i> may still have to wait for one of those.</p><ol class="objectives"><li id="obj-1" class=""><span class="otext">Destroy the machines outside of the Björntunet<span class="cnt">×4</span></span></li><li id="obj-2" class=""><span class="otext">Go to the village of <a href="../world/locations/tarnboda-skans.html">Tärnboda skans</a></span><small class="odeps">after <a href="#obj-1">1</a></small></li><li id="obj-3" class=""><span class="otext">Go to the building close to the fire department in Tärnboda skans</span><small class="odeps">after <a href="#obj-2">2</a></small></li><li id="obj-4" class=""><span class="otext">Gather old papers in the building at Tärnboda skans<span class="cnt">×4</span></span><small class="odeps">after <a href="#obj-3">3</a></small></li><li id="obj-5" class=""><span class="otext">Start a fire to trigger the fire alarm</span><small class="odeps">after <a href="#obj-4">4</a></small></li><li id="obj-6" class=""><span class="otext">Go to the Övertärnafyren lighthouse in Tärnboda skans</span></li><li id="obj-7" class=""><span class="otext">Activate the air-raid siren</span></li></ol>
 <h2 class="wbar" id="places"><span>Places</span><small>2 named</small></h2>
 <p>The map locations the summary, briefing or objectives mention by name, in order of first mention. They are where the mission sends you or what it talks about; the exact objective markers are not in the data.</p>
-<div class="tablewrap"><table class="wt compact sortable"><thead><tr><th>Location</th><th>Type</th><th>Region</th><th>Named in</th></tr></thead><tbody><tr><td><a href="../world/locations/tarnboda-skans.html"><img class="li" src="../img/locations/location_settlement.png" alt="" loading="lazy">Tärnboda skans</a></td><td>Settlement</td><td><a href="../world/alpine.html">Himfjäll (Alpine Unrest)</a></td><td>Summary, Briefing, Objectives</td></tr><tr><td><a href="../world/locations/bjorntunet-hotel.html"><img class="li" src="../img/locations/location_tourist.png" alt="" loading="lazy">Björntunet Hotel</a></td><td>Tourist Attraction</td><td><a href="../world/alpine.html">Himfjäll (Alpine Unrest)</a></td><td>Briefing</td></tr></tbody></table></div>
+<div class="tablewrap"><table class="wt compact sortable"><thead><tr><th>Location</th><th>Type</th><th>Region</th><th>Named in</th></tr></thead><tbody><tr><td><a href="../world/locations/tarnboda-skans.html"><img class="li" src="../img/locations/location_settlement.webp" alt="" loading="lazy">Tärnboda skans</a></td><td>Settlement</td><td><a href="../world/alpine.html">Himfjäll (Alpine Unrest)</a></td><td>Summary, Briefing, Objectives</td></tr><tr><td><a href="../world/locations/bjorntunet-hotel.html"><img class="li" src="../img/locations/location_tourist.webp" alt="" loading="lazy">Björntunet Hotel</a></td><td>Tourist Attraction</td><td><a href="../world/alpine.html">Himfjäll (Alpine Unrest)</a></td><td>Briefing</td></tr></tbody></table></div>
 <div class="minimap" data-pts="[[3820.7, 76.0, &quot;T\u00e4rnboda skans&quot;], [4524.7, -66.7, &quot;Bj\u00f6rntunet Hotel&quot;]]" data-zoom="2" style="height:340px"><a class="mmopen" href="../map/index.html?show=loc_settlement,loc_tourist&amp;region=alpine">Open the full map</a></div>
 <nav class="msnav"><div class="msnrow"><small>Main missions · Alpine Unrest</small><a class="prev" href="../missions/for-the-sick-and-the-injured.html">← For the Sick and the Injured</a><a class="next" href="../missions/arms-race.html">Arms Race →</a></div></nav>
   </article>
@@ -42,6 +43,6 @@
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
   <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="../about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="../assets/wiki.js?v=2"></script>
+<script src="../assets/wiki.js?v=3"></script>
 </body>
 </html>

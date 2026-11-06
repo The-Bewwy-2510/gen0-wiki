@@ -280,7 +280,7 @@ def build_main(site, c):
          "sub": f"{c['weapons']} weapons with damage for every ammo type and quality, {c['ammo']} ammo types, "
                 f"attachments, {c['augments']} augments and every skin."},
         {"href": "~/machines/index.html", "title": "Machines", "tag": "MCH", "color": "#7a2a26",
-         "img": site_img_url(site, "img/machines/hunter_military.webp"),
+         "img": site_img_url(site, "img/machines/small/hunter_military.webp"),
          "sub": f"Every machine class and its {c['machine_layouts']} weapon layouts, component hit points, "
                 f"{c['machine_weapons']} machine weapons, detection ranges and difficulty scaling."},
         {"href": "~/world/index.html", "title": "World", "tag": "MAP", "color": "#5f4258",

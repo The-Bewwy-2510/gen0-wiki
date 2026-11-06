@@ -33,6 +33,9 @@ with **no broken links and no exceptions**.
   (`augments crowns currencies items keys locations schematics skills skins stock vanity`, copied from the
   Gen0 Editor). Paths in the data like `assets/stock/x.png` become `img/stock/x.png`; map glyphs and icons
   `map/glyphs/x.png` / `map/icons/x.png` are at `map/map/glyphs/x.png` / `map/map/icons/x.png`.
+  On disk the icons are WebP (`build/tools/optimize.py`); keep using the `.png` / `.jpg` names from the data:
+  `site.img()`, `site.has_file()` and the page writer switch them to the `.webp`. For a small map use
+  `minimap()`, whose tiles are the 1024 px copies in `docs/img/mm/`, not the big `map/map/tiles`.
 - **Only write files you own**: your module(s) in `build/sections/`, and if you need extra CSS a file
   `build/static/<module>.css` that you load with `head_extra='<link rel="stylesheet" href="~/assets/<module>.css">'`.
   Don't edit `wiki/site.py`, `wiki.css`, `wiki.js`, `build.py` or other modules – if you need a framework change,

@@ -8,23 +8,24 @@
 <link rel="icon" href="../assets/app.ico">
 <link rel="preload" href="../assets/OpenSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="../assets/OpenSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="../assets/wiki.css?v=2">
+<link rel="preload" href="../assets/OpenSans-SemiBold.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/wiki.css?v=3">
 <link rel="stylesheet" href="../assets/missions.css">
 </head>
 <body data-section="missions" style="--bar:#1d4039" data-root="../">
 <div class="bg"></div>
 <header class="topbar">
-  <a class="brand" href="../index.html"><img src="../assets/logo.png" alt="Generation Zero"><span>WIKI</span></a>
+  <a class="brand" href="../index.html"><img src="../assets/logo.webp" alt="Generation Zero" width="120" height="19"><span>WIKI</span></a>
   <button class="menubtn" id="menuBtn" aria-label="Menu" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M2 4h16v2H2zm0 5h16v2H2zm0 5h16v2H2z"/></svg></button>
   <nav class="tabs" id="tabs"><a class="tab" href="../index.html">Home</a><a class="tab" href="../weapons/index.html">Weapons</a><a class="tab" href="../machines/index.html">Machines</a><a class="tab" href="../world/index.html">World</a><a class="tab on" href="../missions/index.html">Missions</a><a class="tab" href="../items/index.html">Items &amp; crafting</a><a class="tab" href="../character/skills.html">Character</a><a class="tab" href="../map/index.html">Map</a></nav>
-  <div class="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search"><div class="results" id="results" hidden></div></div>
+  <div class="search" id="search"><input id="q" type="search" placeholder="Search the wiki" autocomplete="off" aria-label="Search the wiki"><button class="searchbtn" id="searchBtn" type="button" aria-label="Search" aria-expanded="false" aria-controls="q" title="Search ( / )"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.6"/><path d="M12.7 12.7 17.5 17.5"/></svg></button><div class="results" id="results" hidden></div></div>
 </header>
 <nav class="subbar"><a class="stab" href="../missions/index.html">Overview</a><a class="stab" href="../missions/arcs.html">Warboard arcs</a><a class="stab" href="../missions/base-game.html">Base game</a><a class="stab" href="../missions/alpine-unrest.html">Alpine Unrest</a><a class="stab on" href="../missions/fnix-rising.html">FNIX Rising</a><a class="stab" href="../missions/unreleased.html">Unreleased</a><a class="stab" href="../missions/challenges.html">Challenges</a><a class="stab" href="../missions/achievements.html">Achievements</a></nav>
 <main class="content hasrail">
   <div class="head"><div class="crumbs"><a href="../missions/index.html">Missions</a></div>
   <h1>FNIX Rising missions</h1>
   <div class="lead"><p>The FNIX Rising expansion's missions, spread over the Archipelago, Farmlands and South Coast, in the order of the game's mission table.</p></div></div>
-  <aside class="rail"><div class="railtop"><aside class="infobox "><div class="ibh">FNIX Rising</div><div class="ibimg"><img src="../img/dlc/1301740.jpg" alt="FNIX Rising" loading="lazy"></div><dl><dt>Pack</dt><dd><span class="tag dlc">FNIX Rising</span></dd><dt>Released</dt><dd>Jun 23, 2020</dd><dt>Main missions</dt><dd><a href="#main">10</a></dd><dt>Side missions</dt><dd><a href="#side">10</a></dd><dt>Regions</dt><dd><a href="../world/archipelago.html">Archipelago</a>, <a href="../world/southcoast.html">South Coast</a>, <a href="../world/farmlands.html">Farmlands</a></dd><dt>DLC</dt><dd><a href="../dlc.html#fnix-rising">About this expansion</a></dd></dl></aside></div><nav class="toc" aria-label="Contents"><div class="toch">Contents</div><a href="#main">Main missions</a><a href="#side">Side missions</a></nav></aside>
+  <aside class="rail"><div class="railtop"><aside class="infobox "><div class="ibh">FNIX Rising</div><div class="ibimg"><img src="../img/dlc/1301740.webp" alt="FNIX Rising" loading="lazy"></div><dl><dt>Pack</dt><dd><span class="tag dlc">FNIX Rising</span></dd><dt>Released</dt><dd>Jun 23, 2020</dd><dt>Main missions</dt><dd><a href="#main">10</a></dd><dt>Side missions</dt><dd><a href="#side">10</a></dd><dt>Regions</dt><dd><a href="../world/archipelago.html">Archipelago</a>, <a href="../world/southcoast.html">South Coast</a>, <a href="../world/farmlands.html">Farmlands</a></dd><dt>DLC</dt><dd><a href="../dlc.html#fnix-rising">About this expansion</a></dd></dl></aside></div><nav class="toc" aria-label="Contents"><div class="toch">Contents</div><a href="#main">Main missions</a><a href="#side">Side missions</a></nav></aside>
   <article class="body">
 <div class="filterbar" data-for="mslist"><input placeholder="Filter missions..."><span class="count"></span></div>
 <div class="foldall" data-for="mslist"></div>
@@ -93,6 +94,6 @@ After Alexander left on a supply run never to return, Kenneth wishes to find one
   <span><b>[/]</b> SEARCH</span><span><b>[H]</b> HOME</span><span><b>[M]</b> MAP</span>
   <span class="fine">Fan-made. All data read straight from the game files with a custom extraction tool (<a href="../about.html">about</a>). Generation Zero is a trademark of Systemic Reaction / Avalanche Studios Group.</span>
 </footer>
-<script src="../assets/wiki.js?v=2"></script>
+<script src="../assets/wiki.js?v=3"></script>
 </body>
 </html>

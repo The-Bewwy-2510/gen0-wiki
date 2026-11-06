@@ -372,10 +372,15 @@ def dmg_text(d):
     return "; ".join(parts) or '<span class="dim">no damage values</span>'
 
 
-def picture(site, v, small=False):
-    """The class picture (or a placeholder) with its credit line."""
+def picture(site, v, small=False, thumb=None):
+    """The class picture (or a placeholder) with its credit line. small: no credit line; thumb (default: small):
+    the 128 px copy, for pictures shown at icon size."""
     im = v.get("image")
-    tag_ = site.img(im["path"], alt=v["in_game"] or v["machine"]) if im else ""
+    path = im["path"] if im else None
+    if (small if thumb is None else thumb) and path:     # lists show the picture at 48 px: the 128 px copy
+        sp = path.replace("img/machines/", "img/machines/small/", 1)
+        path = sp if site.has_file(sp) else path
+    tag_ = site.img(path, alt=v["in_game"] or v["machine"]) if path else ""
     if not tag_:
         return NOPIC if not small else ""
     if small:
@@ -502,7 +507,7 @@ def faction_grid(site, m):
         if rival:
             t = ts[0]
             v = t["variants"][0]
-            pic = picture(site, v, small=True)
+            pic = picture(site, v, small=True, thumb=False)     # shown at 170 px: the full picture
             base = site.link("machine", v["type"])
             body = (f'<a class="mfbig" href="~/{t["path"]}">{pic or NOPIC}</a>'
                     f'<p>{esc(FACTIONS[group])} The {site.link("machine", t["name"])} is a Rival-class {base}.</p>'

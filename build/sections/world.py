@@ -188,10 +188,17 @@ def overview_map(site, w, dots=(), caption="", label_regions=True, small=False, 
     u = bw / 100                                  # 1 % of the map width, the unit for sizes below
     out = [f'<figure class="ovmap{" small" if small else ""}"><svg viewBox="{x0:.0f} {z0:.0f} {bw:.0f} {bh:.0f}" '
            f'role="img" aria-label="Map of the world">']
-    for i in (0, 1):
-        for j in (0, 1):
-            out.append(f'<image href="~/map/map/tiles/1/{i}_{j}.webp" x="{i * OV_TILE - OV_TILE}" '
-                       f'y="{j * OV_TILE - OV_TILE}" width="{OV_TILE + 24}" height="{OV_TILE + 24}"/>')
+    if small:      # the whole world in one 2048 px picture (tools/optimize.py)
+        out.append(f'<image href="~/img/mm/0/0_0.webp" x="{-OV_TILE}" y="{-OV_TILE}" width="{2 * OV_TILE}" '
+                   f'height="{2 * OV_TILE}"/>')
+    else:          # the level-1 tiles cut to 1024 px (4096 px for the world): only the ones in view
+        t = OV_TILE // 2
+        for i in range(4):
+            for j in range(4):
+                x, z = i * t - OV_TILE, j * t - OV_TILE
+                if x + t < x0 or x > x0 + bw or z + t < z0 or z > z0 + bh:
+                    continue
+                out.append(f'<image href="~/img/mm/1/{i}_{j}.webp" x="{x}" y="{z}" width="{t + 24}" height="{t + 24}"/>')
     for key in REGION_KEYS:
         if key not in w.borders:
             continue

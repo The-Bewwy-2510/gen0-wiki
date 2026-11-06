@@ -41,6 +41,21 @@
       : `<div class="rnone">Nothing found for “${esc(q.value)}”.</div>`;
     box.hidden = false;
   }
+  // the field is closed to an icon; the icon (or "/") opens it, Escape or a click elsewhere on an empty field closes it
+  const sbox = $("#search"), sbtn = $("#searchBtn");
+  function openSearch() {
+    if (!sbox) return;
+    sbox.classList.add("open"); sbtn.setAttribute("aria-expanded", "true"); q.focus(); load();
+  }
+  function closeSearch() {
+    if (!sbox) return;
+    sbox.classList.remove("open"); sbtn.setAttribute("aria-expanded", "false"); box.hidden = true; q.blur();
+  }
+  if (sbtn) sbtn.addEventListener("click", () => {
+    if (!sbox.classList.contains("open")) openSearch();
+    else if (q.value.trim()) { search(); q.focus(); }
+    else closeSearch();
+  });
   if (q) {
     q.addEventListener("input", search);
     q.addEventListener("focus", () => { if (q.value) search(); load(); });
@@ -51,13 +66,17 @@
         sel = (sel + (e.key === "ArrowDown" ? 1 : -1) + links.length) % links.length;
         links.forEach((a, i) => a.classList.toggle("sel", i === sel)); links[sel].scrollIntoView({block: "nearest"});
       } else if (e.key === "Enter" && links[sel]) { location.href = links[sel].href; }
-      else if (e.key === "Escape") { box.hidden = true; q.blur(); }
+      else if (e.key === "Escape") closeSearch();
     });
-    document.addEventListener("click", e => { if (!e.target.closest(".search")) box.hidden = true; });
+    document.addEventListener("click", e => {
+      if (e.target.closest(".search")) return;
+      box.hidden = true;
+      if (!q.value.trim()) closeSearch();
+    });
   }
   document.addEventListener("keydown", e => {
     if (e.target.closest("input, textarea, select") || e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key === "/") { e.preventDefault(); q && q.focus(); }
+    if (e.key === "/") { e.preventDefault(); openSearch(); }
     else if (e.key === "h" || e.key === "H") location.href = ROOT + "index.html";
     else if (e.key === "m" || e.key === "M") location.href = ROOT + "map/index.html";
   });
@@ -213,9 +232,11 @@
     }));
   });
 
-  // ------------------------------------------------------------------ mini maps (tiles of the interactive map in map/map/tiles)
+  // ------------------------------------------------------------------ mini maps (img/mm: the interactive map's tiles
+  // cut into 1024 px tiles by tools/optimize.py, plus a level 0 with the whole world in one 2048 px picture)
   // world units -> level-3 pixels: 8192 + x / 2 (world 32768 units across, 16384 px)
-  const LEVELS = {1: {px: 4096, n: 2}, 2: {px: 8192, n: 4}, 3: {px: 16384, n: 8}};
+  const LEVELS = {0: {px: 2048, n: 1, t: 2048}, 1: {px: 4096, n: 4, t: 1024}, 2: {px: 8192, n: 8, t: 1024}, 3: {px: 16384, n: 16, t: 1024}};
+  const DPR = Math.min(2, window.devicePixelRatio || 1);
   // A map inside a closed fold has no size yet, so each one starts the first time it is shown.
   function startMap(mm) {
     let pts; try { pts = JSON.parse(mm.dataset.pts); } catch (e) { return; }
@@ -238,17 +259,20 @@
     const tiles = {};
     function draw() {
       const W = mm.clientWidth, H = mm.clientHeight;
-      const L = scale > 0.5 ? 3 : scale > 0.2 ? 2 : 1, info = LEVELS[L], f = info.px / 16384;  // level px per level-3 px
-      const s = scale / f;   // screen px per level-L px
+      // level 0 only while it is drawn at about half size or less (sharp on high-DPI screens too)
+      const L = scale > 0.5 ? 3 : scale > 0.2 ? 2 : scale * DPR > 0.07 ? 1 : 0, info = LEVELS[L], f = info.px / 16384;  // level px per level-3 px
+      const s = scale / f, T = info.t;   // screen px per level-L px; tile size
       layer.style.transform = `translate(${W / 2 - cx * scale}px, ${H / 2 - cz * scale}px) scale(${s})`;
+      layer.style.setProperty("--ov", (1.5 / s).toFixed(2) + "px");   // tiles overlap by 1.5 screen px: no hairline seams
       const x0 = (cx * scale - W / 2) / s, x1 = (cx * scale + W / 2) / s, z0 = (cz * scale - H / 2) / s, z1 = (cz * scale + H / 2) / s;
       for (const k in tiles) tiles[k].style.display = k.startsWith(L + "/") ? "" : "none";
-      for (let i = Math.max(0, Math.floor(x0 / 2048)); i <= Math.min(info.n - 1, Math.floor(x1 / 2048)); i++)
-        for (let j = Math.max(0, Math.floor(z0 / 2048)); j <= Math.min(info.n - 1, Math.floor(z1 / 2048)); j++) {
+      for (let i = Math.max(0, Math.floor(x0 / T)); i <= Math.min(info.n - 1, Math.floor(x1 / T)); i++)
+        for (let j = Math.max(0, Math.floor(z0 / T)); j <= Math.min(info.n - 1, Math.floor(z1 / T)); j++) {
           const k = `${L}/${i}_${j}`;
           if (!tiles[k]) {
             const im = document.createElement("img"); im.alt = ""; im.draggable = false;
-            im.src = `${ROOT}map/map/tiles/${k}.webp`; im.style.left = i * 2048 + "px"; im.style.top = j * 2048 + "px";
+            im.src = `${ROOT}img/mm/${k}.webp`; im.style.left = i * T + "px"; im.style.top = j * T + "px";
+            im.style.width = im.style.height = `calc(${T}px + var(--ov, 0px))`;
             layer.appendChild(im); tiles[k] = im;
           }
         }

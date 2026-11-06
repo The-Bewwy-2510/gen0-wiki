@@ -133,6 +133,10 @@ img { display: block; }
 .mk:hover::before, .mk.sel::before { background: rgba(14, 14, 16, .85); border-color: rgb(var(--mk)); }
 .mk.sel::after { content: ""; position: absolute; inset: -3px; border: 1px solid rgba(var(--mk), .9); border-radius: 50%; }
 .mk.spread { z-index: 6; opacity: 1; }
+/* a side mission start: the game's side mission icon, white chevrons on a teal diamond */
+.mk.side::before { background: rgba(39, 115, 141, .92); border-color: rgba(255, 255, 255, .95); }
+.mk.side:hover::before, .mk.side.sel::before { background: rgb(39, 115, 141); border-color: #fff; }
+.mk.side i { inset: calc(6px * var(--mks)); }
 
 /* cluster: same colour, round, with the count */
 .cl {
@@ -233,6 +237,8 @@ img { display: block; }
 /* advanced mode: a heavier rule sets the placed loot apart from the regular filters */
 .madvcats { border-top: 3px solid rgba(255, 255, 255, .38); margin-top: 6px; padding-top: 14px; }
 .madvcats > .msep:first-child { display: none; }
+/* the side missions: the same heavy rule above them (the placed loot's one is below) */
+.mwide { border-top: 3px solid rgba(255, 255, 255, .38); margin-top: 6px; padding-top: 14px; }
 
 /* ---------- motion: short, quiet transitions; none for people who ask for reduced motion ---------- */
 .btn, .toplink, .mappanelbtn, .maptools button, .mcat-h, .msub {

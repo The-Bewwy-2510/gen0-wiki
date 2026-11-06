@@ -71,9 +71,10 @@
     async function start() {
       started = true;
       stage = qs("#mapStage"); tilesEl = qs("#mapTiles"); mkEl = qs("#mapLayer"); legsEl = qs("#mapLegs"); popEl = qs("#mapPopup");
-      // both files download at once (index.html already asked for them); the locations are optional
+      // the files download at once (index.html already asked for them); the locations and side missions are optional
       const markersReq = fetch("map/markers.json");
       const locationsReq = fetch("map/locations.json").then((r) => r.json()).catch(() => null);
+      const sideReq = fetch("map/side_missions.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
       try {
         D = await (await markersReq).json();
       } catch (e) {
@@ -82,6 +83,7 @@
       }
       toL3 = L3 / D.world;
       addLocations(await locationsReq);
+      addSideMissions(await sideReq);
       mains = D.mains;
       D.subs.forEach((sb) => { subs[sb.key] = sb; (subsOf[sb.main] = subsOf[sb.main] || []).push(sb); });
       items = D.items.map((it, i) => ({ ...it, i, X: L3 / 2 + it.x * toL3, Z: L3 / 2 + it.z * toL3 }));
@@ -91,6 +93,7 @@
       (D.regions || []).forEach((r) => { regions[r.key] = r; regionOn[r.key] = savedR && r.key in savedR ? !!savedR[r.key] : true; });
       // every category starts closed except the regions (remembered once changed)
       collapsed = store.get("mapCollapsed2", null) || Object.fromEntries(D.mains.map((m) => [m.key, true]));
+      D.mains.forEach((m) => { if (!(m.key in collapsed)) collapsed[m.key] = true; });   // a category added since: closed too
       if (LINK.any) applyLinkFilters();
       setPanel(store.get("mapPanel", true) !== false);
       sizeIx = Math.max(0, Math.min(SIZES.length - 1, Number.isFinite(+store.get("mapIconSize2", 1)) ? +store.get("mapIconSize2", 1) : 1));
@@ -156,6 +159,19 @@
       }), ...D.subs];
       D.items = D.items.concat(G.list.map((x) => ({ s: "loc_" + x.kind, n: x.name, x: x.x, z: x.z, r: x.region, d: x.region === "alpine" ? 1 : 0,
         loc: x.hash, g: glyph(x.icon) })));
+    }
+
+    // Where the side missions start (map/side_missions.json): a category of its own after the others, set apart by
+    // the wide rule above and below it, a sub category per content pack; the markers look like the game's side
+    // mission icon (white chevrons on its teal diamond)
+    function addSideMissions(S) {
+      if (!S || !S.list || !S.list.length) return;
+      const packs = S.packs.filter((p) => S.list.some((x) => x.pack === p.key));
+      D.mains = [...D.mains, { key: "sidemissions", name: "Side Missions", group: "sidemissions", wide: true }];
+      D.subs = [...D.subs, ...packs.map((p) => ({ key: "sm_" + p.key, name: p.name, main: "sidemissions", mk: "side", color: "255, 255, 255",
+        glyph: "map/glyphs/side_missions.png", icon: "map/icons/side_missions.png", count: S.list.filter((x) => x.pack === p.key).length }))];
+      D.items = D.items.concat(S.list.map((x) => ({ s: "sm_" + x.pack, n: x.name, x: x.x, z: x.z, r: x.region, d: x.pack === "alpine" ? 1 : 0,
+        l: "Start: " + [x.place, x.note].filter(Boolean).join(". "), ms: x.id })));
     }
 
     function measure() { W = stage.clientWidth; H = stage.clientHeight; minS = Math.min(W, H) / L3 * 0.85; }
@@ -322,7 +338,7 @@
 
     function markerHTML(it, extra = "") {
       const sb = subs[it.s];
-      const cls = `mk${it.loc !== undefined ? " loc" : ""}${extra}`;
+      const cls = `mk${it.loc !== undefined ? " loc" : ""}${sb.mk ? " " + sb.mk : ""}${extra}`;
       const title = esc(it.n);
       return `<div class="${cls}" data-item="${it.i}" style="--g:url('${it.g || sb.glyph}')${sb.color ? `;--mk:${sb.color}` : ""}" title="${title}"><i></i></div>`;
     }
@@ -608,7 +624,8 @@
         const list = subsOf[m.key] || [];
         // a separator line between the regions and the categories, and between groups of categories
         if (m.adv && !advOpen) { h += `<div class="madvcats" id="mapAdvCats"${adv ? "" : " hidden"}>`; advOpen = true; }
-        if ((h && group === null) || (group !== null && m.group !== group)) h += `<div class="msep"></div>`;
+        if (m.wide) h += `<div class="mwide"></div>`;     // the side missions: the wide rule, as above the placed loot
+        else if ((h && group === null) || (group !== null && m.group !== group)) h += `<div class="msep"></div>`;
         group = m.group;
         if (list.length === 1) {           // a category with a single entry: just its header, no list to open
           const sb = list[0];
