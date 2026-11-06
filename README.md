@@ -11,9 +11,9 @@ GitHub Pages with no build step on GitHub's side.
 
 ## Branches
 
-- `claude/wiki-overhaul`: the reorganised layout (v2): fluid width, a contents bar on the right that stays on screen,
+- `wiki-overhaul`: the reorganised layout (v2): fluid width, a contents bar on the right that stays on screen,
   collapsible sections, map links that open the map with the page's filters, DLC and Achievements pages, and more.
-- `claude/project-thread-kjcbsh`: the original first version, kept unchanged just in case.
+- `main`: the original first version, kept unchanged just in case.
 
 Pages serves whichever branch you pick in step 4 below.
 
@@ -21,12 +21,10 @@ Pages serves whichever branch you pick in step 4 below.
 
 The finished site is in the `docs/` folder, so Pages only has to serve that folder:
 
-1. Make sure the branch with the site is the repository's default branch (or merge it into `main`).
-   If the only branch is `claude/project-thread-kjcbsh`, you can rename it to `main` on GitHub:
-   **Code → Branches → ✎ (rename) next to the branch → `main`**.
+1. Pick the branch to publish: `wiki-overhaul` (the new version) or `main` (the original).
 2. Open **Settings → Pages**.
 3. Under **Build and deployment**, set **Source** to **Deploy from a branch**.
-4. Set **Branch** to `main` (or the branch that has the site) and the folder to **`/docs`**, then **Save**.
+4. Set **Branch** to that branch and the folder to **`/docs`**, then **Save**.
 5. Wait a minute or two. The address appears at the top of the Pages settings
    (`https://the-bewwy-2510.github.io/gen0-wiki/`). Every push to that branch republishes the site.
 
@@ -34,6 +32,8 @@ If the repository is private, Pages needs a paid GitHub plan; on a free account 
 (**Settings → General → Danger Zone → Change visibility**).
 
 ## Browsing it locally
+
+On Windows, double-click `Open wiki.bat` in a local clone if you have one (it runs the commands below). Otherwise:
 
 Browsers don't let a page opened straight from disk load the search index and map files, so serve the folder:
 

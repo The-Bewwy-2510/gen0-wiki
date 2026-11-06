@@ -1,5 +1,5 @@
 {
- "_about": "Machine pictures. 'render': rendered for this wiki from the game's own rigged 3D models (extracted with the DECA tools), one action pose per machine type taken from the game's own animations. Any entry with a Fandom URL as source is a picture from the Generation Zero Wiki on Fandom (CC BY-SA) still waiting for its render.",
+ "_about": "Machine pictures, rendered for this wiki from the game's own rigged 3D models (extracted with the DECA tools), one action pose per machine type taken from the game's own animations (pose = the animation clip).",
  "images": {
   "Firebird": {
    "Scout": {
@@ -66,10 +66,12 @@
    },
    "Apocalypse": {
     "path": "img/machines/harvester_apocalypse.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:APOC_HARVESTER.png",
+    "source": "render",
+    "model": "harv_classd_load01",
+    "pose": "attack_l",
     "size": [
-     424,
-     400
+     720,
+     720
     ]
    }
   },
@@ -150,10 +152,12 @@
   "Reaper": {
    "Rival": {
     "path": "img/machines/reaper_rival.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Reaper.jpg",
+    "source": "render",
+    "model": "drea_classr1_load01",
+    "pose": "attack_melee_r_stamp",
     "size": [
-     480,
-     480
+     720,
+     720
     ]
    }
   },
