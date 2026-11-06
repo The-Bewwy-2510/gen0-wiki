@@ -840,14 +840,17 @@ def build_about(site, c):
     srcs = []
     for typ, classes in mi.items():
         for cls, e in classes.items():
-            if isinstance(e, dict) and e.get("source"):
+            if isinstance(e, dict) and e.get("source", "render") != "render":
                 srcs.append(f'<li><a href="{esc(e["source"])}" rel="noopener">{esc(cls)} {esc(typ)}</a></li>')
     b.append("<p>Item icons, map art and other game images come from Generation Zero itself and belong to "
              "Systemic Reaction and Avalanche Studios Group; they are shown here for reference.</p>"
-             "<p>The pictures of the machines are from the "
-             "<a href=\"https://generation-zero.fandom.com/\" rel=\"noopener\">Generation Zero Wiki on Fandom</a>, "
-             "used under the <a href=\"https://creativecommons.org/licenses/by-sa/3.0/\" rel=\"noopener\">CC BY-SA</a> "
-             "licence. Thank you to its editors.</p>"
+             "<p>The pictures of the machines were rendered for this wiki from the game's own 3D models, which the "
+             "extraction tool reads out of the game files together with their animations; each machine type is shown "
+             "in one of its own in-game poses.</p>"
+             + ("<p>The machine pictures listed below are still from the "
+                "<a href=\"https://generation-zero.fandom.com/\" rel=\"noopener\">Generation Zero Wiki on Fandom</a>, "
+                "used under the <a href=\"https://creativecommons.org/licenses/by-sa/3.0/\" rel=\"noopener\">CC BY-SA</a> "
+                "licence, until their renders are done.</p>" if srcs else "") +
              "<p>The DLC pictures and descriptions on the <a href=\"~/dlc.html\">DLC page</a> are from the "
              "<a href=\"https://store.steampowered.com/app/704270/\" rel=\"noopener\">Steam store</a>.</p>")
     if srcs:

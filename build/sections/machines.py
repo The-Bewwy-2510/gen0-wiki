@@ -380,6 +380,8 @@ def picture(site, v, small=False):
         return NOPIC if not small else ""
     if small:
         return tag_
+    if im.get("source") == "render":
+        return tag_ + '<span class="swcap">Rendered from the game\'s own 3D model</span>'
     return (tag_ + f'<span class="swcap">Picture: <a href="{esc(im["source"])}" rel="nofollow">Generation Zero '
                    f'Wiki</a> (CC BY-SA)</span>')
 
@@ -519,8 +521,11 @@ def faction_grid(site, m):
                              f'{hp_range([x for v in tv for x in v["totals"]])} HP</span></span></a></li>')
             body = f'<p>{esc(FACTIONS[group])}</p><ul class="mftypes">{"".join(items)}</ul>'
         cells.append(f'<section class="mfcell {FACTION_CLS[group]}">{head}<div class="mfb">{body}</div></section>')
-    credit = ('<p class="small dim mcredit">Pictures: <a href="https://generation-zero.fandom.com/" rel="nofollow">'
-              'Generation Zero Wiki</a> (CC BY-SA).</p>')
+    fandom = any(isinstance(e, dict) and e.get("source", "render") != "render"
+                 for cs in site.data("machine_images").get("images", {}).values() for e in cs.values())
+    credit = ('<p class="small dim mcredit">Pictures rendered from the game\'s own 3D models'
+              + (', a few still from the <a href="https://generation-zero.fandom.com/" rel="nofollow">Generation Zero '
+                 'Wiki</a> (CC BY-SA)' if fandom else '') + '.</p>')
     return '<div class="mfgrid">' + "".join(cells) + "</div>" + credit
 
 

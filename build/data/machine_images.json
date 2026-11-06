@@ -1,55 +1,67 @@
 {
- "_about": "Machine pictures from the Generation Zero Wiki on Fandom (generation-zero.fandom.com), CC BY-SA; game images belong to Systemic Reaction / Avalanche Studios Group. Replace with renders from the Machine 3D Extractor when available.",
+ "_about": "Machine pictures. 'render': rendered for this wiki from the game's own rigged 3D models (extracted with the DECA tools), one action pose per machine type taken from the game's own animations. Any entry with a Fandom URL as source is a picture from the Generation Zero Wiki on Fandom (CC BY-SA) still waiting for its render.",
  "images": {
   "Firebird": {
    "Scout": {
     "path": "img/machines/firebird_scout.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Screenshot_2022.11.04_-_21.37.36.96_Thumbnail.png",
+    "source": "render",
+    "model": "firebird_classa_load01",
+    "pose": "strafe_fwd_01",
     "size": [
-     480,
-     270
+     720,
+     720
     ]
    },
    "Soldier": {
     "path": "img/machines/firebird_soldier.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:SoldierFirebird.webp",
+    "source": "render",
+    "model": "firebird_classb_load01",
+    "pose": "strafe_fwd_01",
     "size": [
-     480,
-     270
+     720,
+     720
     ]
    },
    "Spetsnaz": {
     "path": "img/machines/firebird_spetsnaz.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:SpetsnazFirebird.webp",
+    "source": "render",
+    "model": "firebird_classc_load01",
+    "pose": "strafe_fwd_01",
     "size": [
-     480,
-     270
+     720,
+     720
     ]
    }
   },
   "Harvester": {
    "Prototype": {
     "path": "img/machines/harvester_prototype.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Harvester.png",
+    "source": "render",
+    "model": "harv_classa_load01",
+    "pose": "attack_l",
     "size": [
-     330,
-     330
+     720,
+     720
     ]
    },
    "Military": {
     "path": "img/machines/harvester_military.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_harvester_army.png",
+    "source": "render",
+    "model": "harv_classb_load01",
+    "pose": "attack_l",
     "size": [
-     444,
-     480
+     720,
+     720
     ]
    },
    "FNIX": {
     "path": "img/machines/harvester_fnix.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Harvester_FNIX.png",
+    "source": "render",
+    "model": "harv_classc_load01",
+    "pose": "attack_l",
     "size": [
-     452,
-     480
+     720,
+     720
     ]
    },
    "Apocalypse": {
@@ -64,60 +76,74 @@
   "Hunter": {
    "Prototype": {
     "path": "img/machines/hunter_prototype.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_Hunter.png",
+    "source": "render",
+    "model": "hunt_classa_load01",
+    "pose": "ready_shoulder_stance_01",
     "size": [
-     330,
-     330
+     720,
+     720
     ]
    },
    "Military": {
     "path": "img/machines/hunter_military.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Hunter_army.jpg",
+    "source": "render",
+    "model": "hunt_classb_load01",
+    "pose": "ready_shoulder_stance_01",
     "size": [
-     435,
-     480
+     720,
+     720
     ]
    },
    "FNIX": {
     "path": "img/machines/hunter_fnix.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Hunter_fnix.jpg",
+    "source": "render",
+    "model": "hunt_classc_load01",
+    "pose": "ready_shoulder_stance_01",
     "size": [
-     480,
-     479
+     720,
+     720
     ]
    },
    "Apocalypse": {
     "path": "img/machines/hunter_apocalypse.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Apoc_hunter_bp.jpg",
+    "source": "render",
+    "model": "hunt_classd_load01",
+    "pose": "ready_shoulder_stance_01",
     "size": [
-     377,
-     480
+     720,
+     720
     ]
    }
   },
   "Lynx": {
    "Scout": {
     "path": "img/machines/lynx_scout.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140545.png",
+    "source": "render",
+    "model": "lynx_classa_load01",
+    "pose": "roll_fwd_left_01",
     "size": [
-     411,
-     338
+     720,
+     720
     ]
    },
    "Soldier": {
     "path": "img/machines/lynx_soldier.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140735.png",
+    "source": "render",
+    "model": "lynx_classb_load01",
+    "pose": "roll_fwd_left_01",
     "size": [
-     371,
-     301
+     720,
+     720
     ]
    },
    "Spetsnaz": {
     "path": "img/machines/lynx_spetsnaz.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Screenshot_2023-02-07_140236.png",
+    "source": "render",
+    "model": "lynx_classc_load01",
+    "pose": "roll_fwd_left_01",
     "size": [
-     480,
-     361
+     720,
+     720
     ]
    }
   },
@@ -134,164 +160,212 @@
   "Runner": {
    "Prototype": {
     "path": "img/machines/runner_prototype.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_runner.png",
+    "source": "render",
+    "model": "skir_classa_load01",
+    "pose": "runloop_fwd_01",
     "size": [
-     330,
-     330
+     720,
+     720
     ]
    },
    "Military": {
     "path": "img/machines/runner_military.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Runner_army.png",
+    "source": "render",
+    "model": "skir_classb_load01",
+    "pose": "runloop_fwd_01",
     "size": [
-     444,
-     480
+     720,
+     720
     ]
    },
    "FNIX": {
     "path": "img/machines/runner_fnix.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Runner_fnix.png",
+    "source": "render",
+    "model": "skir_classc_load01",
+    "pose": "runloop_fwd_01",
     "size": [
-     456,
-     480
+     720,
+     720
     ]
    },
    "Apocalypse": {
     "path": "img/machines/runner_apocalypse.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Apocalypse_Runner.jpg",
+    "source": "render",
+    "model": "skir_classd_load01",
+    "pose": "runloop_fwd_01",
     "size": [
-     404,
-     349
+     720,
+     720
     ]
    }
   },
   "Seeker": {
    "Prototype": {
     "path": "img/machines/seeker_prototype.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_seeker.png",
+    "source": "render",
+    "model": "scou_classa_load01",
+    "pose": "landing",
     "size": [
-     330,
-     330
+     720,
+     720
     ]
    },
    "Military": {
     "path": "img/machines/seeker_military.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_seeker_army.png",
+    "source": "render",
+    "model": "scou_classb_load01",
+    "pose": "landing",
     "size": [
-     480,
-     440
+     720,
+     720
     ]
    },
    "FNIX": {
     "path": "img/machines/seeker_fnix.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Seeker_fnix.png",
+    "source": "render",
+    "model": "scou_classc_load01",
+    "pose": "landing",
     "size": [
-     480,
-     461
+     720,
+     720
+    ]
+   },
+   "Apocalypse": {
+    "path": "img/machines/seeker_apocalypse.webp",
+    "source": "render",
+    "model": "scou_classd_load01",
+    "pose": "landing",
+    "size": [
+     720,
+     720
     ]
    }
   },
   "Tank": {
    "Prototype": {
     "path": "img/machines/tank_prototype.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank.png",
+    "source": "render",
+    "model": "drea_classa_load01",
+    "pose": "attack_melee_r_stamp",
     "size": [
-     330,
-     330
+     720,
+     720
     ]
    },
    "Military": {
     "path": "img/machines/tank_military.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank_army.png",
+    "source": "render",
+    "model": "drea_classb_load01",
+    "pose": "attack_melee_r_stamp",
     "size": [
-     413,
-     480
+     720,
+     720
     ]
    },
    "FNIX": {
     "path": "img/machines/tank_fnix.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tank_fnix.png",
+    "source": "render",
+    "model": "drea_classc_load01",
+    "pose": "attack_melee_r_stamp",
     "size": [
-     347,
-     480
+     720,
+     720
     ]
    },
    "Apocalypse": {
     "path": "img/machines/tank_apocalypse.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Tank_Apoc.png",
+    "source": "render",
+    "model": "drea_classd_load01",
+    "pose": "attack_melee_r_stamp",
     "size": [
-     480,
-     397
+     720,
+     720
     ]
    }
   },
   "Tick": {
    "Prototype": {
     "path": "img/machines/tick_prototype.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick.png",
+    "source": "render",
+    "model": "pest_classa_load01",
+    "pose": "attack_melee_jump_loop",
     "size": [
-     330,
-     300
+     720,
+     720
     ]
    },
    "Military": {
     "path": "img/machines/tick_military.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick_army.png",
+    "source": "render",
+    "model": "pest_classb_load01",
+    "pose": "attack_melee_jump_loop",
     "size": [
-     480,
-     451
+     720,
+     720
     ]
    },
    "FNIX": {
     "path": "img/machines/tick_fnix.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Generation_Zero_tick_fnix.png",
+    "source": "render",
+    "model": "pest_classc_load01",
+    "pose": "attack_melee_jump_loop",
     "size": [
-     480,
-     442
+     720,
+     720
     ]
    },
    "Apocalypse": {
     "path": "img/machines/tick_apocalypse.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Tick-Apocalypse.png",
+    "source": "render",
+    "model": "pest_classd_load01",
+    "pose": "attack_melee_jump_loop",
     "size": [
-     463,
-     480
+     720,
+     720
     ]
    }
   },
   "Vulture": {
    "Rival": {
     "path": "img/machines/vulture_rival.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Vulture.png",
+    "source": "render",
+    "model": "firebird_classr1_load01",
+    "pose": "strafe_fwd_01",
     "size": [
-     480,
-     279
+     720,
+     720
     ]
    }
   },
   "Wolf": {
    "Scout": {
     "path": "img/machines/wolf_scout.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Scout_Wolf_Rival.jpg",
+    "source": "render",
+    "model": "wolf_classa_load01",
+    "pose": "assault_melee_r_fwd",
     "size": [
-     480,
-     270
+     720,
+     720
     ]
    },
    "Soldier": {
     "path": "img/machines/wolf_soldier.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Soldier_Class_Wolf_Rival.jpg",
+    "source": "render",
+    "model": "wolf_classb_load01",
+    "pose": "assault_melee_r_fwd",
     "size": [
-     480,
-     270
+     720,
+     720
     ]
    },
    "Spetsnaz": {
     "path": "img/machines/wolf_spetsnaz.webp",
-    "source": "https://generation-zero.fandom.com/wiki/File:Spetsnaz_Class_Wolf_Rival.jpg",
+    "source": "render",
+    "model": "wolf_classc_load01",
+    "pose": "assault_melee_r_fwd",
     "size": [
-     480,
-     270
+     720,
+     720
     ]
    }
   }
