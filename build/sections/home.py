@@ -854,11 +854,7 @@ def build_about(site, c):
              "<p>The DLC pictures and descriptions on the <a href=\"~/dlc.html\">DLC page</a> are from the "
              "<a href=\"https://store.steampowered.com/app/704270/\" rel=\"noopener\">Steam store</a>. The "
              "<a href=\"~/missions/achievements.html\">achievement</a> names, descriptions and icons are read from "
-             "Steam's own achievement list for the game.</p>"
-             "<p>The \"Mission start\" box on the mission pages (where a mission starts, with its coordinates) is from "
-             "the mission pages of the <a href=\"https://generation-zero.fandom.com/\" rel=\"noopener\">Generation "
-             "Zero Wiki on Fandom</a> (<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\" "
-             "rel=\"noopener\">CC BY-SA</a>); each box links to its source page.</p>")
+             "Steam's own achievement list for the game.</p>")
     if srcs:
         b.append(fold("Machine picture sources", f'<ul class="hmsrc">{"".join(srcs)}</ul>', level=3,
                       id="picture-sources", right=f"{len(srcs)} pictures"))

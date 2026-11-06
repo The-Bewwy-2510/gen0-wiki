@@ -45,7 +45,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 22px 0; }
 .brand:hover { text-decoration: none; }
 .brand img { height: 19px; width: auto; display: block; }
 .brand span { font-size: 10px; letter-spacing: .32em; font-weight: 600; opacity: .85; margin-top: 2px; }
-.tabs { flex: 1 1 auto; min-width: 0; display: flex; gap: 34px; padding: 0 24px; overflow-x: auto; scrollbar-width: none; height: 100%; align-items: stretch; }
+.tabs { flex: 1 1 auto; min-width: 0; display: flex; gap: clamp(18px, 2vw, 34px); padding: 0 24px; overflow-x: auto; scrollbar-width: none; height: 100%; align-items: stretch; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab { white-space: nowrap; position: relative; font-size: 15px; text-transform: uppercase; color: rgba(255,255,255,.86); display: flex; align-items: center; }
 .tab:hover { color: #fff; text-decoration: none; }

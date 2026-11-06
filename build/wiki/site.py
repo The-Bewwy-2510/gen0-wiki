@@ -61,7 +61,6 @@ NAV = [
         {"id": "controlpoints", "label": "Control points & beacons", "path": "world/control-points.html"},
         {"id": "collectibles", "label": "Collectibles", "path": "world/collectibles.html"},
         {"id": "keys", "label": "Keys & barcodes", "path": "world/keys.html"},
-        {"id": "map", "label": "Interactive map", "path": "map/index.html"},
     ]},
     {"id": "missions", "label": "Missions", "color": "#1d4039", "path": "missions/index.html", "subs": [
         {"id": "missions", "label": "Overview", "path": "missions/index.html"},
@@ -85,6 +84,8 @@ NAV = [
         {"id": "emotes", "label": "Emotes & face paint", "path": "character/emotes.html"},
         {"id": "vehicles", "label": "Vehicles", "path": "character/vehicles.html"},
     ]},
+    # the interactive map is its own page (docs/map, copied from gen0-mapping), so its tab has no sub tabs
+    {"id": "map", "label": "Map", "color": "#5f4258", "path": "map/index.html", "subs": []},
     # turned off for now (not in the menus and not built: build.py DISABLED); the module stays in build/sections
     {"id": "modding", "label": "Modding", "color": "#33393f", "path": "modding/index.html", "hidden": True, "subs": [
         {"id": "modding", "label": "Overview", "path": "modding/index.html"},
@@ -307,6 +308,14 @@ def minimap(x, z, label="", zoom=3, height=260, markers=None, show=(), region=()
 
 
 # ---------------------------------------------------------------------------------------------------------------
+def split_9mm(stock):
+    """stock.json files the handgun and the SMG 9mm rounds under one '9mm' group, but they are separate items that
+    no gun shares, so the wiki treats them as two calibres: '9mm Handgun' and '9mm SMG'."""
+    for e in stock.get("stock", []):
+        if e.get("g") == "ammo" and e.get("sub") == "9mm":
+            e["sub"] = "9mm SMG" if "SMG" in e["name"] else "9mm Handgun"
+
+
 class Site:
     def __init__(self, out=DOCS):
         self.out = out
@@ -324,6 +333,8 @@ class Site:
         if name not in self._data:
             with open(os.path.join(DATA, name if name.endswith(".json") else name + ".json"), encoding="utf-8") as f:
                 self._data[name] = json.load(f)
+            if name.replace(".json", "") == "stock":
+                split_9mm(self._data[name])
         return self._data[name]
 
     def warn(self, msg):

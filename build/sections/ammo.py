@@ -34,13 +34,19 @@ def cal_path(cal):
 
 
 def cal_title(cal):
+    if cal in NINE_MM:                      # '9mm Handgun' -> '9mm ammo (Handgun)', like the game's item names
+        return f"9mm ammo ({cal.split()[1]})"
     return f"{cal} ammo" if cal[0] in ".0123456789" else cal
 
+
+# the handgun and the SMG 9mm rounds are separate items no gun shares, so they are two calibres (see site.split_9mm)
+NINE_MM = ("9mm Handgun", "9mm SMG")
+
 # calibres in the order the page shows them (stock.json 'sub' values); anything else found in the data goes last
-CAL_ORDER = ["9mm", ".32 ACP", ".44", "5.56mm", "7.62mm", "9x39mm", ".243", ".270", ".50 BMG", "12ga",
+CAL_ORDER = ["9mm Handgun", "9mm SMG", ".32 ACP", ".44", "5.56mm", "7.62mm", "9x39mm", ".243", ".270", ".50 BMG", "12ga",
              "Launcher rounds", "Arrows", "Other ammo"]
 CAL_ALIASES = {  # extra spellings people search for / other files use
-    "9mm": ["9mm Handgun", "9mm SMG", "9 mm", "9x19mm"], ".32 ACP": ["32 ACP", ".32"], ".44": [".44 Magnum", "44"],
+    "9mm Handgun": ["9mm", "9mm handgun ammo", "9mm pistol", "9x19mm"], "9mm SMG": ["9mm SMG ammo", "9mm submachine gun"], ".32 ACP": ["32 ACP", ".32"], ".44": [".44 Magnum", "44"],
     "5.56mm": ["5.56", "556"], "7.62mm": ["7.62", "762"], "9x39mm": ["9x39"], ".243": ["243"], ".270": ["270"],
     ".50 BMG": [".50", "50 BMG"], "12ga": ["12 gauge", "12G", "shotgun shells"],
     "Launcher rounds": ["Launchers", "Grenade launcher ammo", "Granat", "GLHE", "Recoilless"],
@@ -754,8 +760,7 @@ def section_matrix(site, m):
         rows.append([f"<b>{site.link('caliber', cal, text=cal)}</b>"] + ["<br>".join(c) or "–" for c in cells])
     return ("<h3>What each calibre offers</h3>"
             "<p>The variants of each calibre by role. A <span class=\"xq\">Q6</span> mark means the round only "
-            "works in experimental weapons. The 9mm handgun and SMG rounds are separate items, marked (handgun) "
-            "and (SMG).</p>" +
+            "works in experimental weapons.</p>" +
             table(["Calibre"] + [c[0] for c in cols[1:] + cols[:1]], rows, cls="matrix", sortable=False))
 
 
@@ -1213,14 +1218,16 @@ def section_cal_damage(site, m, cal, ammo, users):
 
 def _cal_note(site, m, cal, ammo):
     """Short data-driven notes for calibres with a twist."""
-    if cal == "9mm":
-        hg = [a for a in ammo if "Handgun" in a["name"]]
-        smg = [a for a in ammo if "SMG" in a["name"]]
-        if hg and smg:
-            return note(f"Handgun 9mm and SMG 9mm are separate items: the handguns fire the four handgun rounds "
-                        f"(stack {fmt(hg[0]['stack'])}, {fmt(_first_damage(hg[0]))} base damage) and the SMGs the "
-                        f"four SMG rounds (stack {fmt(smg[0]['stack'])}, {fmt(_first_damage(smg[0]))} base damage). "
-                        "The weapon tuning lists no gun that takes both.", "warn")
+    if cal in NINE_MM:
+        other = NINE_MM[1 - NINE_MM.index(cal)]
+        if other in m["cal"]:
+            mine, theirs = ammo[0], m["cal"][other][0]
+            return note(f"Not the same as {site.link('caliber', other, text=cal_title(other))}: the "
+                        f"{'handguns' if cal.endswith('Handgun') else 'SMGs'} fire these {len(ammo)} rounds "
+                        f"(stack {fmt(mine['stack'])}, {fmt(_first_damage(mine))} base damage) and the "
+                        f"{'SMGs' if cal.endswith('Handgun') else 'handguns'} their own "
+                        f"(stack {fmt(theirs['stack'])}, {fmt(_first_damage(theirs))} base damage). They are "
+                        "separate items and no gun takes both.", "warn")
     if cal == ".32 ACP":
         return "<p>The .32 ACP is shared by a handgun and an SMG; both fire the same items.</p>"
     if cal == "7.62mm":

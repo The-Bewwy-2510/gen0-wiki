@@ -676,9 +676,6 @@ def start_panel(site, ms, m):
         region = [loc["region"]] if loc and loc["region"] != "global" else []
         out.append(minimap(x, z, "", zoom=2, height=200, show=show, region=region,
                            focus=loc["name"] if loc else None, map_zoom=1))
-    url = "https://generation-zero.fandom.com/wiki/" + st["fandom_title"].replace(" ", "_")
-    out.append(f'<p class="mscredit">From the <a href="{esc(url)}" rel="nofollow">Generation Zero Wiki on Fandom</a>'
-               ' (CC BY-SA).</p>')
     return panel("Mission start", "".join(out), cls="msstartp")
 
 
