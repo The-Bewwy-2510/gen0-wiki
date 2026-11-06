@@ -1,4 +1,5 @@
-/* Character section: the skill menu (tree tabs, skill details, point planner) and links into in-page tabs. */
+/* Character section: the skill menu (tree tabs, skill details, point planner), the apparel grid's two-row slots and
+   links into in-page tabs. */
 (() => {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
@@ -98,11 +99,67 @@
     window.__skSelect = select;
   }
 
+  // ---------------------------------------------------------------- apparel grid: two rows per slot until opened
+  // Each .apslot shows the first two rows of its cards (counted from the grid's real columns, so it works at any
+  // width) and a "Show all N" / "Show fewer" button. While a filter is on (text or a chip) every match is shown.
+  const apg = $("#apgrid");
+  let apLayout = () => {}, apReveal = () => {};
+  if (apg) {
+    const slots = $$(".apslot", apg), fb = $('.filterbar[data-for="apgrid"]');
+    const filtering = () => {
+      if (!fb) return false;
+      const input = $("input", fb);
+      return (input && input.value.trim() !== "") || $$(".chip.on", fb).some(c => c.dataset.f !== "*");
+    };
+    apLayout = () => {
+      const f = filtering();
+      slots.forEach(s => {
+        const grid = $(".apgrid", s), btn = $(".apmore", s);
+        if (!grid || !btn || !grid.offsetParent) return;          // in the hidden Table tab: done when shown
+        const cards = $$(".apc", grid);
+        cards.forEach(c => c.classList.remove("apover"));
+        const vis = cards.filter(c => !c.classList.contains("hidden"));
+        const cols = getComputedStyle(grid).gridTemplateColumns.split(" ").filter(Boolean).length || 1;
+        const more = !f && vis.length > cols * 2, open = s.classList.contains("open");
+        if (more && !open) vis.slice(cols * 2).forEach(c => c.classList.add("apover"));
+        btn.hidden = !more;
+        btn.textContent = open ? "Show fewer" : `Show all ${vis.length}`;
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    };
+    apReveal = el => {                       // make sure a linked card isn't in a folded-away row
+      const s = el.closest(".apslot");
+      apLayout();
+      if (s && el.classList.contains("apover")) { s.classList.add("open"); apLayout(); }
+    };
+    slots.forEach(s => {
+      const btn = $(".apmore", s);
+      if (btn) btn.addEventListener("click", () => {
+        const open = s.classList.toggle("open"); apLayout();
+        if (!open && s.getBoundingClientRect().top < 0) s.scrollIntoView({block: "start"});
+      });
+    });
+    if (fb) { fb.addEventListener("input", apLayout); fb.addEventListener("click", () => requestAnimationFrame(apLayout)); }
+    let lastW = -1;
+    const ro = typeof ResizeObserver === "function" && new ResizeObserver(es => {
+      const w = Math.round(es[0].contentRect.width);
+      if (w !== lastW) { lastW = w; requestAnimationFrame(apLayout); }
+    });
+    if (ro) ro.observe(apg); else window.addEventListener("resize", apLayout);
+    apLayout();
+  }
+
   // ---------------------------------------------------------------- #links: skills, and targets in hidden tab panes
   function go(id, scroll) {
     let el = null;
     try { el = id && document.getElementById(decodeURIComponent(id)); } catch (e) { el = null; }
     if (!el) return false;
+    if (apg && el.classList.contains("apc") && apg.contains(el)) {
+      showTabOf(el); apReveal(el);
+      if (scroll) el.scrollIntoView({block: "center"});
+      el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1600);
+      return true;
+    }
     if (menu && el.classList.contains("sknd")) {
       window.__skSelect(el.dataset.s, false);
       if (scroll) menu.scrollIntoView({block: "start"});

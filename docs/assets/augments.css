@@ -37,16 +37,6 @@ table.augfits td:nth-child(4) .tag { white-space: nowrap; }
 .augq { display: inline-flex; flex-wrap: wrap; gap: 4px; }
 .qb.qno { color: var(--dim); border-style: dashed; text-decoration: line-through; opacity: .7; }
 
-/* the internal names and IDs side panel */
-.augside table.augids { border-collapse: collapse; width: 100%; font-size: 13px; }
-.augside table.augids td { padding: 2px 0; vertical-align: top; }
-.augside table.augids td:first-child { color: var(--dim); white-space: nowrap; padding-right: 10px; }
-.augside table.augids tr.idh td { color: var(--ink); font-weight: 700; padding: 9px 0 3px; border-bottom: 1px solid var(--line); }
-.augside table.augids tr.idh:first-child td { padding-top: 0; }
-.augside table.augids .idv { text-align: right; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 12.5px; overflow-wrap: anywhere; user-select: all; }
-.augside .tag { font-size: 9.5px; }
-.augside p.small { margin-top: 10px; }
-
 /* task tables: let the table scroll on phones instead of crushing the task text */
 #augtasks td:nth-child(3), table.augres td:last-child { min-width: 200px; }
 @media (max-width: 700px) {
@@ -55,14 +45,6 @@ table.augfits td:nth-child(4) .tag { white-space: nowrap; }
   table.augres td:first-child, table.augres th:first-child { display: none; }
   table.augfits img.awicon { width: 40px; }
 }
-.augside table.augids tr.idw td > span { display: block; }
-.augside table.augids tr.idw td > span:first-child { color: var(--dim); }
-.augside table.augids tr.idw td > span.idv { text-align: left; padding: 1px 0 2px 12px; }
-details.augside > summary { list-style: none; cursor: pointer; position: relative; padding-right: 36px; }
-details.augside > summary::-webkit-details-marker { display: none; }
-details.augside > summary::after { content: ""; position: absolute; right: 16px; top: 50%; width: 7px; height: 7px; margin-top: -6px;
-  border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); }
-details.augside[open] > summary::after { transform: rotate(-135deg); margin-top: -2px; }
 @media (max-width: 700px) { table.augfits td:nth-child(3), table.augfits th:nth-child(3) { display: none; } }
 @media (max-width: 520px) {
   table.augfits td:nth-child(4), table.augfits th:nth-child(4) { display: none; }

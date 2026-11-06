@@ -1156,10 +1156,8 @@ def build_safehouses(site, w):
 
     for key, name in REGIONS:
         shs = [s for s in w.safehouses if s["region"] == key]
-        body.append(bar(name, f"{len(shs)} safehouses", id=key))
-        body.append(table_intro(site, key, shs))
-        body.append(safehouse_table(site, w, shs, photo=True))
-        body.append(region_safehouse_map(w, key, shs))
+        body.append(fold(name, table_intro(site, key, shs) + safehouse_table(site, w, shs, photo=True)
+                         + region_safehouse_map(w, key, shs), open=True, right=f"{len(shs)} safehouses", id=key))
 
     body.append(bar("Map of all safehouses"))
     dots = [(s["x"], s["z"], s["name"] + (" (starting safehouse)" if s["start"] else ""), f'#{s["slug"]}',

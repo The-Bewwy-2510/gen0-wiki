@@ -742,7 +742,8 @@ def build_materials(site, m):
     body.append('<dl class="kv matgroups">' + "".join(f"<dt>{esc(g)}</dt><dd>{esc(intro)}</dd>"
                                                       for g, _, intro in MAT_GROUPS) + "</dl>")
     body.extend(material_tips(site, m))
-    body.extend(material_loot(site, m))
+    loot, loot_panel = material_loot(site, m)
+    body.extend(loot)
 
     need = sorted(m.materials, key=lambda e: -material_need(m, e)[1])
     ib = infobox("Materials", [(g, len(by_sub[g])) for g, _, _ in MAT_GROUPS] + [
@@ -752,7 +753,7 @@ def build_materials(site, m):
     side = [see_also(site, [
         ('<a href="~/items/schematics.html">Schematics</a>', "every recipe"),
         ('<a href="~/items/index.html">Equipment</a>', "what you craft"),
-    ])]
+    ])] + ([loot_panel] if loot_panel else [])
     lead = (f"<p>Crafting materials are what schematics turn into ammo, equipment, apparel upgrades and companion "
             f"armor. The game has {len(m.materials)} of them in four groups. You find them in crates, on bodies and "
             f"in destroyed machines, and a few lie at fixed spots in the world.</p>")
@@ -814,13 +815,15 @@ def material_loot(site, m):
     out = [fold("Placed materials by region", inner, id="placed", right=plural(total, "pickup"))]
     pts = [p for e in placed for p in m.loot_pts.get(e["raw"], [])]
     keys = [k for e in placed for k in m.loot_keys.get(e["raw"], [])]
-    if pts:
-        text = (f"<p><b>Placed materials on the map.</b> The {fmt(total)} material pickups of the world files. "
+    side = ""
+    if pts:   # the overview map goes to the right-hand rail: the square map on top, its text under it
+        text = (f"<p>The {fmt(total)} material pickups of the world files. "
                 f"<a href=\"{maplink(show=keys)}\">The full map</a> shows each one, with only the materials "
                 f"ticked.</p>")
-        out.append(minimap(pts[0][0], pts[0][1], "", markers=[(x, z, "") for x, z in pts[1:]], show=keys,
-                           small=True, text=text, zoom=1))
-    return out
+        side = panel("Placed materials on the map",
+                     minimap(pts[0][0], pts[0][1], "", markers=[(x, z, "") for x, z in pts[1:]], show=keys,
+                             small=True, text=text, zoom=1), cls="mmside")
+    return out, side
 
 
 # ---------------------------------------------------------------------------------------------------------------
@@ -916,7 +919,7 @@ def tree_section(site, m, t):
     its = m.tree_items(t)
     cur = m.currency.get(t["cur"], {})
     total = sum(s["c"] for s in its)
-    out = [bar(f"{t['name']} tree", f"{len(its)} schematics · {fmt(total)} points", id=f"tree-{t['key']}")]
+    out = []
     out.append(f'<div class="curbox">{site.img(TREE_ICON.format(t["key"]), alt="", cls="curbig")}<div>'
                f'<b>{esc(cur.get("name", t["name"]))}</b><p>{esc(cur.get("earn", ""))}</p>'
                f'<span class="small dim">Unlocking the whole tree costs {fmt(total)} points</span></div></div>')
@@ -931,7 +934,8 @@ def tree_section(site, m, t):
             continue
         out.append(fold("Details" + (f": {g['name']}" if named else ""), schematic_table(site, m, t, g), level=3,
                         id=f"details-{t['key']}-{slug(g['name'])}", right=plural(n, "schematic")))
-    return out
+    return [fold(f"{t['name']} tree", "".join(out), open=True, id=f"tree-{t['key']}",
+                 right=f"{len(its)} schematics · {fmt(total)} points")]
 
 
 def path_grid(site, m, g):

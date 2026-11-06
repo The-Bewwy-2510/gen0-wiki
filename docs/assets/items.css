@@ -69,3 +69,8 @@ h3.sgroup { margin: 22px 0 6px; }
 table.equip td:nth-child(6) { min-width: 120px; }
 /* overview maps (small, last on the page): every pin is one of many, none is "the" place */
 .mmrow .minimap .mmpin { background: #e8bd3f; width: 10px; height: 10px; margin: -5px 0 0 -5px; }
+/* materials: the placed-materials overview map in the right-hand rail - the square map fills the rail, text under it */
+.sidepanel.mmside .mmrow { flex-direction: column; gap: 10px; background: none; padding: 0; margin: 0; }
+.sidepanel.mmside .minimap.small { width: 100% !important; height: auto !important; aspect-ratio: 1 / 1; }
+.sidepanel.mmside .mmtext { width: 100%; }
+.sidepanel.mmside .mmtext p { margin: 0; }

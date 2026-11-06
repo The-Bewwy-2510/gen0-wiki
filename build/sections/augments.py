@@ -1,6 +1,6 @@
 """Augments & research: weapons/augments.html (slots, research, every augment and its task, hidden entries) and
-one page per augment, weapons/augments/<slug>.html (research, related things, the weapons it fits; its internal
-names and IDs in a side panel under the infobox, the only place this section prints them).
+one page per augment, weapons/augments/<slug>.html (research, related things, the weapons it fits).
+Item ids and internal names are only search aliases (site.register); no page prints them.
 
 Data (build/data):
   IDs.json       Augments: group (Primary / Support) -> augment name -> tier (Bronze / Silver / Gold, one augment has
@@ -22,7 +22,6 @@ import re
 from wiki.site import esc, slug, fmt, table, infobox, bar, fold, note, qbadge, tag, QUALITY
 
 CSS = '<link rel="stylesheet" href="~/assets/augments.css">'
-JS = '<script src="~/assets/augments.js" defer></script>'
 MAIN = "weapons/augments.html"
 TIERS = ("Bronze", "Silver", "Gold")
 GROUPS = ("Primary", "Support")
@@ -102,10 +101,8 @@ def make_augment(name, group, tiers, r, fit):
     first = next(iter(tiers.values()), {})
     r = r or {}
     need = r.get("tiers") or []
-    sch = fit.get("sch") or []
-    for k, it in enumerate(items):          # research thresholds and design hashes exist for Bronze/Silver/Gold only
+    for k, it in enumerate(items):          # research thresholds exist for Bronze/Silver/Gold only
         it["need"] = need[k] if k < len(need) and it["tier"] in TIERS else None
-        it["sch"] = sch[k] if k < len(sch) and it["tier"] in TIERS else None
     return {"name": name, "group": group, "slug": slug(name), "path": f"weapons/augments/{slug(name)}.html",
             "icon": first.get("Augment", ""), "items": items, "r": r, "rslug": r.get("slug", ""),
             "fits": {w: mk for w, mk in fit.get("fits", [])}, "only": fit.get("only", "")}
@@ -193,11 +190,6 @@ def counts_metres(r):
 def km(r):
     """' That is 400 km.' for a task counted in metres."""
     return f" That is {fmt(r['max'] / 1000)} km." if counts_metres(r) else ""
-
-
-def tier_label(it):
-    """'Gold', or 'Tier 4' with an Unreleased tag for the items past Gold that nothing unlocks."""
-    return esc(it["tier"]) + ("" if it["tier"] in TIERS else " " + tag("Unreleased", "unreleased"))
 
 
 def tier_need_text(r, n):
@@ -482,30 +474,7 @@ def build_augment(site, m, a, prev, nxt):
     body = [section_aug_research(site, a), related(site, m, a), section_aug_fits(site, m, a), nav_links(prev, nxt)]
     site.page(a["path"], a["name"], "".join(body), "weapons", sub="augments",
               crumbs=[("Augments & research", "~/" + MAIN)], desc=f"{a['name']}: {r.get('desc', '')}",
-              infobox_html=box, side=[ids_panel(a)], kind=f"Augment · {a['group']}", lead=lead, head_extra=CSS + JS)
-
-
-def ids_panel(a):
-    """Side panel under the infobox: every tier's internal name, item ID and design hash, and the research counter.
-    The one place the augments section prints internal names and IDs (for save editing)."""
-    row = lambda k, v: f'<tr><td>{esc(k)}</td><td class="idv">{esc(v)}</td></tr>' if v not in (None, "") else ""
-    rows = []
-    for it in a["items"]:
-        rows.append(f'<tr class="idh"><td colspan="2">{tier_label(it)}</td></tr>')
-        rows += [row("Item ID", it["id"]), row("Design", it["sch"])]
-        if it["raw"]:      # long: on its own line under the label, breakable after the underscores
-            rows.append(f'<tr class="idw"><td colspan="2"><span>Internal name</span><span class="idv">'
-                        f'{esc(it["raw"]).replace("_", "_<wbr>")}</span></td></tr>')
-    rows.append('<tr class="idh"><td colspan="2">Research counter</td></tr>')
-    rows += [row("Name", a["rslug"]), row("Hash", a["r"].get("hash", "")), row("Icon", a["icon"])]
-    extra = any(it["tier"] not in TIERS for it in a["items"])
-    body = (f'<table class="augids">{"".join(rows)}</table><p class="small dim">Each tier is its own item. '
-            "“Design” is that tier's augmentation design, which your profile holds once you have unlocked it."
-            + (" The tiers past Gold are in the item list, but nothing unlocks them." if extra else "") + "</p>")
-    # like wiki.site.panel(), but it can be closed: augments.js closes it on narrow screens, where the rail sits
-    # above the article and the IDs would push the page's content down
-    return (f'<details class="sidepanel augside" open><summary class="ibh">Internal names and IDs</summary>'
-            f'<div class="spb">{body}</div></details>')
+              infobox_html=box, kind=f"Augment · {a['group']}", lead=lead, head_extra=CSS)
 
 
 def section_aug_research(site, a):

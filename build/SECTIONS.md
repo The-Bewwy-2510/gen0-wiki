@@ -46,8 +46,7 @@ with **no broken links and no exceptions**.
 - **Readable first (layout v2).** The layout follows generation-zero.fandom.com's simpler pages: a short intro,
   an infobox on the right, short sections. Our data makes the pages more detailed, but:
   - **No internal names or hashes** (`wpn_*`, `<code>` object ids, item hashes, pack hashes, location hashes,
-    "internal name" columns) anywhere, except where a page explicitly keeps IDs in a side panel (weapon item IDs,
-    augment IDs). Keep them as search aliases in `site.register(aliases=...)` if useful, just don't print them.
+    "internal name" columns) anywhere, except where a page explicitly keeps IDs in a side panel (weapon item IDs). Keep them as search aliases in `site.register(aliases=...)` if useful, just don't print them.
   - **No redundancy**: if an entity page has the full data, the index page shows only the basics and links to it.
     Don't repeat a table another page owns; link to it.
   - Big lists are split into **collapsed folds** (per region / type / slot ...) instead of one giant table.

@@ -1,4 +1,4 @@
-"""Weapons tab: the weapon list (with a comparison table, closed by default), one page per weapon, experimental
+"""Weapons tab: the weapon list (with a comparison table: one closed fold per category), one page per weapon, experimental
 weapons, weapon skins.
 
 Layout v2: a weapon page has the infobox on the right, then side panels with the attachments that fit and the item
@@ -24,6 +24,7 @@ from wiki.site import (esc, slug, norm, fmt, table, infobox, bar, fold, panel, m
                        qbadge, tag, REGIONS, QUALITY)
 
 CSS = '<link rel="stylesheet" href="~/assets/weapons.css?v=3">'
+JS = '<script src="~/assets/weapons.js?v=1" defer></script>'   # weapons/index.html: comparison table folds
 EXP_PAGE = "weapons/experimental.html"
 REGION_NAME = dict(REGIONS)
 
@@ -526,11 +527,13 @@ def table_f(headers, rows, fs, **kw):
     return out
 
 
-def filterbar(target, cats, extra=True):
-    chips = '<button class="chip on" data-g="c" data-f="*">All</button>' + "".join(
-        f'<button class="chip" data-g="c" data-f="c-{slug(c)}">{esc(c)}</button>' for c in cats)
+def filterbar(target, cats=(), extra=True):
+    """Text filter plus chips: one per category in cats (none when empty) and, with extra, pack / experimental."""
+    chips = ('<button class="chip on" data-g="c" data-f="*">All</button>' + "".join(
+        f'<button class="chip" data-g="c" data-f="c-{slug(c)}">{esc(c)}</button>' for c in cats)) if cats else ""
     if extra:
-        chips += ('<span class="fsep"></span><button class="chip on" data-g="p" data-f="*">Any pack</button>'
+        chips += (('<span class="fsep"></span>' if cats else "") +
+                  '<button class="chip on" data-g="p" data-f="*">Any pack</button>'
                   '<button class="chip" data-g="p" data-f="base">Base game</button>'
                   '<button class="chip" data-g="p" data-f="dlc">DLC</button>'
                   '<button class="chip" data-g="p" data-f="exp">Has experimental</button>')
@@ -549,16 +552,22 @@ def build_index(site, m):
         body.append(bar(cat, f"{len(cws)}", id=slug(cat)))
         body.append(f"<p>{esc(CAT_BLURB[cat])}</p>")
         body.append(cards([card(site, w) for w in cws], cls="wcards"))
-    # the comparison table: below the list, closed until opened
-    rows, fs = zip(*(compare_row(site, m, w) for w in ws))
+    # the comparison table: below the list, one small closed table per category (same columns in each)
+    headers = ["", "Weapon", "Calibre", "Standard ammo", "Damage", "Best shot", "Blast / burn",
+               "Qualities", "Pack", "Range / falloff"]
+    groups = []
+    for cat in cats:
+        cws = [w for w in ws if w["cat"] == cat]
+        rows, fs = zip(*(compare_row(site, m, w) for w in cws))
+        groups.append(fold(cat, table_f(headers, rows, fs, cls="compact wcmp", num={4, 5}), open=False, level=3,
+                           right=f"{len(cws)} weapons", id="cmp-" + slug(cat), cls="wcmpfold"))
     cmp_html = [
-        "<p>Every weapon side by side. Click a column header to sort; use the chips to narrow the list to one "
-        "category, to base game or DLC weapons, or to weapons with an experimental version.</p>",
-        filterbar("wcompare", cats),
-        '<div id="wcompare">' + table_f(
-            ["", "Weapon", "Calibre", "Standard ammo", "Damage", "Best shot", "Blast / burn",
-             "Qualities", "Pack", "Range / falloff"],
-            rows, fs, cls="compact wcmp", num={4, 5}) + "</div>",
+        "<p>Every weapon side by side, one table per category: open a category to compare its weapons. Click a "
+        "column header to sort; type in the filter box to search all categories at once, or use the chips to show "
+        "only base game or DLC weapons, or weapons with an experimental version.</p>",
+        filterbar("wcompare"),
+        '<div class="foldall" data-for="wcompare"></div>',
+        '<div id="wcompare">' + "".join(groups) + "</div>",
         "<h3>How to read the columns</h3>",
         "<p>In Generation Zero the damage of a shot is set by the <b>ammunition</b>, not by the gun: every "
         "7.62mm weapon, from the AI-76 to the Kotenok, fires the same 33-damage bullet. What the gun adds is a "
@@ -579,7 +588,7 @@ def build_index(site, m):
             ("Range / falloff", "Farthest the projectile flies, and how its damage drops with distance.")]),
         note("Fire rate, magazine size, recoil and reload time are not in the extracted files, so they are not "
              "in these tables. Melee hit damage isn't either – only the melee quality multipliers.", "data")]
-    body.append(fold("Comparison table", "".join(cmp_html), open=False, right=f"{len(ws)} weapons",
+    body.append(fold("Comparison table", "".join(cmp_html), open=True, right=f"{len(ws)} weapons",
                      id="comparison-table"))
     n_skins = len(m["skins"])
     glance = kv([("Weapons", fmt(len(ws))), ("Categories", fmt(len(cats))),
@@ -590,7 +599,7 @@ def build_index(site, m):
             f"{n_dlc} of them from DLC packs and {n_exp} with an experimental version. Pick a weapon for its "
             "damage per ammo and quality, attachments, augments, skins and where it is placed in the world; the "
             '<a href="#comparison-table">comparison table</a> at the bottom puts them all side by side.</p>')
-    site.page("weapons/index.html", "Weapons", "".join(body), "weapons", lead=lead, head_extra=CSS,
+    site.page("weapons/index.html", "Weapons", "".join(body), "weapons", lead=lead, head_extra=CSS + JS,
               side=[panel("At a glance", glance)],
               desc="Every Generation Zero weapon by category, with a comparison table of damage, ammo and range.")
 

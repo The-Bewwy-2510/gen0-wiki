@@ -20,7 +20,22 @@
 .skhead .skpts b { font-size: 15px; color: #0b0b0b; }
 .skreset { background: #0b0b0b; color: #fff; border: 0; font: inherit; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; cursor: pointer; }
 .skreset:hover { background: #333; }
+/* each tree has the tint of its column in the game's skill menu (sampled from a screenshot of it), fading darker
+   towards the bottom; the details panel beside it is near-black, like the game's */
+.skmenu { container-type: inline-size; }
+.skpane { --skt: #1d1114; background: linear-gradient(180deg, var(--skt0) 0%, var(--skt) 45%, var(--skt1) 100%); }
+.skpane[data-t="combat"] { --skt0: #251113; --skt: #1d1114; --skt1: #0b0a0e; }
+.skpane[data-t="support"] { --skt0: #1f1927; --skt: #1a1724; --skt1: #0d0f14; }
+.skpane[data-t="survival"] { --skt0: #132223; --skt: #152326; --skt1: #0d1317; }
+.skpane[data-t="tech"] { --skt0: #0f1b29; --skt: #14202c; --skt1: #0d131b; }
 .skwrap { display: flex; flex-wrap: wrap; gap: 18px; padding: 16px 14px 18px; align-items: flex-start; }
+/* side by side (wide enough): the details panel is exactly as tall as the tree and scrolls inside if it's longer */
+@container (min-width: 680px) {
+  .skwrap { flex-wrap: nowrap; align-items: stretch; }
+  .skmenu.js .skinfo { position: relative; top: auto; min-height: 320px; }
+  .skmenu.js .skd.on { position: absolute; inset: 0; overflow-y: auto; overscroll-behavior: contain;
+    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.3) transparent; }
+}
 
 /* the tree: two columns of six, lines between the nodes, specializations under a label */
 .skgrid { --gap: 26px; flex: 1 1 300px; max-width: 460px; display: grid; grid-template-columns: 1fr 1fr; row-gap: var(--gap);
@@ -54,7 +69,7 @@
 
 /* the details beside the tree */
 .skinfo { flex: 1 1 320px; min-width: 0; position: sticky; top: 108px; }
-.skd { display: none; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.12); }
+.skd { display: none; background: rgba(3, 6, 11, .94); border: 1px solid rgba(255,255,255,.12); }
 .skd.on { display: block; }
 .skmenu:not(.js) .skd { display: none; }
 .skmenu:not(.js) .skd.on { display: block; }
@@ -118,6 +133,16 @@ h3.aph { display: flex; align-items: center; gap: 8px; margin: 0 0 8px; font-siz
   border-bottom: 1px solid rgba(255,255,255,.2); padding-bottom: 4px; }
 h3.aph small { font-size: 12px; color: var(--dim); font-weight: 400; letter-spacing: .04em; text-transform: none; margin-left: auto; }
 h3.aph img.chi { width: 30px; height: 30px; }
+/* two rows per slot until "Show all" (character.js) */
+.apc.apover { display: none; }
+.apmore { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; margin: 8px 0 0; padding: 6px 12px;
+  background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.16); color: var(--ink2); font: inherit; font-size: 12px;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase; cursor: pointer; }
+.apmore[hidden] { display: none; }
+.apmore::after { content: ""; width: 7px; height: 7px; border: solid currentColor; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-top: -4px; }
+.apmore[aria-expanded="true"]::after { transform: rotate(-135deg); margin-top: 3px; }
+.apmore:hover { background: rgba(255,255,255,.12); color: #fff; }
+.apmore:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 .apgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); gap: 8px; }
 .apc { display: flex; gap: 12px; background: var(--card); padding: 10px; min-width: 0; border-left: 3px solid #3d4a50; scroll-margin-top: 110px; }
 .apc:target { outline: 2px solid var(--q5); }

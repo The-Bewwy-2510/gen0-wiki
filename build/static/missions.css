@@ -153,3 +153,12 @@ ul.chlist li { margin: 6px 0; }
   table.mstable td:last-child { grid-column: 1 / -1; margin-top: 3px; }
   table.mstable td.msum, table.mstable .msum { min-width: 0; }
 }
+
+/* ---------- mission page: "Mission start" box in the rail (from the Fandom wiki) ---------- */
+.msstartp .msstart { margin: 0 0 4px; font-weight: 700; color: var(--ink); }
+.msstartp .msstart .dim { font-weight: 400; }
+.msstartp .msxy { margin: 0 0 6px; color: var(--ink2); font-size: 13.5px; }
+.msstartp .msxy b { font-variant-numeric: tabular-nums; color: var(--ink); }
+.msstartp p.small { margin: 0 0 6px; }
+.msstartp .minimap { margin: 8px 0; }
+.msstartp .mscredit { margin: 6px 0 0; font-size: 12px; color: var(--dim); }

@@ -1,0 +1,960 @@
+{
+ "_about": {
+  "source": "Generation Zero Wiki on Fandom (https://generation-zero.fandom.com), the 'Mission Start' field (start =) of each mission page's MissionInfo infobox, read through the MediaWiki API (action=parse, prop=wikitext); for four stub pages without one (Stalemate, The Response, Normal Lives, Unorthodox Skiing) the start their article text gives.",
+  "date": "2026-11-06",
+  "license": "Text from the Fandom wiki, CC BY-SA 3.0 (https://www.fandom.com/licensing). Credit Fandom wherever it is shown.",
+  "coordinates": "x, y are the numbers Fandom writes next to the start (the in-game map coordinates). They are the same axes and units as our world x, z (map_locations.json / markers.json) with no offset, flip or scale: compared with the map location the start names, they are a median of 39 m and at most 352 m apart over 45 starts (Fandom's figures are rounded readings, e.g. Vesslan Command Bunker 1490, 3885 against 1526.5, 3861.8 in map_locations.json; the Hisingafyren safehouse -5655, 4542 against -5662.8, 4542.4 in markers.json). null = Fandom gives no coordinates.",
+  "fields": "name = our mission name; place = the start as Fandom names it (null when it names none); location = our map location of that name (exact name, or a spelling difference checked by name and position); note = a short reading of a start that Fandom writes as a sentence; fandom_text = the infobox text (or the article's words, see source) as Fandom has it, markup removed; fandom_title = the page.",
+  "matching": "Missions matched to Fandom pages by title ignoring case and punctuation (the list on the Missions page and Category:Missions, then the mission name itself); 'Summer Vacation' is the page 'Summer Vaction'; the three Home Base Defense difficulties share 'Our New Home - Home Base Defense'.",
+  "missing": [
+   "Flying Blind: Fandom page 'Flying Blind' has no start",
+   "Warboard - Uttern Bunker: Fandom page 'Warboard - Uttern Bunker' has no start",
+   "Line of Fire: Fandom page 'Line of Fire' has no start",
+   "Loud and Clear: Fandom page 'Loud and Clear' has no start",
+   "Behind the Curtain: Fandom page 'Behind the Curtain' has no start",
+   "The Hellmouth: Fandom page 'The Hellmouth' has no start",
+   "Ghosts of the Past: Fandom page 'Ghosts of the Past' has no start",
+   "A Light in the Dark: Fandom start unreadable: (???, ???)",
+   "Last Resort: Fandom start unreadable: (???, ???)",
+   "The Secluded: Fandom start unreadable: (???, ???)",
+   "Piece by Piece: Fandom page 'Piece by Piece' has no start",
+   "Test Run: Fandom page 'Test Run' has no start",
+   "Clearing the Path: Fandom page 'Clearing the Path' has no start",
+   "On the Side of the Road: Fandom page 'On the Side of the Road' has no start",
+   "Wages of Fear: Fandom page 'Wages of Fear' has no start",
+   "New Cycles: Fandom page 'New Cycles' has no start",
+   "Good Night: Fandom page 'Good Night' has no start",
+   "Never Trust Anyone: Fandom page 'Never Trust Anyone' has no start",
+   "In the Face of Adversity: Fandom page 'In the Face of Adversity' has no start",
+   "Summer Vacation: Fandom page 'Summer Vaction' has no start",
+   "We Are the Resistance: Fandom page 'We Are the Resistance' has no start",
+   "Fighting the Future: Fandom page 'Fighting the Future' has no start",
+   "The Hatches: Fandom page 'The Hatches' has no start",
+   "Energy Independence: Fandom page 'Energy Independence' has no start",
+   "Synapses: Fandom page 'Synapses' has no start",
+   "Fuel to the Fire: Fandom page 'Fuel to the Fire' has no start",
+   "The Virus: Fandom page 'The Virus' has no start",
+   "The Old Mine: no Fandom page",
+   "Monday, 15:00: no Fandom page",
+   "Triangles: no Fandom page",
+   "Mirrors: no Fandom page",
+   "All Along the Castle Tower: no Fandom page",
+   "The Lesser Evil: no Fandom page",
+   "Building Blocks: Fandom page 'Building Blocks' has no start",
+   "Foreign Machines: no Fandom page",
+   "One Last Excursion: no Fandom page",
+   "Death from above: no Fandom page",
+   "An Invitation: no Fandom page",
+   "Making Friends: no Fandom page",
+   "Network Infiltration: no Fandom page",
+   "Exclusion Zone: no Fandom page",
+   "Skinnarbol: no Fandom page",
+   "Something Worth Guarding: no Fandom page",
+   "Launch Site Bravo: no Fandom page"
+  ]
+ },
+ "starts": {
+  "2109181687": {
+   "name": "Break of Dawn",
+   "place": null,
+   "x": 4114,
+   "y": 2204,
+   "fandom_title": "Break of Dawn",
+   "note": "Added to your log as soon as the game starts; the coordinates are those Fandom gives for the first objective, inside the house up the path.",
+   "fandom_text": "Obtaining the Mission: / Mission is added to your log as soon as the game starts. / First Objective: / Inside the house up the path. / (4114, 2204)"
+  },
+  "-1900180705": {
+   "name": "Sanctuary",
+   "place": null,
+   "x": 3588,
+   "y": 2334,
+   "fandom_title": "Sanctuary",
+   "note": "Added to your log after Break of Dawn; the coordinates are those Fandom gives for the first objective, the church west of the house where you found the gun.",
+   "fandom_text": "Obtaining the Mission: / Mission is added to your log after completing the mission Break of Dawn. / First Objective: / Inside the church to the west of the house where you found the gun. / (3588, 2334)"
+  },
+  "1099791464": {
+   "name": "The Farm",
+   "place": "Iboholmen Church",
+   "x": null,
+   "y": null,
+   "fandom_title": "The Farm",
+   "location": "Iboholmen Church",
+   "fandom_text": "Iboholmen Church"
+  },
+  "-251042488": {
+   "name": "The Road to Salthamn",
+   "place": "Stenhaga Farm",
+   "x": 2740,
+   "y": 2480,
+   "fandom_title": "The Road to Salthamn",
+   "location": "Stenhaga Farm",
+   "fandom_text": "Stenhaga Farm / (2740, 2480)"
+  },
+  "-1183251439": {
+   "name": "Civil Defense",
+   "place": "Salthamn Bomb Shelter",
+   "x": 2019,
+   "y": 3130,
+   "fandom_title": "Civil Defense",
+   "fandom_text": "Salthamn Bomb Shelter / (2019, 3130)"
+  },
+  "319615773": {
+   "name": "The Home Team",
+   "place": "Salthamn",
+   "x": 1840,
+   "y": 3080,
+   "fandom_title": "The Home Team",
+   "location": "Salthamn",
+   "fandom_text": "Salthamn (1840, 3080)"
+  },
+  "-1902362550": {
+   "name": "Old Bettan",
+   "place": "Iboholmen Church",
+   "x": null,
+   "y": null,
+   "fandom_title": "Old Bettan",
+   "location": "Iboholmen Church",
+   "fandom_text": "Iboholmen Church"
+  },
+  "-919844763": {
+   "name": "The Hunter",
+   "place": "Green Björk car near Yttervik",
+   "x": 3830,
+   "y": 2385,
+   "fandom_title": "The Hunter",
+   "fandom_text": "Green Björk car near Yttervik (3830, 2385)"
+  },
+  "-1068922354": {
+   "name": "One Can Only Hope",
+   "place": "Iboholmen Castle, worker's barrack",
+   "x": 3080,
+   "y": 2860,
+   "fandom_title": "One Can Only Hope",
+   "location": "Iboholmen Castle",
+   "fandom_text": "Iboholmen Castle, Worker's Barrack (3080, 2860)"
+  },
+  "1264946870": {
+   "name": "Shooting Practice",
+   "place": "Mörtnäs",
+   "x": 2300,
+   "y": 2900,
+   "fandom_title": "Shooting Practice",
+   "location": "Mörtnäs",
+   "fandom_text": "Mörtnäs (2300, 2900)"
+  },
+  "1863122565": {
+   "name": "Unbearable Lightness",
+   "place": "Vesslan Command Bunker",
+   "x": 1470,
+   "y": 3860,
+   "fandom_title": "Unbearable Lightness",
+   "location": "Vesslan Command Bunker",
+   "fandom_text": "Vesslan Command Bunker (1470, 3860)"
+  },
+  "696646054": {
+   "name": "Road Rage",
+   "place": "Saltholmen Naval Base, Gate House",
+   "x": 965,
+   "y": 3945,
+   "fandom_title": "Road Rage",
+   "location": "Saltholmen Base",
+   "fandom_text": "Saltholmen Naval Base, Gate House (965, 3945)"
+  },
+  "1425407517": {
+   "name": "The Path of the Gods",
+   "place": "Skogsbo",
+   "x": 160,
+   "y": 2860,
+   "fandom_title": "The Path of the Gods",
+   "location": "Skogsbo",
+   "fandom_text": "Skogsbo (160, 2860)"
+  },
+  "1597456989": {
+   "name": "Strength in Numbers",
+   "place": "Hästvik",
+   "x": 465,
+   "y": 3645,
+   "fandom_title": "Strength in Numbers",
+   "location": "Hästvik",
+   "fandom_text": "Hästvik (465, 3645)"
+  },
+  "543967838": {
+   "name": "Warboard - Minken Bunker",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Warboard - Minken Bunker",
+   "note": "Starts the first time you enter the region.",
+   "fandom_text": "First Time Region Entry"
+  },
+  "-1279951679": {
+   "name": "Seeds of Doubt",
+   "place": "Knaperänna Farm",
+   "x": -2000,
+   "y": 2035,
+   "fandom_title": "Seeds of Doubt",
+   "location": "Knaperänna Farm",
+   "fandom_text": "Knaperänna Farm (-2000, 2035)"
+  },
+  "1590182975": {
+   "name": "Treasure Hunt",
+   "place": "Villa Kaseberg",
+   "x": -2090,
+   "y": 2630,
+   "fandom_title": "Treasure Hunt",
+   "location": "Villa Kaseberg",
+   "fandom_text": "Villa Kaseberg (-2090, 2630)"
+  },
+  "1142420669": {
+   "name": "Beyond the Barricade",
+   "place": "Åsö",
+   "x": -695,
+   "y": 2015,
+   "fandom_title": "Beyond the Barricade",
+   "location": "Åsö",
+   "fandom_text": "Åsö (-695, 2015)"
+  },
+  "-1697945450": {
+   "name": "At Death's Door",
+   "place": "Hisingafyren Safehouse",
+   "x": -5655,
+   "y": 4542,
+   "fandom_title": "At Death's Door",
+   "location": "Hisingafyren",
+   "fandom_text": "Hisingafyren Safehouse (-5655, 4542)"
+  },
+  "-1980303087": {
+   "name": "Safe Harbor",
+   "place": "Tångekil",
+   "x": -4055,
+   "y": 3300,
+   "fandom_title": "Safe Harbor",
+   "location": "Tångekil",
+   "fandom_text": "Tångekil (-4055, 3300)"
+  },
+  "899572014": {
+   "name": "No Rest for the Weary",
+   "place": "Kålleby",
+   "x": -2930,
+   "y": 2685,
+   "fandom_title": "No Rest for the Weary",
+   "location": "Kålleby",
+   "fandom_text": "Kålleby (-2930, 2685)"
+  },
+  "-862606437": {
+   "name": "Secret Cargo",
+   "place": "Minken Command Bunker",
+   "x": -2100,
+   "y": 2530,
+   "fandom_title": "Secret Cargo",
+   "location": "Minken Command Bunker",
+   "fandom_text": "Minken Command Bunker (-2100, 2530)"
+  },
+  "2037084536": {
+   "name": "The Fallen",
+   "place": "Torsberga Fort",
+   "x": -4270,
+   "y": 4415,
+   "fandom_title": "The Fallen",
+   "location": "Torsberga Fort",
+   "fandom_text": "Torsberga Fort (-4270, 4415)"
+  },
+  "753054138": {
+   "name": "To the Lighthouse",
+   "place": "Sillavik",
+   "x": -3105,
+   "y": 3800,
+   "fandom_title": "To the Lighthouse",
+   "location": "Sillavik",
+   "fandom_text": "Sillavik (-3105, 3800)"
+  },
+  "218561533": {
+   "name": "Spiking the Guns",
+   "place": "Minken Command Bunker",
+   "x": -2100,
+   "y": 2530,
+   "fandom_title": "Spiking the Guns",
+   "location": "Minken Command Bunker",
+   "note": "From the Warboard.",
+   "fandom_text": "Warboard - Minken Bunker (-2100, 2530)"
+  },
+  "591944120": {
+   "name": "The Girl Who Cried Wolf",
+   "place": "Minken Command Bunker",
+   "x": -2100,
+   "y": 2530,
+   "fandom_title": "The Girl Who Cried Wolf",
+   "location": "Minken Command Bunker",
+   "fandom_text": "Minken Command Bunker (-2100, 2530)"
+  },
+  "-1201532963": {
+   "name": "Warboard - Sorken Bunker",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Warboard - Sorken Bunker",
+   "note": "Starts the first time you enter the Farmlands Region.",
+   "fandom_text": "Upon entry of / Farmlands Region"
+  },
+  "-1606626004": {
+   "name": "Hogging Supplies",
+   "place": "Skogshult",
+   "x": -271,
+   "y": 1497,
+   "fandom_title": "Hogging Supplies",
+   "location": "Skogshult",
+   "fandom_text": "Skogshult (-271, 1497)"
+  },
+  "1927757739": {
+   "name": "Of Machines and Men",
+   "place": "F23 Överby Air Base",
+   "x": -870,
+   "y": 650,
+   "fandom_title": "Of Machines and Men",
+   "location": "F23 Överby Air Base",
+   "fandom_text": "F23 Överby Air Base (-870, 650)"
+  },
+  "-1078377901": {
+   "name": "Total Defense",
+   "place": "Skrankebol",
+   "x": -10,
+   "y": 1290,
+   "fandom_title": "Total Defense",
+   "location": "Skrankebol",
+   "fandom_text": "Skrankebol (-10, 1290)"
+  },
+  "1122595907": {
+   "name": "On the Road",
+   "place": "Broskulla",
+   "x": -50,
+   "y": -810,
+   "fandom_title": "On the Road",
+   "location": "Broskulla",
+   "fandom_text": "Broskulla (-50, -810)"
+  },
+  "850494284": {
+   "name": "Stealing from the Poor",
+   "place": null,
+   "x": 604,
+   "y": -318,
+   "fandom_title": "Stealing from the Poor",
+   "fandom_text": "604, -318"
+  },
+  "144027062": {
+   "name": "Lone Wolf",
+   "place": null,
+   "x": -1783,
+   "y": -1325,
+   "fandom_title": "Lone Wolf",
+   "fandom_text": "-1783, -1325"
+  },
+  "-1785268528": {
+   "name": "Colonists",
+   "place": null,
+   "x": -730,
+   "y": -1800,
+   "fandom_title": "Colonists",
+   "fandom_text": "-730 -1800"
+  },
+  "1048480322": {
+   "name": "Law of the Land",
+   "place": "Österviks Policestation",
+   "x": 979,
+   "y": 40,
+   "fandom_title": "Law of the Land",
+   "note": "A radio in a car.",
+   "fandom_text": "Österviks Policestation / Radio in a car (979, 40)"
+  },
+  "-271448195": {
+   "name": "Refueling",
+   "place": "Sorken Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "Refueling",
+   "location": "Sorken Command Bunker",
+   "fandom_text": "Sorken Bunker"
+  },
+  "113208287": {
+   "name": "Warboard - Mården Bunker",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Warboard - Mården Bunker",
+   "note": "Starts the first time you enter the region.",
+   "fandom_text": "First-time Region entry"
+  },
+  "-438786961": {
+   "name": "Hazardous Contents",
+   "place": "Beredskapsförråd 119",
+   "x": 1400,
+   "y": -560,
+   "fandom_title": "Hazardous Contents",
+   "location": "Beredskapsförråd 119",
+   "fandom_text": "Beredskapsförråd 119 (1400, -560)"
+  },
+  "475033823": {
+   "name": "Exchange Student",
+   "place": null,
+   "x": 680,
+   "y": 838,
+   "fandom_title": "Exchange Student",
+   "fandom_text": "680, 838"
+  },
+  "134020818": {
+   "name": "Scrap Metal",
+   "place": "Tornberget",
+   "x": 1025,
+   "y": 380,
+   "fandom_title": "Scrap Metal",
+   "location": "Tornberget",
+   "fandom_text": "Tornberget 1025,380"
+  },
+  "1375565119": {
+   "name": "Woodcutter",
+   "place": "Granhygget",
+   "x": 1630,
+   "y": -1820,
+   "fandom_title": "Woodcutter",
+   "location": "Granhygget",
+   "fandom_text": "Granhygget 1630,-1820"
+  },
+  "1698158538": {
+   "name": "Tilting at Windmills",
+   "place": "Granlugnet",
+   "x": 487,
+   "y": 183,
+   "fandom_title": "Tilting at Windmills",
+   "location": "Granlugnet",
+   "fandom_text": "Granlugnet (487, 183)"
+  },
+  "-1713687869": {
+   "name": "Courage, Power and Resilience",
+   "place": "Mården Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "Courage, Power and Resilience",
+   "location": "Mården Command Bunker",
+   "note": "From the Warboard.",
+   "fandom_text": "Warboard Mården Bunker"
+  },
+  "-452189809": {
+   "name": "Flying Objects",
+   "place": "Mården Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "Flying Objects",
+   "location": "Mården Command Bunker",
+   "note": "From the Warboard.",
+   "fandom_text": "Warboard - Mården"
+  },
+  "1432804957": {
+   "name": "The Gas Factory",
+   "place": null,
+   "x": 1988,
+   "y": 200,
+   "fandom_title": "The Gas Factory",
+   "note": "After Warboard - Mården Bunker.",
+   "fandom_text": "When: After completing Warboard - Mården Bunker / Where: 1988, 200"
+  },
+  "-1262739697": {
+   "name": "Supply Run",
+   "place": null,
+   "x": -4010,
+   "y": 150,
+   "fandom_title": "Supply Run",
+   "fandom_text": "-4010,150"
+  },
+  "-377169660": {
+   "name": "The Gun Club",
+   "place": "St Maria Church",
+   "x": -3418,
+   "y": -771,
+   "fandom_title": "The Gun Club",
+   "location": "S:ta Maria Church",
+   "fandom_text": "St Maria Church (-3418, -771)"
+  },
+  "1590573498": {
+   "name": "Out Hiking",
+   "place": "Klinte",
+   "x": -4582,
+   "y": -393,
+   "fandom_title": "Out Hiking",
+   "location": "Klinte",
+   "fandom_text": "Klinte -4582, -393"
+  },
+  "-1786300021": {
+   "name": "Top of the World",
+   "place": "Ramberga",
+   "x": -4413,
+   "y": 859,
+   "fandom_title": "Top of the World",
+   "location": "Ramberga",
+   "note": "A note on the refrigerator in the house.",
+   "fandom_text": "-4413, 859 (A note on the refrigerator in the house at Ramberga)"
+  },
+  "156757511": {
+   "name": "Prospect Tunnel",
+   "place": null,
+   "x": -3732,
+   "y": 275,
+   "fandom_title": "Prospect Tunnel",
+   "note": "An upright book on a bookshelf.",
+   "fandom_text": "-3732, 275 (Upright book on a bookshelf)"
+  },
+  "-1327901013": {
+   "name": "Zero Hour",
+   "place": null,
+   "x": -3850,
+   "y": 270,
+   "fandom_title": "Zero Hour",
+   "fandom_text": "-3850, 270"
+  },
+  "-1450800147": {
+   "name": "Lost and Found",
+   "place": null,
+   "x": -2830,
+   "y": -1602,
+   "fandom_title": "Lost and Found",
+   "fandom_text": "-2830, -1602"
+  },
+  "-1731964896": {
+   "name": "Back on Track",
+   "place": "Uttern Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "Back on Track",
+   "location": "Uttern Command Bunker",
+   "note": "From the Warboard.",
+   "fandom_text": "Uttern Bunker Warboard (back on track)"
+  },
+  "-1146866565": {
+   "name": "Radio Silence",
+   "place": "Rusaberget",
+   "x": -3291,
+   "y": 1165,
+   "fandom_title": "Radio Silence",
+   "location": "Rusaberget Radio Mast",
+   "fandom_text": "Rusaberget / -3291, 1165"
+  },
+  "-1897310609": {
+   "name": "Warboard - Skvadern Bunker",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Warboard - Skvadern Bunker",
+   "note": "Starts the first time you enter the region.",
+   "fandom_text": "First-time Region entry"
+  },
+  "-676268595": {
+   "name": "Contraband",
+   "place": null,
+   "x": -2575,
+   "y": -3100,
+   "fandom_title": "Contraband",
+   "fandom_text": "-2575, -3100"
+  },
+  "-864752206": {
+   "name": "Gas Run",
+   "place": null,
+   "x": -2665,
+   "y": -1845,
+   "fandom_title": "Gas Run",
+   "fandom_text": "-2665, -1845"
+  },
+  "-1939904615": {
+   "name": "Last Stand",
+   "place": "Norrmyra Artillery Base",
+   "x": -2463,
+   "y": -3189,
+   "fandom_title": "Last Stand",
+   "location": "Norrmyra Artillery Base",
+   "fandom_text": "-2463, -3189 (Norrmyra Artillery Base)"
+  },
+  "-1782830638": {
+   "name": "Emergency Supplies",
+   "place": null,
+   "x": -983.615,
+   "y": -4361.142,
+   "fandom_title": "Emergency Supplies",
+   "fandom_text": "-983.615, -4361.142"
+  },
+  "-493906454": {
+   "name": "A Place to Rest",
+   "place": null,
+   "x": -1545,
+   "y": -3360,
+   "fandom_title": "A Place to Rest",
+   "fandom_text": "-1545, -3360"
+  },
+  "-827298477": {
+   "name": "The Bridge",
+   "place": "Skvadern Command Bunker",
+   "x": -1529,
+   "y": -3329,
+   "fandom_title": "The Bridge",
+   "location": "Skvadern Command Bunker",
+   "note": "Starts at the Warboard in the Skvadern Command Bunker (Warboard - Skvadern Bunker); the coordinates are the bunker entrance.",
+   "fandom_text": "Obtaining the Mission: / Interacting with the warboard in the Skvadern command bunker for the first time, through the Warboard - Skvadern Bunker mission. / (Entrance at -1529, -3329) / First Objective: / Bridge connecting to the mainland, at the northernmost point of the main island. / (-1390, -5011)"
+  },
+  "-539844789": {
+   "name": "The Old Guard",
+   "place": "Skvadern Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "The Old Guard",
+   "location": "Skvadern Command Bunker",
+   "note": "Starts at the Warboard in the Skvadern Command Bunker.",
+   "fandom_text": "Interacting with the warboard in the Skvadern command bunker for the first time."
+  },
+  "-525728801": {
+   "name": "Warboard - Hermelinen Bunker",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Warboard - Hermelinen Bunker",
+   "note": "Starts when you enter the region.",
+   "fandom_text": "Region Entry"
+  },
+  "658894450": {
+   "name": "The Spotter",
+   "place": "Army Storage",
+   "x": 2190,
+   "y": -3600,
+   "fandom_title": "The Spotter",
+   "fandom_text": "Army Storage (2190, -3600)"
+  },
+  "342866636": {
+   "name": "History Repeats Itself",
+   "place": null,
+   "x": 1870,
+   "y": -3859,
+   "fandom_title": "History Repeats Itself",
+   "fandom_text": "1870, -3859"
+  },
+  "324836335": {
+   "name": "Troll Toll",
+   "place": null,
+   "x": 978,
+   "y": -4400,
+   "fandom_title": "Troll Toll",
+   "note": "A radio on the table.",
+   "fandom_text": "978, -4400 / (Radio on the table)"
+  },
+  "1819070514": {
+   "name": "Left Behind",
+   "place": null,
+   "x": 812.9,
+   "y": -4215.4,
+   "fandom_title": "Left Behind",
+   "note": "A letter.",
+   "fandom_text": "812.9, -4215.4 (Letter)"
+  },
+  "-348468125": {
+   "name": "The Ruin of Many a Poor Man",
+   "place": "Lövnäs",
+   "x": 1549,
+   "y": -3107,
+   "fandom_title": "The Ruin of Many a Poor Man",
+   "location": "Lövnäs",
+   "fandom_text": "Lövnäs (1549, -3107)"
+  },
+  "1465506425": {
+   "name": "Heavy Loadout",
+   "place": null,
+   "x": 700,
+   "y": -4300,
+   "fandom_title": "Heavy Loadout",
+   "note": "A letterbox on the first floor.",
+   "fandom_text": "Letterbox first floor (700, -4300)"
+  },
+  "-886976559": {
+   "name": "Science of Deduction",
+   "place": "FOA 5 Facility",
+   "x": null,
+   "y": null,
+   "fandom_title": "Science of Deduction",
+   "location": "FOA Facility",
+   "fandom_text": "FOA 5 Facility"
+  },
+  "353145632": {
+   "name": "The Command Bunker Network",
+   "place": "Vesslan Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "The Command Bunker Network",
+   "location": "Vesslan Command Bunker",
+   "fandom_text": "Vesslan Command Bunker"
+  },
+  "2045279672": {
+   "name": "The Enemy of my Enemy",
+   "place": "Ålnästet",
+   "x": -1820,
+   "y": -4314,
+   "fandom_title": "The Enemy of my Enemy",
+   "location": "Ålnästet",
+   "fandom_text": "Ålnästet (-1820, -4314)"
+  },
+  "-448297969": {
+   "name": "Empty Spaces",
+   "place": "Hermelinen Command Bunker",
+   "x": null,
+   "y": null,
+   "fandom_title": "Empty Spaces",
+   "location": "Hermelinen Command Bunker",
+   "note": "From the Warboard; Science of Deduction leads into it.",
+   "fandom_text": "Hermelinen Bunkers Warboard, Main Mission \"Science of Deduction\" Leads Into \"Empty Spaces\""
+  },
+  "-1019113988": {
+   "name": "A Wrench in the Works",
+   "place": null,
+   "x": -3623,
+   "y": 135,
+   "fandom_title": "A Wrench in the Works",
+   "fandom_text": "-3623, 135"
+  },
+  "-1935682175": {
+   "name": "Not Alone",
+   "place": "Convoy past the IGA Facility",
+   "x": null,
+   "y": null,
+   "fandom_title": "Not Alone",
+   "fandom_text": "(Convoy past IGA Facility)"
+  },
+  "-1650564989": {
+   "name": "For the Sick and the Injured",
+   "place": "Marksätern café",
+   "x": null,
+   "y": null,
+   "fandom_title": "For the Sick and the Injured",
+   "location": "Marksätern",
+   "fandom_text": "(Marksätern café)"
+  },
+  "-2147453808": {
+   "name": "Make Some Noise",
+   "place": "Björntunet Hotel",
+   "x": null,
+   "y": null,
+   "fandom_title": "Make Some Noise",
+   "location": "Björntunet Hotel",
+   "fandom_text": "(Björntunet Hotel)"
+  },
+  "1497849544": {
+   "name": "Arms Race",
+   "place": "Björntunet Hotel",
+   "x": null,
+   "y": null,
+   "fandom_title": "Arms Race",
+   "location": "Björntunet Hotel",
+   "fandom_text": "(Björntunet Hotel)"
+  },
+  "-890559954": {
+   "name": "Nothing but the Snow",
+   "place": "Himarvet police station",
+   "x": null,
+   "y": null,
+   "fandom_title": "Nothing but the Snow",
+   "location": "Himarvet",
+   "fandom_text": "(Himarvet police station)"
+  },
+  "-156739918": {
+   "name": "Fighting the Cold",
+   "place": "Björntunet Hotel",
+   "x": null,
+   "y": null,
+   "fandom_title": "Fighting the Cold",
+   "location": "Björntunet Hotel",
+   "fandom_text": "(Björntunet Hotel)"
+  },
+  "499361357": {
+   "name": "The Resistance",
+   "place": "Bjorntunet Hotel",
+   "x": null,
+   "y": null,
+   "fandom_title": "The Resistance",
+   "location": "Björntunet Hotel",
+   "fandom_text": "Bjorntunet Hotel"
+  },
+  "1232323967": {
+   "name": "Father and Son",
+   "place": "Björntunet Hotel",
+   "x": 4542,
+   "y": -45,
+   "fandom_title": "Father and Son",
+   "location": "Björntunet Hotel",
+   "note": "From the Warboard in the basement of the hotel.",
+   "fandom_text": "Mission Activation: / This mission is activated from the Warboard in the basement of the Bjorntunet Hotel. / (4542, -45) / First Objective: / Österhällan / (4917, -733)"
+  },
+  "-1538559386": {
+   "name": "Unfinished investigation",
+   "place": "Björntunet Hotel",
+   "x": 4508,
+   "y": -48,
+   "fandom_title": "Unfinished Investigation",
+   "location": "Björntunet Hotel",
+   "note": "From the newspaper on the wall left of the stairs in the hotel foyer.",
+   "fandom_text": "Mission Activation: / Björntunet Hotel foyer; interact with the newspaper on the wall to the left of the stairs. / (4508, -48) / First Objective: / Readiness Storage 018 / (3510, -183)"
+  },
+  "1627779901": {
+   "name": "The Response",
+   "place": "Enhyattan Camping Ground",
+   "x": 2682,
+   "y": -229,
+   "fandom_title": "The Response",
+   "location": "Enhyttan Camping Ground",
+   "fandom_text": "Mission Start: Enhyattan Camping Ground Loc: 2682, -229"
+  },
+  "-764941503": {
+   "name": "Normal Lives",
+   "place": "St. Charlotte Church",
+   "x": 3870,
+   "y": -341,
+   "fandom_title": "Normal Lives",
+   "location": "St. Charlotte Church",
+   "note": "The whiteboard by the stairs inside the church.",
+   "fandom_text": "Mission starts in the St. Charlotte Church (location 3870 / -341). Interact with the whiteboard by the stairs inside the church."
+  },
+  "247400773": {
+   "name": "Capitulation",
+   "place": "Bjortunet Hotel",
+   "x": null,
+   "y": null,
+   "fandom_title": "Capitulation",
+   "location": "Björntunet Hotel",
+   "fandom_text": "Bjortunet Hotel"
+  },
+  "-1374565337": {
+   "name": "Stalemate",
+   "place": "Osterhallan Marine Center Dock",
+   "x": 5296,
+   "y": -568,
+   "fandom_title": "Stalemate",
+   "location": "Österhällan Marine Center",
+   "fandom_text": "Mission Start: Osterhallan Marine Center Dock. Loc: 5296, -568"
+  },
+  "-1537565824": {
+   "name": "Behind Closed Doors",
+   "place": null,
+   "x": 4770,
+   "y": 400,
+   "fandom_title": "Behind Closed Doors",
+   "note": "South-west of Bergahyttan Hunting Club.",
+   "fandom_text": "4770, 400 / South-West of Bergahyttan Hunting Club"
+  },
+  "622004705": {
+   "name": "Unorthodox Skiing",
+   "place": "Hammarbodarna safehouse",
+   "x": null,
+   "y": null,
+   "fandom_title": "Unorthodox Skiing",
+   "location": "Hammarbodarna",
+   "note": "Spawn a bicycle at the safehouse's vehicle bench and ride it through the open doors of the small wood shack in front of you.",
+   "fandom_text": "To start the Unorthodox skiing mission you must first travel to the hammarbodarna safe house. From there find the vehicle bench and spawn a bicycle. After getting on the bicycle you will see a small wood shack in front of you with two doors open after ridding the bike through the doors the mission Unorthodox skiing will start."
+  },
+  "1420116089": {
+   "name": "Where the Sun Sets",
+   "place": "Asotungan",
+   "x": null,
+   "y": null,
+   "fandom_title": "Where the Sun Sets",
+   "location": "Åsötungan Outpost",
+   "fandom_text": "(Asotungan)"
+  },
+  "1222319941": {
+   "name": "The Ringfort",
+   "place": "Masskar Camp",
+   "x": null,
+   "y": null,
+   "fandom_title": "The Ringfort",
+   "location": "Måsskär Resistance Camp",
+   "fandom_text": "(Masskar Camp)"
+  },
+  "-491553851": {
+   "name": "Tidal Wave",
+   "place": "Mullvadsberget tunnels",
+   "x": null,
+   "y": null,
+   "fandom_title": "Tidal Wave",
+   "fandom_text": "(Mullvadsberget tunnels)"
+  },
+  "1146131598": {
+   "name": "Our New Home - Preparations",
+   "place": "Resistance Home Base",
+   "x": 2636,
+   "y": 2309,
+   "fandom_title": "Our New Home - Preparations",
+   "fandom_text": "Resistance Home Base (2636, 2309)"
+  },
+  "1930229062": {
+   "name": "Our New Home [Home Base Defense · Easy]",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Our New Home - Home Base Defense",
+   "note": "Starts automatically when you choose a difficulty in Our New Home - Preparations.",
+   "fandom_text": "Started automatically when choosing / difficulty in Our New Home - Preparations"
+  },
+  "-1284493805": {
+   "name": "Our New Home [Home Base Defense · Medium]",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Our New Home - Home Base Defense",
+   "note": "Starts automatically when you choose a difficulty in Our New Home - Preparations.",
+   "fandom_text": "Started automatically when choosing / difficulty in Our New Home - Preparations"
+  },
+  "-1288396097": {
+   "name": "Our New Home [Home Base Defense · Hard]",
+   "place": null,
+   "x": null,
+   "y": null,
+   "fandom_title": "Our New Home - Home Base Defense",
+   "note": "Starts automatically when you choose a difficulty in Our New Home - Preparations.",
+   "fandom_text": "Started automatically when choosing / difficulty in Our New Home - Preparations"
+  },
+  "1216512518": {
+   "name": "Calling for Help",
+   "place": "Vesslan Command Bunker",
+   "x": 1470,
+   "y": 3860,
+   "fandom_title": "Calling for Help",
+   "location": "Vesslan Command Bunker",
+   "fandom_text": "Vesslan Command Bunker (1470, 3860)"
+  },
+  "530832777": {
+   "name": "Over and Out",
+   "place": "Saltholmen Naval Base",
+   "x": 670,
+   "y": 3965,
+   "fandom_title": "Over and Out",
+   "location": "Saltholmen Base",
+   "fandom_text": "Saltholmen Naval Base (670, 3965)"
+  },
+  "1394361323": {
+   "name": "First Contact",
+   "place": "Vesslan Command Bunker",
+   "x": 1470,
+   "y": 3860,
+   "fandom_title": "First Contact",
+   "location": "Vesslan Command Bunker",
+   "fandom_text": "Vesslan Command Bunker (1470, 3860)"
+  },
+  "-780417937": {
+   "name": "Beachhead",
+   "place": "Iboholmen Castle",
+   "x": 3050,
+   "y": 2810,
+   "fandom_title": "Beachhead",
+   "location": "Iboholmen Castle",
+   "fandom_text": "Iboholmen Castle (3050, 2810)"
+  },
+  "610071693": {
+   "name": "Another Castle",
+   "place": "Vesslan Command Bunker",
+   "x": 1490,
+   "y": 3885,
+   "fandom_title": "Another Castle",
+   "location": "Vesslan Command Bunker",
+   "fandom_text": "Vesslan Command Bunker (1490, 3885)"
+  }
+ }
+}

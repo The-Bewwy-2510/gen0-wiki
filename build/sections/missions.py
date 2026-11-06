@@ -26,9 +26,12 @@ Data (build/data):
                  locations   every map location (name, type, kind, region, x, z): we search the mission texts for
                              these names and link them
   markers.json   collectible counts for the challenges that ask you to collect things
-  achievements.json  the Steam achievements (name, desc, icon, hidden), from the Fandom wiki, checked against the
-                     Steam store (see its _about)
+  achievements.json  the Steam achievements (name, desc, icon, hidden), read from the Steam client's own copy of
+                     the game's achievement schema, icons from Steam's image server (see its _about)
   steam.json     store pictures and release dates for the pack pages
+  mission_starts.json  the "Mission Start" of each mission page's infobox on the Fandom wiki (place and coordinates,
+                       which are the same x / z as our map), shown in a "Mission start" box in the right-hand rail of
+                       the mission pages; CC BY-SA, credited there
 
 Kinds registered: 'mission' (name; aliases the mission id as a string), 'mission-region' (region key -> the pack page
 holding most of that region's main missions, #main-<key>), 'challenge' (challenge name, alias its key like '02_03';
@@ -110,6 +113,8 @@ class Missions:
         self.locs = [l for l in gd["locations"]["list"] if l["name"] not in LOCATION_SKIP]
         self.loc_by_name = {l["name"]: l for l in self.locs}
         self.markers = site.data("markers")
+        # where each mission starts, from the Fandom wiki's mission infoboxes (see mission_starts.json _about)
+        self.starts = site.data("mission_starts")["starts"]
         self._groups()
         self._text_patterns()
         self._challenge_links()
@@ -443,7 +448,8 @@ def build_index(site, ms):
          "sub": f"{n_ch} challenges in {len(ms.trees)} trees; every tier awards a title"},
         {"href": "~/missions/achievements.html", "title": "Achievements", "color": "#47545a",
          "sub": f"The {len(achs)} Steam achievements, grouped by what they ask for",
-         "img": "~/img/achievements/map_gold.webp" if site.has_file("img/achievements/map_gold.webp") else None},
+         "img": next(("~/" + a["icon"] for a in achs if a["name"] == "It's The Final Countdown"
+                      and site.has_file(a["icon"])), None)},
     ]
     for it in more:
         if not it.get("img"):
@@ -636,8 +642,44 @@ def build_mission(site, ms, m):
               (REGION_NAME[m["region"]] if m["region"] != "global" else TYPE_NAME[m["type"]],
                f"~/{PACK_PAGE[m['pack']]}#{fold_id(m['type'], m['region'])}")]
     site.page(m["path"], m["name"], "\n".join(body), "missions", sub=PACK_SUB[m["pack"]], crumbs=crumbs,
-              infobox_html=ib, kind=kind, lead=lead, head_extra=CSS,
+              infobox_html=ib, kind=kind, lead=lead, head_extra=CSS, side=[start_panel(site, ms, m)],
               desc=f"{m['name']}: {kind.lower()} in {REGION_NAME[m['region']]}. {m.get('summary', '')}")
+
+
+def start_panel(site, ms, m):
+    """The 'Mission start' box of the right-hand rail, from the Fandom wiki's mission infobox
+    (mission_starts.json): the place (linked to its location page), Fandom's coordinates (the same x / z as our map)
+    and a small map. '' when Fandom gives no start."""
+    st = ms.starts.get(str(m["id"]))
+    if not st:
+        return ""
+    loc = ms.loc_by_name.get(st.get("location") or "")
+    place = st.get("place")
+    if place and loc and place == loc["name"]:
+        place_html = site.link("location", place)
+    elif place:
+        place_html = esc(place) + (f' <span class="dim">({site.link("location", loc["name"])})</span>' if loc else "")
+    else:
+        place_html = ""
+    has_xy = st.get("x") is not None and st.get("y") is not None
+    out = []
+    if place_html:
+        out.append(f'<p class="msstart">{place_html}</p>')
+    if has_xy:
+        out.append(f'<p class="msxy">Coordinates <b>{st["x"]}, {st["y"]}</b></p>')
+    if st.get("note"):
+        out.append(f'<p class="small dim">{esc(st["note"])}</p>')
+    x, z = (st["x"], st["y"]) if has_xy else (loc["x"], loc["z"]) if loc else (None, None)
+    if x is not None:
+        # no pin label: the place is named just above, and a long name would be cut off in the narrow rail
+        show = ["loc_" + loc["kind"]] if loc and loc.get("kind") else []
+        region = [loc["region"]] if loc and loc["region"] != "global" else []
+        out.append(minimap(x, z, "", zoom=2, height=200, show=show, region=region,
+                           focus=loc["name"] if loc else None, map_zoom=1))
+    url = "https://generation-zero.fandom.com/wiki/" + st["fandom_title"].replace(" ", "_")
+    out.append(f'<p class="mscredit">From the <a href="{esc(url)}" rel="nofollow">Generation Zero Wiki on Fandom</a>'
+               ' (CC BY-SA).</p>')
+    return panel("Mission start", "".join(out), cls="msstartp")
 
 
 def garble_note(m):
@@ -1165,18 +1207,18 @@ def build_achievements(site, ms):
         body.append(f'<section class="achgroup">{bar(title, right=f"{len(items)}", id="g-" + g)}'
                     f'<p class="small dim">{esc(blurb)}</p><div class="achs">{"".join(rows)}</div></section>')
     body.append("</div>")
-    body.append(note("The achievement list (names, descriptions, icons and which ones are secret) comes from the "
-                     "<a href=\"https://generation-zero.fandom.com/wiki/Achievements\">Generation Zero Fandom wiki</a> "
-                     "(text and icons CC BY-SA). Its 72 entries match the count on the "
-                     "<a href=\"https://store.steampowered.com/app/704270/\">Steam store</a>. The game files we read "
-                     "don't hold the achievement list, and the global unlock percentages from Steam aren't included.",
-                     "data", "Source"))
+    body.append(note("The achievement list (names, descriptions, icons and which ones are secret) is read from "
+                     "Steam's own copy of the game's achievement list, the one the Steam client keeps for "
+                     "Generation Zero, and the icons are the files it names on Steam's image server. The game "
+                     "files only hold the logic that unlocks them. The global unlock percentages from Steam "
+                     "aren't included.", "data", "Source"))
     rows = [("Achievements", str(len(achs))), ("Secret", str(n_secret)), (None, "Groups")]
     rows += [(title, f'<a href="#g-{g}">{len(groups[g])}</a>') for g, title, _ in ACH_GROUPS if groups[g]]
-    rows += [(None, "Source"), ("List", '<a href="https://generation-zero.fandom.com/wiki/Achievements">Fandom wiki</a>'),
+    rows += [(None, "Source"), ("List", "Steam's achievement list for the game"),
              ("Steam", '<a href="https://store.steampowered.com/app/704270/">Store page</a>')]
+    top = next((a for a in achs if a["name"] == "It's The Final Countdown"), achs[0])
     ib = infobox("Steam achievements", rows,
-                 image="~/img/achievements/map_gold.webp" if site.has_file("img/achievements/map_gold.webp") else None)
+                 image="~/" + top["icon"] if site.has_file(top["icon"]) else None)
     site.page("missions/achievements.html", "Achievements", "\n".join(body), "missions", sub="achievements",
               lead=lead, head_extra=CSS, infobox_html=ib,
               desc=f"All {len(achs)} Generation Zero Steam achievements, including the {n_secret} secret ones, "

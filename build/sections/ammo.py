@@ -845,7 +845,14 @@ def section_shots(site, m):
                ("Military", "Harvester", "Plate", "armour"), ("Military", "Tank", "Fuel Tank", "component")]
     targets = [(c, t, p, k, _part(site, c, t, p, k)) for c, t, p, k in targets]
     targets = [x for x in targets if x[4]]
-    heads = [f"{site.link('machine', t)} ({c}) {esc(p.lower())} · {fmt(hp)} hp" for c, t, p, k, hp in targets]
+    # short two-line headers (machine / part) with the full name as a tooltip; the legend under the table spells
+    # them out with links, so the columns stay narrow
+    def full(c, t, p, k, hp):
+        return f"{c} {t} {p.lower()} ({k}), {fmt(hp)} hp"
+    heads = [f'<abbr title="{esc(full(*x))}">{esc(x[1])}<br>{esc(x[2].lower())}</abbr>' for x in targets]
+    legend = ("; ".join(f"<b>{esc(t)} {esc(p.lower())}</b>: {site.link('machine', t)} ({esc(c)}) "
+                        f"{esc(p.lower())}, {'armour' if k == 'armour' else 'component'}, {fmt(hp)} hp"
+                        for c, t, p, k, hp in targets))
     rows = []
     for cal in m["cal_order"]:
         for a in m["cal"][cal]:
@@ -867,8 +874,11 @@ def section_shots(site, m):
             "from the machines' layout files (first layout of each machine). Treat it as a comparison, not an "
             "exact promise: weak-spot bonuses, falloff, difficulty and co-op scaling all change the real count.</p>"
             '<div class="ammotable">' +
-            table(["Ammo", "Armour dmg / shot", "Component dmg / shot"] + heads, rows, raw_headers=True,
-                  num=set(range(1, 3 + len(heads))), cls="compact") + "</div>" +
+            table(["Ammo", '<abbr title="Damage per shot against armour">Armour</abbr>',
+                   '<abbr title="Damage per shot against components">Comp.</abbr>'] + heads, rows, raw_headers=True,
+                  num=set(range(1, 3 + len(heads))), cls="compact hits") + "</div>" +
+            '<p class="small hitkey"><b>Armour</b> / <b>Comp.</b>: damage per shot against armour / components. '
+            f"The other columns are hits to break that part: {legend}.</p>" +
             note("“never” means the round does no damage to that kind of part: HEAT ammo has an armour "
                  "multiplier of 0, so it cannot break armour plates at all.", "info"))
     return fold("How many hits?", body, open=False, right=f"{len(rows)} rounds", id="hits")
@@ -1629,18 +1639,18 @@ def att_by_weapon(site, m):
                 cells.append("<br>".join(f'<a href="#{a["id"]}">{esc(a["name"])}</a>' for a in items) or "–")
         rows.append([f'<span class="wcell">{site.link("weapon", w["name"], icon=True)}</span>'] + cells)
     none = [m["tool"][t] for t in sorted(m["tool"], key=int) if t not in per]
-    return (bar("Attachments by weapon", id="by-weapon") +
-            "<p>Find your weapon to see everything that fits it. Weapons that take no attachments at all are "
+    body = ("<p>Find your weapon to see everything that fits it. Weapons that take no attachments at all are "
             "listed under the table.</p>" + table(["Weapon"] + slots, rows, cls="compact matrix attw") +
             (f"<p class=\"small\">No attachments: {', '.join(site.link('weapon', w['name']) for w in none)}.</p>"
              if none else ""))
+    return fold("Attachments by weapon", body, open=False, right=f"{len(rows)} weapons", id="by-weapon")
 
 
 def att_section(site, m, cat, items, placed):
     title, slot, text = ATT_CATS[cat]
-    return (bar(title, f"{len(items)} items", id=slug(title)) + f"<p>{esc(text)}</p>" +
-            '<div class="attgrid">' + "".join(att_card(site, m, a, placed.get(a["name"], [])) for a in items) +
-            "</div>")
+    return fold(title, f"<p>{esc(text)}</p>" + '<div class="attgrid">' +
+                "".join(att_card(site, m, a, placed.get(a["name"], [])) for a in items) + "</div>",
+                open=True, right=f"{len(items)} items", id=slug(title))
 
 
 def _spot_link(s, zoom=1.2):

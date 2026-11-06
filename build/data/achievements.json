@@ -1,452 +1,2026 @@
 {
- "_about": "Generation Zero's Steam achievements. The list (name, description, icon, which ones are secret = hidden on Steam until unlocked) is the generation-zero.fandom.com 'Achievements' page (MediaWiki parse API, revision 11984, read 2026-11-06; text CC BY-SA), in its order. The count matches the Steam store (store.steampowered.com/api/appdetails?appids=704270: achievements.total = 72), and the ten achievements the store highlights match by name (steam_icon = their Steam icon file). The game files don't hold the achievement list, and Steam's global unlock percentages (api.steampowered.com, steamcommunity.com) could not be fetched, so there are none. The icons are the 14 shared category icons, copied from the Fandom wiki into docs/img/achievements/.",
+ "_about": "Generation Zero's 72 Steam achievements, read from the Steam client's own copy of the game's achievement schema (Steam\\appcache\\stats\\UserGameStatsSchema_704270.bin, schema version 16): API name, name and description in every language Steam has, whether it is secret (hidden until unlocked), and its icon and locked (gray) icon. The icons are the files the schema names, from Steam's image server. The game files themselves hold only the achievement logic (missions/achievements.group.hpmissionsc), not the list or the icons.",
  "source": {
-  "fandom": "https://generation-zero.fandom.com/wiki/Achievements",
-  "steam_total": 72,
-  "steam_store": "https://store.steampowered.com/app/704270/"
+  "schema": "UserGameStatsSchema_704270.bin",
+  "version": 16,
+  "icons": "https://cdn.akamai.steamstatic.com/steamcommunity/public/images/apps/704270/<icon>"
  },
  "achievements": [
   {
+   "api": "ach_001",
    "name": "First Blood",
-   "desc": "Destroy your first machine",
-   "icon": "img/achievements/tank_bronze.webp",
+   "desc": "Destroy your first machine.",
    "hidden": false,
-   "steam_icon": "d96fdd4421312b70d8940d3c91b2ea8098505c00.jpg"
+   "icon": "img/achievements/d96fdd4421312b70d8940d3c91b2ea8098505c00.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "First Blood",
+    "german": "First Blood",
+    "french": "Premier sang",
+    "spanish": "Iniciativa",
+    "schinese": "第一滴血",
+    "russian": "Первая кровь",
+    "japanese": "最初の血",
+    "polish": "Pierwsza krew"
+   },
+   "descs": {
+    "english": "Destroy your first machine.",
+    "german": "Erledige deine erste Maschine.",
+    "french": "Détruisez votre première machine.",
+    "spanish": "Destruye tu primera máquina.",
+    "schinese": "干掉第一台机器兽。",
+    "russian": "Уничтожьте свою первую машину.",
+    "japanese": "機械獣を倒す。",
+    "polish": "Zniszcz swoją pierwszą maszynę."
+   }
   },
   {
+   "api": "ach_003",
    "name": "Decimation",
-   "desc": "Destroy 500 machines",
-   "icon": "img/achievements/tank_bronze.webp",
+   "desc": "Destroy 500 machines.",
    "hidden": false,
-   "steam_icon": "ae276302afff4afc890d6dbf1da5b47d833d410f.jpg"
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Decimation",
+    "german": "Dezimierung",
+    "french": "Décimation",
+    "spanish": "Aniquilación",
+    "schinese": "大毁灭",
+    "russian": "Истребление",
+    "japanese": "大量虐殺",
+    "polish": "Zdziesiątkowanie"
+   },
+   "descs": {
+    "english": "Destroy 500 machines.",
+    "german": "Erledige 500 Maschinen.",
+    "french": "Détruisez 500 machines.",
+    "spanish": "Destruye 500 máquinas.",
+    "schinese": "干掉500台机器兽。",
+    "russian": "Уничтожить 500 машин.",
+    "japanese": "機械獣を500体倒す。",
+    "polish": "Zniszcz 500 maszyn."
+   }
   },
   {
+   "api": "ach_008",
    "name": "Marksman",
-   "desc": "Destroy an enemy with a shot fired from 300 meters away",
-   "icon": "img/achievements/guns_gold.webp",
+   "desc": "Destroy an enemy with a shot fired from 300 meters away.",
    "hidden": false,
-   "steam_icon": "76b3010b855462783098e04d8b523e3c45ff1b3e.jpg"
+   "icon": "img/achievements/76b3010b855462783098e04d8b523e3c45ff1b3e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Marksman",
+    "german": "Scharfschütze",
+    "french": "Tireur d’élite",
+    "spanish": "Tirador",
+    "schinese": "神射手",
+    "russian": "Снайпер",
+    "japanese": "マークスマン",
+    "polish": "Strzelec wyborowy"
+   },
+   "descs": {
+    "english": "Destroy an enemy with a shot fired from 300 meters away.",
+    "german": "Erledige einen Gegner mit einem aus mehr als 300 m abgefeuerten Schuss.",
+    "french": "Détruisez un ennemi avec un tir mortel tiré à plus de 300 m de distance.",
+    "spanish": "Destruye un enemigo de un disparo a más de 300 metros.",
+    "schinese": "从300m外的距离干掉一个敌人。",
+    "russian": "Уничтожить врага выстрелом с расстояния более 300 м.",
+    "japanese": "敵を300m以上の距離から撃ってとどめを刺す。",
+    "polish": "Zniszcz wroga, strzelając do niego z ponad 300 metrów."
+   }
   },
   {
+   "api": "ach_010",
    "name": "Siren Call",
-   "desc": "Use a boombox to lure an enemy",
-   "icon": "img/achievements/tank_bronze.webp",
+   "desc": "Use a boombox to lure an enemy.",
    "hidden": false,
-   "steam_icon": "ae276302afff4afc890d6dbf1da5b47d833d410f.jpg"
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Siren Call",
+    "german": "Sirenengesang",
+    "french": "Le chant des sirènes",
+    "spanish": "Canto de sirena",
+    "schinese": "警告笛声",
+    "russian": "Вой сирены",
+    "japanese": "サイレンの誘惑",
+    "polish": "Syreni śpiew"
+   },
+   "descs": {
+    "english": "Use a boombox to lure an enemy.",
+    "german": "Locke einen Gegner mit einem Ghettoblaster an.",
+    "french": "Utilisez une radiocassette pour leurrer un ennemi.",
+    "spanish": "Utiliza un radiocasete para atraer a un enemigo.",
+    "schinese": "使用手提音响来引诱敌人。",
+    "russian": "Отвлечь врага с помощью бумбокса.",
+    "japanese": "ラジカセを使って敵をおびき寄せる。",
+    "polish": "Zwab przeciwnika za pomocą boomboxa."
+   }
   },
   {
+   "api": "ach_011",
    "name": "Splash Damage",
-   "desc": "Destroy more than one machine at the same time using the m/49 Granatgevär or a hand grenade",
-   "icon": "img/achievements/guns_bronze.webp",
+   "desc": "Destroy more than one machine at the same time using the m/49 Granatgevär or a hand grenade.",
    "hidden": false,
-   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Splash Damage",
+    "german": "Splash Damage",
+    "french": "Dégâts de zone",
+    "spanish": "Daño de área",
+    "schinese": "溅射伤害",
+    "russian": "Осколочный урон",
+    "japanese": "破壊の飛沫",
+    "polish": "Obrażenia rozpryskowe"
+   },
+   "descs": {
+    "english": "Destroy more than one machine at the same time using the m/49 Granatgevär or a hand grenade.",
+    "german": "Erledige mehr als eine Maschine auf einmal mit dem Granatgevär m/49 oder einer Handgranate.",
+    "french": "Détruisez plus d’une machine en même temps avec le m/49 Granatgevär ou avec une grenade à main.",
+    "spanish": "Destruye más de una máquina a la vez con el m/49 Granatgevär o una granada.",
+    "schinese": "使用m/49 Granatgevär或手雷，一次干掉超过一台机器兽。",
+    "russian": "Уничтожить несколько машин одновременно с помощью Granatgevär m/49 или ручной гранаты.",
+    "japanese": "m/49 Granatgevärまたは手りゅう弾を使って一度に複数の機械獣を倒す。",
+    "polish": "Używając granatu ręcznego lub wyrzutni m/49 Granatgevär, zniszcz naraz więcej niż jedną maszynę."
+   }
   },
   {
+   "api": "ach_012",
    "name": "Gunslinger",
-   "desc": "Use handgun to destroy 20 machines",
-   "icon": "img/achievements/guns_bronze.webp",
+   "desc": "Use handgun to destroy 20 machines.",
    "hidden": false,
-   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Gunslinger",
+    "german": "Revolverheld",
+    "french": "Flingueur",
+    "spanish": "Pistolero",
+    "schinese": "快枪手",
+    "russian": "Стрелок",
+    "japanese": "ガンスリンガー",
+    "polish": "Rewolwerowiec"
+   },
+   "descs": {
+    "english": "Use handgun to destroy 20 machines.",
+    "german": "Erledige 20 Maschinen mit Faustfeuerwaffen.",
+    "french": "Détruisez 20 machines avec des armes de poing.",
+    "spanish": "Destruye 20 máquinas con pistolas.",
+    "schinese": "用手枪干掉20台机器兽。",
+    "russian": "Уничтожить 20 машин с помощью пистолетов.",
+    "japanese": "拳銃で機械獣を20体倒す。",
+    "polish": "Zniszcz 20 maszyn za pomocą pistoletu."
+   }
   },
   {
+   "api": "ach_013",
    "name": "Operator",
-   "desc": "Use shotguns to destroy 40 machines",
-   "icon": "img/achievements/guns_bronze.webp",
+   "desc": "Use shotguns to destroy 40 machines.",
    "hidden": false,
-   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Operator",
+    "german": "Operator",
+    "french": "Opérateur",
+    "spanish": "Operador",
+    "schinese": "操作员",
+    "russian": "Оператор",
+    "japanese": "オペレーター",
+    "polish": "Operator"
+   },
+   "descs": {
+    "english": "Use shotguns to destroy 40 machines.",
+    "german": "Erledige 40 Maschinen mit Flinten.",
+    "french": "Détruisez 40 machines avec des fusils à pompe.",
+    "spanish": "Destruye 40 máquinas con escopetas.",
+    "schinese": "用霰弹枪干掉40台机器兽。",
+    "russian": "Уничтожить 40 машин с помощью дробовиков.",
+    "japanese": "散弾銃で機械獣を40体倒す。",
+    "polish": "Zniszcz 40 maszyn za pomocą strzelb."
+   }
   },
   {
+   "api": "ach_014",
    "name": "Gangster",
-   "desc": "Use submachine guns to destroy 60 machines",
-   "icon": "img/achievements/guns_bronze.webp",
+   "desc": "Use submachine guns to destroy 60 machines.",
    "hidden": false,
-   "steam_icon": "f7e9dd32981e27d7f0b4bc216bd2b9dba807fbcd.jpg"
+   "icon": "img/achievements/f7e9dd32981e27d7f0b4bc216bd2b9dba807fbcd.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Gangster",
+    "german": "Gangster",
+    "french": "Gangster",
+    "spanish": "Gánster",
+    "schinese": "暴徒",
+    "russian": "Гангстер",
+    "japanese": "ギャング",
+    "polish": "Gangster"
+   },
+   "descs": {
+    "english": "Use submachine guns to destroy 60 machines.",
+    "german": "Erledige 60 Maschinen mit Maschinenpistolen.",
+    "french": "Détruisez 60 machines avec des pistolets-mitrailleurs.",
+    "spanish": "Destruye 60 máquinas con subfusiles.",
+    "schinese": "用冲锋枪干掉60台机器兽。",
+    "russian": "Уничтожить 60 машин с помощью пистолетов-пулеметов.",
+    "japanese": "短機関銃で機械獣を60体倒す。",
+    "polish": "Zniszcz 60 maszyn za pomocą pistoletów maszynowych."
+   }
   },
   {
+   "api": "ach_015",
    "name": "Commando",
-   "desc": "Use assault rifles to destroy 80 machines",
-   "icon": "img/achievements/guns_bronze.webp",
+   "desc": "Use assault rifles to destroy 80 machines.",
    "hidden": false,
-   "steam_icon": "1f88e791badf1cbf773d37d5d293016729b29b9e.jpg"
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Commando",
+    "german": "Kommandosoldat",
+    "french": "Commando",
+    "spanish": "Comando",
+    "schinese": "突击队员",
+    "russian": "Десантник",
+    "japanese": "コマンド―",
+    "polish": "Komandos"
+   },
+   "descs": {
+    "english": "Use assault rifles to destroy 80 machines.",
+    "german": "Erledige 80 Maschinen mit Sturmgewehren.",
+    "french": "Détruisez 80 machines avec des fusils d’assaut.",
+    "spanish": "Destruye 80 máquinas con fusiles de asalto.",
+    "schinese": "用突击步枪干掉80台机器兽。",
+    "russian": "Уничтожить 80 машин с помощью штурмовых винтовок.",
+    "japanese": "アサルトライフルで機械獣を80体倒す。",
+    "polish": "Zniszcz 80 maszyn za pomocą karabinów szturmowych."
+   }
   },
   {
+   "api": "ach_016",
    "name": "Hunter",
-   "desc": "Use hunting rifles to destroy 20 machines",
-   "icon": "img/achievements/guns_bronze.webp",
+   "desc": "Use hunting rifles to destroy 20 machines.",
    "hidden": false,
-   "steam_icon": "f7e9dd32981e27d7f0b4bc216bd2b9dba807fbcd.jpg"
+   "icon": "img/achievements/f7e9dd32981e27d7f0b4bc216bd2b9dba807fbcd.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Hunter",
+    "german": "Jäger",
+    "french": "Chasseur",
+    "spanish": "Cazador",
+    "schinese": "猎人",
+    "russian": "Охотник",
+    "japanese": "ハンター",
+    "polish": "Łowca"
+   },
+   "descs": {
+    "english": "Use hunting rifles to destroy 20 machines.",
+    "german": "Erledige 20 Maschinen mit Jagdgewehren.",
+    "french": "Détruisez 20 machines avec des fusils de chasse.",
+    "spanish": "Destruye 20 máquinas con rifles de caza.",
+    "schinese": "用猎枪干掉20台机器兽。",
+    "russian": "Уничтожить 20 машин с помощью охотничьих винтовок.",
+    "japanese": "狩猟用ライフルで機械獣を20体倒す。",
+    "polish": "Zniszcz 20 maszyn za pomocą sztucerów."
+   }
   },
   {
+   "api": "ach_017",
    "name": "Sapper",
-   "desc": "Use explosives to destroy 15 machines",
-   "icon": "img/achievements/guns_bronze.webp",
-   "hidden": false
+   "desc": "Use explosives to destroy 15 machines.",
+   "hidden": false,
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Sapper",
+    "german": "Pionier",
+    "french": "Sapeur",
+    "spanish": "Zapador",
+    "schinese": "工兵",
+    "russian": "Сапер",
+    "japanese": "工兵",
+    "polish": "Saper"
+   },
+   "descs": {
+    "english": "Use explosives to destroy 15 machines.",
+    "german": "Erledige 15 Maschinen mit Sprengstoff.",
+    "french": "Détruisez 15 machines avec des explosifs.",
+    "spanish": "Destruye 15 máquinas con explosivos.",
+    "schinese": "用炸药干掉15台机器兽。",
+    "russian": "Уничтожить 15 машин с помощью взрывчатки.",
+    "japanese": "爆発物で機械獣を15体倒す。",
+    "polish": "Zniszcz 15 maszyn za pomocą materiałów wybuchowych."
+   }
   },
   {
+   "api": "ach_018",
    "name": "You're A Disease And I'm The Cure",
-   "desc": "Destroy 20 Ticks",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 20 Ticks.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "You're A Disease And I'm The Cure",
+    "german": "Du bist eine Krankheit und ich die Medizin",
+    "french": "Tu es le poison et moi l’antidote",
+    "spanish": "El crimen es una plaga y yo soy el remedio",
+    "schinese": "你就是疾病，而我是解药",
+    "russian": "Ты — болезнь, а я — лекарство.",
+    "japanese": "病の撲滅",
+    "polish": "Jesteś chorobą, a ja lekarstwem"
+   },
+   "descs": {
+    "english": "Destroy 20 Ticks.",
+    "german": "Erledige 20 Ticks.",
+    "french": "Détruisez 20 tiques.",
+    "spanish": "Destruye 20 garrapatas.",
+    "schinese": "干掉20台蜱虫。",
+    "russian": "Уничтожить 20 «Клещей».",
+    "japanese": "ティックを20体倒す。",
+    "polish": "Zniszcz 20 Kleszczy."
+   }
   },
   {
+   "api": "ach_019",
    "name": "Hasta La Vista Baby",
-   "desc": "Destroy 30 Seekers",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 30 Seekers.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Hasta La Vista Baby",
+    "german": "Hasta la vista, baby!",
+    "french": "Hasta la vista, baby",
+    "spanish": "Sayonara, baby",
+    "schinese": "后会有期宝贝",
+    "russian": "Hasta la vista, baby",
+    "japanese": "さよならベイビー",
+    "polish": "Hasta la vista, baby"
+   },
+   "descs": {
+    "english": "Destroy 30 Seekers.",
+    "german": "Erledige 30 Seeker.",
+    "french": "Détruisez 30 traqueurs.",
+    "spanish": "Destruye 30 buscadores.",
+    "schinese": "干掉30台搜索者。",
+    "russian": "Уничтожить 30 «Ищеек».",
+    "japanese": "シーカーを30体倒す。",
+    "polish": "Zniszcz 30 Szperaczy."
+   }
   },
   {
+   "api": "ach_020",
    "name": "All Out Of Bubblegum",
-   "desc": "Destroy 80 Runners",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 80 Runners.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/61afa240ba271d276fa3e1af5ef1194c8a9cfb9a.jpg",
+   "names": {
+    "english": "All Out Of Bubblegum",
+    "german": "Ich hab nur leider keinen Kaugummi",
+    "french": "J’ai plus de chewing-gum",
+    "spanish": "Porque ya estoy hasta las pelotas",
+    "schinese": "泡泡糖全没了",
+    "russian": "Жвачка закончилась",
+    "japanese": "やるっきゃない",
+    "polish": "Skończyła mi się guma do żucia"
+   },
+   "descs": {
+    "english": "Destroy 80 Runners.",
+    "german": "Erledige 80 Runner.",
+    "french": "Détruisez 80 coureurs.",
+    "spanish": "Destruye 80 corredores.",
+    "schinese": "干掉80台奔跑者。",
+    "russian": "Уничтожить 80 «Патрульных».",
+    "japanese": "ランナーを80体倒す。",
+    "polish": "Zniszcz 80 Gońców."
+   }
   },
   {
+   "api": "ach_021",
    "name": "Go Ahead, Make My Day",
-   "desc": "Destroy 30 Hunters",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 30 Hunters.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Go Ahead, Make My Day",
+    "german": "Na los doch",
+    "french": "Vas-y, allez !",
+    "spanish": "Anda, alégrame el día",
+    "schinese": "继续前进，让我开心",
+    "russian": "Давай, порадуй меня",
+    "japanese": "やってみろ",
+    "polish": "No, dalej!"
+   },
+   "descs": {
+    "english": "Destroy 30 Hunters.",
+    "german": "Erledige 30 Hunter.",
+    "french": "Détruisez 30 chasseurs.",
+    "spanish": "Destruye 30 cazadores.",
+    "schinese": "干掉30台猎犬。",
+    "russian": "Уничтожить 30 «Охотников».",
+    "japanese": "ハンターを30体倒す。",
+    "polish": "Zniszcz 30 Łowców."
+   }
   },
   {
+   "api": "ach_022",
    "name": "Yippee-Ki-Yay",
-   "desc": "Destroy 15 Harvesters",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 15 Harvesters.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Yippee-Ki-Yay",
+    "german": "Yippie ya-yay",
+    "french": "Yippee-Ki-Yay",
+    "spanish": "Yipikayei",
+    "schinese": "中大奖",
+    "russian": "Ковбой",
+    "japanese": "これでも食らえ",
+    "polish": "Jupikajej!"
+   },
+   "descs": {
+    "english": "Destroy 15 Harvesters.",
+    "german": "Erledige 15 Harvester.",
+    "french": "Détruisez 15 collecteurs.",
+    "spanish": "Destruye 15 cosechadores.",
+    "schinese": "干掉15台收割机。",
+    "russian": "Уничтожить 15 «Жнецов».",
+    "japanese": "ハーベスターを15体倒す。",
+    "polish": "Zniszcz 15 Żniwiarzy."
+   }
   },
   {
+   "api": "ach_023",
    "name": "Say Hello To My Little Friend",
-   "desc": "Destroy 15 Tanks",
-   "icon": "img/achievements/tank_gold.webp",
-   "hidden": false
+   "desc": "Destroy 15 Tanks.",
+   "hidden": false,
+   "icon": "img/achievements/e42d6acab78bbf3f69e72b30506c1003032e9eda.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Say Hello To My Little Friend",
+    "german": "Auf euch wartet meine kleine Freundin",
+    "french": "Dites bonjour à mon petit ami",
+    "spanish": "¡Saludad de mi parte a mi amigo Sosa!",
+    "schinese": "向我的小朋友问声好",
+    "russian": "Поздоровайся с моим маленьким другом",
+    "japanese": "小さな力持ち",
+    "polish": "Przywitajcie się z moim małym przyjacielem"
+   },
+   "descs": {
+    "english": "Destroy 15 Tanks.",
+    "german": "Erledige 15 Tanks.",
+    "french": "Détruisez 15 tanks.",
+    "spanish": "Destruye 15 tanques.",
+    "schinese": "干掉15台坦克。",
+    "russian": "Уничтожить 15 «Колоссов».",
+    "japanese": "タンクを15体倒す。",
+    "polish": "Zniszcz 15 Tanków."
+   }
   },
   {
+   "api": "ach_024",
    "name": "Offence Is The Best Defence",
-   "desc": "Destroy 3 machines without taking damage",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 3 machines without taking damage.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Offence Is The Best Defence",
+    "german": "Angriff ist die beste Verteidigung",
+    "french": "L’attaque est la meilleure des défenses",
+    "spanish": "La mejor defensa es un buen ataque",
+    "schinese": "进攻是最好的防御",
+    "russian": "Лучшая защита — это нападение",
+    "japanese": "攻撃は最大の防御",
+    "polish": "Najlepszą obroną jest atak"
+   },
+   "descs": {
+    "english": "Destroy 3 machines without taking damage.",
+    "german": "Erledige 3 Maschinen, ohne selbst Schaden zu nehmen.",
+    "french": "Détruisez 3 machines sans subir de dégâts.",
+    "spanish": "Destruye 3 máquinas sin recibir daño.",
+    "schinese": "干掉3台机器兽，同时不受伤。",
+    "russian": "Уничтожить 3 машины, не получив урона.",
+    "japanese": "ダメージを受けずに機械獣を3体倒す。",
+    "polish": "Zniszcz 3 maszyny, nie otrzymując obrażeń."
+   }
   },
   {
+   "api": "ach_027",
    "name": "Hot Property",
-   "desc": "Have 8 machines simultaneously lured to the same flare",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Have 8 machines simultaneously lured to the same flare.",
+   "hidden": false,
+   "icon": "img/achievements/ae276302afff4afc890d6dbf1da5b47d833d410f.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Hot Property",
+    "german": "Heiße Ware",
+    "french": "Ça chauffe",
+    "spanish": "Objeto de deseo",
+    "schinese": "烫手山芋",
+    "russian": "Горячее предложение",
+    "japanese": "大人気",
+    "polish": "Gorący towar"
+   },
+   "descs": {
+    "english": "Have 8 machines simultaneously lured to the same flare.",
+    "german": "Locke 8 Maschinen auf einmal mit derselben Signalfackel an.",
+    "french": "Leurrez simultanément 8 machines avec une seule fusée.",
+    "spanish": "Atrae a 8 máquinas a la vez a una misma bengala.",
+    "schinese": "用同一发照明弹同时引诱8台机器兽。",
+    "russian": "Отвлечь 8 машин одновременно с помощью одной шашки.",
+    "japanese": "1つの発炎筒に8体の機械獣を同時におびき寄せる。",
+    "polish": "Zwab jednocześnie 8 maszyn do jednego wabika."
+   }
   },
   {
+   "api": "ach_028",
    "name": "Real Sneaky Like",
-   "desc": "Use suppressed weapons to destroy 20 enemies",
-   "icon": "img/achievements/guns_bronze.webp",
-   "hidden": false
+   "desc": "Use suppressed weapons to destroy 20 enemies.",
+   "hidden": false,
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Real Sneaky Like",
+    "german": "Unheimlich heimlich",
+    "french": "Le roi des sournois",
+    "spanish": "Como una serpiente",
+    "schinese": "鬼鬼祟祟",
+    "russian": "Тихохонько",
+    "japanese": "こっそり",
+    "polish": "Podstępny gość"
+   },
+   "descs": {
+    "english": "Use suppressed weapons to destroy 20 enemies.",
+    "german": "Erledige 20 Gegner mit schallgedämpften Waffen.",
+    "french": "Détruisez 20 ennemis avec des armes silencieuses.",
+    "spanish": "Destruye 20 enemigos con armas con silenciador.",
+    "schinese": "用消音武器干掉20台机器兽。",
+    "russian": "Уничтожить 20 противников с помощью оружия с глушителем.",
+    "japanese": "サイレンサー付きの武器で敵を20体倒す。",
+    "polish": "Zniszcz 20 przeciwników bronią z tłumikiem."
+   }
   },
   {
+   "api": "ach_030",
    "name": "Overkill",
-   "desc": "Shoot a Seeker with the m/49 Granatgevär",
-   "icon": "img/achievements/guns_bronze.webp",
-   "hidden": false
+   "desc": "Shoot a Seeker with the m/49 Granatgevär.",
+   "hidden": false,
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Overkill",
+    "german": "Overkill",
+    "french": "Overkill",
+    "spanish": "Masacre",
+    "schinese": "杀鸡用牛刀",
+    "russian": "Перебор",
+    "japanese": "オーバーキル",
+    "polish": "Przesada"
+   },
+   "descs": {
+    "english": "Shoot a Seeker with the m/49 Granatgevär.",
+    "german": "Erledige einen Seeker mit einem Granatgevär m/49.",
+    "french": "Tirez sur un Traqueur avec le Granatgevär m/49.",
+    "spanish": "Dispara a un buscador con el m/49 Granatgevär.",
+    "schinese": "用m/49 Granatgevär射杀一台侦察者。",
+    "russian": "Подстрелить разведчика из Granatgevär m/49.",
+    "japanese": "m/49 Granatgevärでシーカーを撃つ。",
+    "polish": "Zniszcz Szperacza za pomocą wyrzutni m/49 Granatgevär."
+   }
   },
   {
+   "api": "ach_031",
    "name": "One Shot",
-   "desc": "Destroy a Hunter with a single shot",
-   "icon": "img/achievements/guns_silver.webp",
-   "hidden": false
+   "desc": "Destroy a Hunter with a single shot.",
+   "hidden": false,
+   "icon": "img/achievements/39e86ed5b69f6d6b1f086602146419334c062b7b.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "One Shot",
+    "german": "Die schnelle Lösung",
+    "french": "Tir unique",
+    "spanish": "De un solo tiro",
+    "schinese": "一发毙命",
+    "russian": "Один выстрел",
+    "japanese": "一発",
+    "polish": "Pojedynczy strzał"
+   },
+   "descs": {
+    "english": "Destroy a Hunter with a single shot.",
+    "german": "Erledige einen Hunter mit einem einzigen Schuss.",
+    "french": "Détruisez un chasseur d’un seul tir.",
+    "spanish": "Destruye a un cazador de un solo disparo.",
+    "schinese": "用一发子弹摧毁一台猎犬。",
+    "russian": "Уничтожить «Охотника» одним выстрелом.",
+    "japanese": "ハンターを一発で倒す。",
+    "polish": "Zniszcz Łowcę jednym strzałem."
+   }
   },
   {
+   "api": "ach_034",
    "name": "Fika Club",
-   "desc": "Unlock 5 safehouses",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Unlock 5 safehouses.",
+   "hidden": false,
+   "icon": "img/achievements/2e9f45c723385aeb11cc4f5bf50aa89b39d58d6b.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Fika Club",
+    "german": "Kaffeekränzchen",
+    "french": "Sain et sauf",
+    "spanish": "Club Fika",
+    "schinese": "菲卡俱乐部",
+    "russian": "Клуб Фика",
+    "japanese": "フィーカクラブ",
+    "polish": "Klub Fika"
+   },
+   "descs": {
+    "english": "Unlock 5 safehouses.",
+    "german": "Schalte 5 Unterschlüpfe frei.",
+    "french": "Déverrouillez 5 refuges.",
+    "spanish": "Desbloquea 5 refugios.",
+    "schinese": "解锁5间安全屋。",
+    "russian": "Найти 5 безопасных укрытий.",
+    "japanese": "隠れ家を5つアンロックする。",
+    "polish": "Odblokuj 5 kryjówek."
+   }
   },
   {
+   "api": "ach_036",
    "name": "Gustafsloppet",
-   "desc": "Travel 90 km on foot",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Travel 90 km on foot.",
+   "hidden": false,
+   "icon": "img/achievements/66680d4fa495a6f13cf1ee3c3d7284de4e9e046d.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Gustafsloppet",
+    "german": "Gustafslauf",
+    "french": "Ça use les souliers",
+    "spanish": "Camino de Santiago",
+    "schinese": "Gustafs马拉松",
+    "russian": "Марафонец",
+    "japanese": "クロスカントリー",
+    "polish": "Bieg Gustawa"
+   },
+   "descs": {
+    "english": "Travel 90 km on foot.",
+    "german": "Lege 90 km zu Fuß zurück.",
+    "french": "Parcourez 90 km à pied.",
+    "spanish": "Viaja 90 kilómetros a pie.",
+    "schinese": "徒步旅行90公里。",
+    "russian": "Пройти 90 км пешком.",
+    "japanese": "徒歩で90km移動する。",
+    "polish": "Przejdź pieszo 90 kilometrów."
+   }
   },
   {
+   "api": "ach_039",
    "name": "I Just Called To Say I Love You",
-   "desc": "Listen to the messages left on 5 different answering machines",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Listen to the messages left on 5 different answering machines.",
+   "hidden": false,
+   "icon": "img/achievements/2e9f45c723385aeb11cc4f5bf50aa89b39d58d6b.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "I Just Called To Say I Love You",
+    "german": "I Just Called To Say I Love You",
+    "french": "Je t’appelle pour te dire que je t’aime",
+    "spanish": "Solo llamo para decirte que te quiero",
+    "schinese": "电话诉衷肠",
+    "russian": "I Just Called To Say I Love You",
+    "japanese": "声を聞きたかっただけ",
+    "polish": "Dzwonię, by powiedzieć ci, że cię kocham"
+   },
+   "descs": {
+    "english": "Listen to the messages left on 5 different answering machines.",
+    "german": "Höre dir 5 verschiedene Anrufbeantworter an.",
+    "french": "Écoutez 5 répondeurs différents.",
+    "spanish": "Escucha 5 contestadores automáticos.",
+    "schinese": "听5台不同的答录机。",
+    "russian": "Прослушать 5 различных автоответчиков.",
+    "japanese": "異なる録音メッセージを5件聞く。",
+    "polish": "Wysłuchaj 5 unikalnych, automatycznych sekretarek."
+   }
   },
   {
+   "api": "ach_040",
    "name": "Light My Fire",
-   "desc": "Climb to the top of 3 different lighthouses",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Climb to the top of 3 different lighthouses.",
+   "hidden": false,
+   "icon": "img/achievements/66680d4fa495a6f13cf1ee3c3d7284de4e9e046d.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Light My Fire",
+    "german": "Light My Fire",
+    "french": "Allumer le phare",
+    "spanish": "La luz al final del túnel",
+    "schinese": "点燃我的火焰",
+    "russian": "Путеводный свет",
+    "japanese": "ハートに灯をつけて",
+    "polish": "Rozpal we mnie ogień"
+   },
+   "descs": {
+    "english": "Climb to the top of 3 different lighthouses.",
+    "german": "Besteige 3 verschiedene Leuchttürme.",
+    "french": "Grimpez au sommet de 3 phares différents.",
+    "spanish": "Sube a la cima de 3 faros.",
+    "schinese": "爬上3座不同灯塔的顶端。",
+    "russian": "Забраться на три различных маяка.",
+    "japanese": "3つの異なる灯台の上に上る。",
+    "polish": "Wejdź na 3 unikalne latarnie."
+   }
   },
   {
+   "api": "ach_042",
    "name": "Folk Wisdom",
-   "desc": "Read 10 different sayings in homes",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Read 10 different sayings in homes.",
+   "hidden": false,
+   "icon": "img/achievements/66680d4fa495a6f13cf1ee3c3d7284de4e9e046d.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Folk Wisdom",
+    "german": "Volkes Weisheit",
+    "french": "Sagesse populaire",
+    "spanish": "Sabiduría popular",
+    "schinese": "民间智慧",
+    "russian": "Народная мудрость",
+    "japanese": "言い伝え",
+    "polish": "Mądrość ludowa"
+   },
+   "descs": {
+    "english": "Read 10 different sayings in homes.",
+    "german": "Lies 10 verschiedene Sprichwörter in Wohnhäusern.",
+    "french": "Lisez 10 proverbes différents dans les maisons.",
+    "spanish": "Lee 10 refranes en casas.",
+    "schinese": "在家中读10条不同的谚语。",
+    "russian": "Прочитать 10 различных пословиц в домах.",
+    "japanese": "家々で異なる格言を10個読む。",
+    "polish": "Przeczytaj 10 unikalnych porzekadeł znajdujących się w domach."
+   }
   },
   {
+   "api": "ach_045",
    "name": "Scavenger",
-   "desc": "Find and take 80 items from the world",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Find and take 80 items from the world.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "Scavenger",
+    "german": "Plünderer",
+    "french": "Charognard",
+    "spanish": "Saqueador",
+    "schinese": "拾荒者",
+    "russian": "Мародер",
+    "japanese": "スカベンジャー",
+    "polish": "Złomiarz"
+   },
+   "descs": {
+    "english": "Find and take 80 items from the world.",
+    "german": "Erbeute 80 Gegenstände.",
+    "french": "Pillez 80 objets.",
+    "spanish": "Saquea 80 objetos.",
+    "schinese": "搜刮80件物品。",
+    "russian": "Подобрать 80 предметов.",
+    "japanese": "アイテムを80個回収する。",
+    "polish": "Złup 80 przedmiotów."
+   }
   },
   {
+   "api": "ach_048",
    "name": "Engineer",
-   "desc": "Collect all machine blueprints",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Collect all machine blueprints.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "Engineer",
+    "german": "Ingenieur",
+    "french": "Ingénieur",
+    "spanish": "Ingeniero",
+    "schinese": "工程师",
+    "russian": "Инженер",
+    "japanese": "エンジニア",
+    "polish": "Inżynier"
+   },
+   "descs": {
+    "english": "Collect all machine blueprints.",
+    "german": "Sammle alle Maschinenbaupläne.",
+    "french": "Recueillez tous les plans de la machine.",
+    "spanish": "Consigue todos los planos de las máquinas.",
+    "schinese": "收集所有机器兽的蓝图。",
+    "russian": "Собрать все чертежи машин.",
+    "japanese": "機械獣の設計図をすべて集める。",
+    "polish": "Zbierz wszystkie projekty maszyn."
+   }
   },
   {
+   "api": "ach_049",
    "name": "Gardener",
-   "desc": "Collect all garden gnomes",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Collect all garden gnomes.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "Gardener",
+    "german": "Gärtner",
+    "french": "Jardinier",
+    "spanish": "Jardinero",
+    "schinese": "园丁",
+    "russian": "Садовник",
+    "japanese": "庭師",
+    "polish": "Ogrodnik"
+   },
+   "descs": {
+    "english": "Collect all garden gnomes.",
+    "german": "Sammle alle Gartenzwerge.",
+    "french": "Ramassez tous les nains de jardin.",
+    "spanish": "Consigue todos los gnomos de jardín.",
+    "schinese": "收集所有的花园地精。",
+    "russian": "Собрать всех садовых гномов.",
+    "japanese": "ガーデンノームをすべて集める。",
+    "polish": "Zbierz wszystkie skrzaty ogrodowe."
+   }
   },
   {
+   "api": "ach_050",
    "name": "DJ",
-   "desc": "Collect all mixtapes",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Collect all mixtapes.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "DJ",
+    "german": "DJ",
+    "french": "DJ",
+    "spanish": "DJ",
+    "schinese": "DJ",
+    "russian": "Диджей",
+    "japanese": "DJ",
+    "polish": "DJ"
+   },
+   "descs": {
+    "english": "Collect all mixtapes.",
+    "german": "Sammle alle Kassetten.",
+    "french": "Recueillez toutes les compilations.",
+    "spanish": "Consigue todas las cintas.",
+    "schinese": "收集所有的混音带。",
+    "russian": "Собрать все аудиосборники.",
+    "japanese": "ミックステープをすべて集める。",
+    "polish": "Zbierz wszystkie składanki."
+   }
   },
   {
+   "api": "ach_051",
    "name": "Tourist",
-   "desc": "Collect all souvenirs",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Collect all souvenirs.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "Tourist",
+    "german": "Tourist",
+    "french": "Touriste",
+    "spanish": "Turista",
+    "schinese": "游客",
+    "russian": "Турист",
+    "japanese": "観光客",
+    "polish": "Turysta"
+   },
+   "descs": {
+    "english": "Collect all souvenirs.",
+    "german": "Sammle alle Dalapferde.",
+    "french": "Recueillez tous les dalahästar.",
+    "spanish": "Consigue todos los souvenirs.",
+    "schinese": "收集所有的达拉马。",
+    "russian": "Собрать все сувениры.",
+    "japanese": "souvenirをすべて集める。",
+    "polish": "Zbierz wszystkie koniki Dala."
+   }
   },
   {
+   "api": "ach_052",
    "name": "Explorer",
-   "desc": "Discover 50 locations",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Discover 50 locations.",
+   "hidden": false,
+   "icon": "img/achievements/66680d4fa495a6f13cf1ee3c3d7284de4e9e046d.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Explorer",
+    "german": "Entdecker",
+    "french": "Explorateur",
+    "spanish": "Explorador",
+    "schinese": "探索家",
+    "russian": "Исследователь",
+    "japanese": "探検家",
+    "polish": "Odkrywca"
+   },
+   "descs": {
+    "english": "Discover 50 locations.",
+    "german": "Entdecke 50 Orte.",
+    "french": "Découvrez 50 lieux.",
+    "spanish": "Descubre 50 ubicaciones.",
+    "schinese": "发现50个地方。",
+    "russian": "Открыть 50 локаций.",
+    "japanese": "ロケーションを50か所発見する。",
+    "polish": "Odkryj 50 miejsc."
+   }
   },
   {
+   "api": "ach_053",
    "name": "Tunnel Rat",
-   "desc": "Discover 5 bunkers",
-   "icon": "img/achievements/compass_bronze.webp",
-   "hidden": false
+   "desc": "Discover 5 bunkers.",
+   "hidden": false,
+   "icon": "img/achievements/66680d4fa495a6f13cf1ee3c3d7284de4e9e046d.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Tunnel Rat",
+    "german": "Tunnelratte",
+    "french": "Ami des tunnels",
+    "spanish": "Rata de túnel",
+    "schinese": "遁地鼠",
+    "russian": "Туннельная крыса",
+    "japanese": "トンネルラット",
+    "polish": "Szczur tunelowy"
+   },
+   "descs": {
+    "english": "Discover 5 bunkers.",
+    "german": "Entdecke 5 Bunker.",
+    "french": "Découvrez 5 bunkers.",
+    "spanish": "Descubre 5 búnkeres.",
+    "schinese": "发现5个掩体。",
+    "russian": "Найти 5 бункеров.",
+    "japanese": "バンカーを5つ発見する。",
+    "polish": "Odkryj 5 bunkrów."
+   }
   },
   {
+   "api": "ach_056",
    "name": "Fashionista",
-   "desc": "Collect 200 items of apparel",
-   "icon": "img/achievements/characters_bronze.webp",
-   "hidden": false
+   "desc": "Collect 200 items of apparel.",
+   "hidden": false,
+   "icon": "img/achievements/00e51b174ff3f2d8a368019e35203c5c2a8b66a1.jpg",
+   "icon_gray": "img/achievements/abdb1609b60f690ea4ca4eba9475a1c763911f31.jpg",
+   "names": {
+    "english": "Fashionista",
+    "german": "Modefreak",
+    "french": "Fashionista",
+    "spanish": "Fashion victim",
+    "schinese": "时尚达人",
+    "russian": "Модельер",
+    "japanese": "ファッショニスタ",
+    "polish": "Modniś"
+   },
+   "descs": {
+    "english": "Collect 200 items of apparel.",
+    "german": "Sammle 200 Bekleidungsgegenstände.",
+    "french": "Récupérez 200 vêtements.",
+    "spanish": "Consigue 200 prendas de ropa.",
+    "schinese": "收集200件服装用品。",
+    "russian": "Собрать 200 предметов гардероба.",
+    "japanese": "服装アイテムを200個集める。",
+    "polish": "Zbierz 200 elementów ubioru."
+   }
   },
   {
+   "api": "ach_058",
    "name": "Spare Parts",
-   "desc": "Scavenge a vision module from a machine",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Scavenge a vision module from a machine.",
+   "hidden": false,
+   "icon": "img/achievements/1a290759e13a5529151413efe852ea5ce71cc950.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "Spare Parts",
+    "german": "Ersatzteile",
+    "french": "Pièces de rechange",
+    "spanish": "Piezas de repuesto",
+    "schinese": "备用部件",
+    "russian": "Запчасти",
+    "japanese": "スペアパーツ",
+    "polish": "Części zapasowe"
+   },
+   "descs": {
+    "english": "Scavenge a vision module from a machine.",
+    "german": "Birg ein Sichtmodul von einer Maschine.",
+    "french": "Récupérez un module de vision d’une machine.",
+    "spanish": "Saquea el módulo de visión de una máquina.",
+    "schinese": "从机器兽那里拆解一个视觉模块。",
+    "russian": "Снять модуль визуального распознавания с машины.",
+    "japanese": "機械獣から視覚モジュールを入手する。",
+    "polish": "Wymontuj moduł wizyjny z maszyny."
+   }
   },
   {
+   "api": "ach_059",
    "name": "Modder",
-   "desc": "Attach a mod to a weapon",
-   "icon": "img/achievements/guns_bronze.webp",
-   "hidden": false
+   "desc": "Attach a mod to a weapon.",
+   "hidden": false,
+   "icon": "img/achievements/1f88e791badf1cbf773d37d5d293016729b29b9e.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Modder",
+    "german": "Modder",
+    "french": "Bidouilleur",
+    "spanish": "Mañoso",
+    "schinese": "模组达人",
+    "russian": "Моддер",
+    "japanese": "改造屋",
+    "polish": "Majsterkowicz"
+   },
+   "descs": {
+    "english": "Attach a mod to a weapon.",
+    "german": "Bringe eine Modifikation an einer Waffe an.",
+    "french": "Installez une modification sur une arme.",
+    "spanish": "Acopla un accesorio a un arma.",
+    "schinese": "把模组装到一个武器上。",
+    "russian": "Установить модификацию на оружие.",
+    "japanese": "武器に改造パーツを装着する。",
+    "polish": "Zamontuj moduł do broni."
+   }
   },
   {
+   "api": "ach_060",
    "name": "Lock & Load",
-   "desc": "Fully equip a level 5 weapon with level 5 mods",
-   "icon": "img/achievements/guns_silver.webp",
-   "hidden": false
+   "desc": "Fully equip a level 5 weapon with level 5 mods.",
+   "hidden": false,
+   "icon": "img/achievements/39e86ed5b69f6d6b1f086602146419334c062b7b.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Lock & Load",
+    "german": "Durchladen!",
+    "french": "Verrouiller et charger",
+    "spanish": "Cargado y listo",
+    "schinese": "蓄势待发",
+    "russian": "Оружие к бою!",
+    "japanese": "完全装備",
+    "polish": "Załadować i odbezpieczyć"
+   },
+   "descs": {
+    "english": "Fully equip a level 5 weapon with level 5 mods.",
+    "german": "Statte eine Level-5-Waffe mit Level-5-Modifikationen aus.",
+    "french": "Équipez-vous d’une arme de niveau 5 avec des modifications de niveau 5.",
+    "spanish": "Equipa un arma de nivel 5 con accesorios de nivel 5.",
+    "schinese": "用5级的模组装备一个5级的武器。",
+    "russian": "Полностью оснастить оружие 5-го уровня модификациями 5-го уровня.",
+    "japanese": "レベル5の武器をレベル5の改造パーツで完全に装備する。",
+    "polish": "Zamontuj wszystkie moduły piątego poziomu w broni piątego poziomu."
+   }
   },
   {
+   "api": "ach_061",
    "name": "Grey Dawn",
-   "desc": "Complete all Intro missions",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete all Intro Missions.",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Grey Dawn",
+    "german": "Die Flut",
+    "french": "Aube grise",
+    "spanish": "Amanecer gris",
+    "schinese": "灰色黎明",
+    "russian": "Мрачный рассвет",
+    "japanese": "薄暗い夜明け",
+    "polish": "Szary świt"
+   },
+   "descs": {
+    "english": "Complete all Intro Missions.",
+    "german": "Schließe alle Intro-Missionen ab.",
+    "french": "Terminez toutes les missions d’introduction.",
+    "spanish": "Completa todas las misiones introductorias.",
+    "schinese": "完成所有的简介任务。",
+    "russian": "Завершить все вводные задания.",
+    "japanese": "イントロミッションをすべて完了する。",
+    "polish": "Ukończ wszystkie misje wprowadzające."
+   }
   },
   {
-   "name": "If It Bleeds, We Can Kill It",
-   "desc": "Complete the \"A Wrench in the Works\" mission",
-   "icon": "img/achievements/map_silver.webp",
-   "hidden": false
+   "api": "ach_062",
+   "name": "If It Bleeds, We Can Kill It.",
+   "desc": "Complete the Main Mission \"A Wrench in the Works\".",
+   "hidden": false,
+   "icon": "img/achievements/cc8c7678f0726cf7715cfaffeaefe7229b219c71.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "If It Bleeds, We Can Kill It.",
+    "german": "Wenn es blutet",
+    "french": "S’il peut saigner...",
+    "spanish": "Si sangra...",
+    "schinese": "如果它会流血，我们就能干掉它",
+    "russian": "Если оно кровоточит",
+    "japanese": "血を流すなら",
+    "polish": "Jeśli krwawi, dobijmy go"
+   },
+   "descs": {
+    "english": "Complete the Main Mission \"A Wrench in the Works\".",
+    "german": "Schließe die Hauptmission „Sand im Getriebe“ ab.",
+    "french": "Terminez la mission principale « Une clé dans l’engrenage ».",
+    "spanish": "Completa la misión principal \"Planes desbaratados\".",
+    "schinese": "完成主线任务“车间里的扳手”。",
+    "russian": "Завершить основное задание «Насмарку».",
+    "japanese": "メインミッション「妨害工作」を完了する。",
+    "polish": "Ukończ misję główną „Pokrzyżowane plany”."
+   }
   },
   {
+   "api": "ach_063",
    "name": "Elementary",
-   "desc": "Complete the mission \"Empty Spaces\"",
-   "icon": "img/achievements/map_silver.webp",
-   "hidden": false
+   "desc": "Complete the Main Mission \"Empty Spaces\".",
+   "hidden": false,
+   "icon": "img/achievements/cc8c7678f0726cf7715cfaffeaefe7229b219c71.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Elementary",
+    "german": "Elementar",
+    "french": "Élémentaire",
+    "spanish": "Elemental",
+    "schinese": "小儿科",
+    "russian": "Элементарно",
+    "japanese": "初歩",
+    "polish": "Elementarz"
+   },
+   "descs": {
+    "english": "Complete the Main Mission \"Empty Spaces\".",
+    "german": "Schließe die Hauptmission „Leere Räume“ ab.",
+    "french": "Terminez la mission principale « Espaces vides ».",
+    "spanish": "Completa la misión principal \"Espacios vacíos\".",
+    "schinese": "完成主线任务“空白之地”。",
+    "russian": "Завершить основное задание «Пустые пространства».",
+    "japanese": "メインミッション「空いたスペース」を完了する。",
+    "polish": "Ukończ misję główną „Puste przestrzenie”."
+   }
   },
   {
+   "api": "ach_064",
    "name": "My Friend",
-   "desc": "Complete the mission \"The Enemy of my Enemy\"",
-   "icon": "img/achievements/map_silver.webp",
-   "hidden": false
+   "desc": "Complete the Main Mission \"The Enemy of my Enemy\".",
+   "hidden": false,
+   "icon": "img/achievements/b2de5be3ec2d753c263fa16e79624d83d5ff7ddc.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "My Friend",
+    "german": "Mein Freund",
+    "french": "Mon ami",
+    "spanish": "Es mi amigo",
+    "schinese": "我的朋友",
+    "russian": "Мой друг",
+    "japanese": "わが友よ",
+    "polish": "Mój przyjaciel"
+   },
+   "descs": {
+    "english": "Complete the Main Mission \"The Enemy of my Enemy\".",
+    "german": "Schließe die Hauptmission „Der Feind meines Feindes“ ab.",
+    "french": "Terminez la mission principale « L’ennemi de mon ennemi ».",
+    "spanish": "Completa la misión principal \"El enemigo de mi enemigo\".",
+    "schinese": "完成主线任务“敌人的敌人”。",
+    "russian": "Завершить основное задание «Враг моего врага».",
+    "japanese": "メインミッション「敵の敵」を完了する。",
+    "polish": "Ukończ misję główną „Wróg mojego wroga”."
+   }
   },
   {
+   "api": "ach_065",
    "name": "Rise Of The Phoenix",
-   "desc": "Complete the mission \"Behind the Curtain\"",
-   "icon": "img/achievements/map_gold.webp",
-   "hidden": false
+   "desc": "Complete the Main Mission \"Behind the Curtain\".",
+   "hidden": false,
+   "icon": "img/achievements/6c1868203f5a751039aa33d7e4caac490297db0c.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Rise Of The Phoenix",
+    "german": "Der Phoenix steigt auf",
+    "french": "L’ascension du phénix",
+    "spanish": "El resurgir del fénix",
+    "schinese": "凤凰涅磐",
+    "russian": "Возрождение Феникса",
+    "japanese": "燃え上がる不死鳥",
+    "polish": "Narodziny feniksa"
+   },
+   "descs": {
+    "english": "Complete the Main Mission \"Behind the Curtain\".",
+    "german": "Schließe die Hauptmission „Hinter dem Vorhang“ ab.",
+    "french": "Terminez la mission principale « Derrière le rideau ».",
+    "spanish": "Completa la misión principal \"Tras el telón\".",
+    "schinese": "完成主线任务“幕后”。",
+    "russian": "Завершить основное задание «За занавесом».",
+    "japanese": "メインミッション「黒幕」を完了する。",
+    "polish": "Ukończ misję główną „Za kurtyną”."
+   }
   },
   {
+   "api": "ach_066",
    "name": "Kill Switch",
-   "desc": "Destroy 10 relay beacons",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Destroy 10 relay beacons.",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Kill Switch",
+    "german": "Notabschaltung",
+    "french": "Disjoncteur",
+    "spanish": "Botón de autodestrucción ",
+    "schinese": "死穴",
+    "russian": "Аварийный выключатель",
+    "japanese": "キルスイッチ",
+    "polish": "Wyłącznik"
+   },
+   "descs": {
+    "english": "Destroy 10 relay beacons.",
+    "german": "Zerstöre 10 Relais-Antennen.",
+    "french": "Détruisez 10 balises relais.",
+    "spanish": "Destruye 10 balizas de transmisión.",
+    "schinese": "摧毁10个中继信标。",
+    "russian": "Уничтожить 10 источников сигнала.",
+    "japanese": "中継ビーコンを10個破壊する。",
+    "polish": "Zniszcz 10 przekaźników."
+   }
   },
   {
+   "api": "ach_069",
    "name": "Go-Getter",
-   "desc": "Complete 25 World Missions",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete 25 Side Missions.",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Go-Getter",
+    "german": "Mensch der Tat",
+    "french": "Fonceur",
+    "spanish": "Ambicioso",
+    "schinese": "志在必得",
+    "russian": "Целеустремленный",
+    "japanese": "やり手",
+    "polish": "Energiczny"
+   },
+   "descs": {
+    "english": "Complete 25 Side Missions.",
+    "german": "Schließe 25 Nebenmissionen ab.",
+    "french": "Terminez 25 missions secondaires.",
+    "spanish": "Completa 25 misiones secundarias.",
+    "schinese": "完成25个支线任务。",
+    "russian": "Завершить 25 побочных заданий.",
+    "japanese": "サイドミッションを25個完了する。",
+    "polish": "Ukończ 25 misji pobocznych."
+   }
   },
   {
+   "api": "ach_071",
    "name": "It's The Final Countdown",
-   "desc": "Complete all Warboard Missions",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete all Main Missions.",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "It's The Final Countdown",
+    "german": "It's The Final Countdown",
+    "french": "It’s the final countdown",
+    "spanish": "La última cuenta atrás",
+    "schinese": "这是最后的时刻",
+    "russian": "It's The Final Countdown",
+    "japanese": "大詰め",
+    "polish": "It's The Final Countdown"
+   },
+   "descs": {
+    "english": "Complete all Main Missions.",
+    "german": "Schließe alle Hauptmissionen ab.",
+    "french": "Terminez toutes les missions principales.",
+    "spanish": "Completa todas las misiones principales.",
+    "schinese": "完成全部主线任务。",
+    "russian": "Завершить все основные задания.",
+    "japanese": "メインミッションをすべて完了する。",
+    "polish": "Ukończ wszystkie misje główne."
+   }
   },
   {
+   "api": "ach_074",
    "name": "I Want To Be A Mighty Pirate!",
-   "desc": "Loot something while wearing an eyepatch",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Loot something while wearing an eyepatch.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "I Want To Be A Mighty Pirate!",
+    "german": "Ich will ein mächtiger Pirat werden!",
+    "french": "Je veux être un puissant pirate !",
+    "spanish": "¡Quiero ser un pirata!",
+    "schinese": "我想成为强大的海盗！",
+    "russian": "Хочу стать могучим пиратом!",
+    "japanese": "海賊王になる！",
+    "polish": "Chcę zostać piratem!"
+   },
+   "descs": {
+    "english": "Loot something while wearing an eyepatch.",
+    "german": "Erbeute etwas, während du eine Augenklappe trägst.",
+    "french": "Pillez quelque chose en portant un cache-œil.",
+    "spanish": "Saquea llevando puesto un parche en el ojo.",
+    "schinese": "戴着眼罩的同时搜刮一个物品。",
+    "russian": "Подобрать какой-либо предмет, надев глазную повязку.",
+    "japanese": "眼帯を付けた状態で何かを回収する。",
+    "polish": "Złup przedmiot, mając na oku opaskę."
+   }
   },
   {
+   "api": "ach_081",
    "name": "Player Two",
-   "desc": "Create a second character",
-   "icon": "img/achievements/characters_bronze.webp",
-   "hidden": false
+   "desc": "Create a second character.",
+   "hidden": false,
+   "icon": "img/achievements/00e51b174ff3f2d8a368019e35203c5c2a8b66a1.jpg",
+   "icon_gray": "img/achievements/abdb1609b60f690ea4ca4eba9475a1c763911f31.jpg",
+   "names": {
+    "english": "Player Two",
+    "german": "Zweiter Spieler",
+    "french": "Joueur deux",
+    "spanish": "Jugador dos",
+    "schinese": "二号玩家",
+    "russian": "Второй игрок",
+    "japanese": "プレイヤー2",
+    "polish": "Gracz nr 2"
+   },
+   "descs": {
+    "english": "Create a second character.",
+    "german": "Erstelle einen zweiten Charakter.",
+    "french": "Créez un deuxième personnage.",
+    "spanish": "Crea un segundo personaje.",
+    "schinese": "创造第二个角色。",
+    "russian": "Создать второго персонажа.",
+    "japanese": "2人目のキャラクターを作成する。",
+    "polish": "Stwórz drugą postać."
+   }
   },
   {
+   "api": "ach_083",
    "name": "Postgraduate",
-   "desc": "Have two separate characters with different active specializations",
-   "icon": "img/achievements/characters_bronze.webp",
-   "hidden": false
+   "desc": "Have two separate characters with different active specializations.",
+   "hidden": false,
+   "icon": "img/achievements/00e51b174ff3f2d8a368019e35203c5c2a8b66a1.jpg",
+   "icon_gray": "img/achievements/abdb1609b60f690ea4ca4eba9475a1c763911f31.jpg",
+   "names": {
+    "english": "Postgraduate",
+    "german": "Aufbaustudium",
+    "french": "Études supérieures",
+    "spanish": "Posgrado",
+    "schinese": "研究生",
+    "russian": "Аспирант",
+    "japanese": "別の顔",
+    "polish": "Doktorant"
+   },
+   "descs": {
+    "english": "Have two separate characters with different active specializations.",
+    "german": "Verfüge gleichzeitig über zwei Charaktere mit verschiedenen aktiven Spezialisierungen.",
+    "french": "Ayez deux personnages distincts avec des spécialisations actives différentes.",
+    "spanish": "Ten dos personajes con distintas especializaciones activas.",
+    "schinese": "使用两个不同的角色，并且有着不同的激活特殊技能。",
+    "russian": "Прокачать двух персонажей с различными активными специализациями.",
+    "japanese": "キャラクター2人に別々の特性を有効化させる。",
+    "polish": "Posiadaj dwie różne postaci z włączonymi różnymi specjalizacjami."
+   }
   },
   {
+   "api": "ach_086",
    "name": "Assist",
-   "desc": "Deal more than 50% of the damage to an enemy killed by another player",
-   "icon": "img/achievements/hands_bronze.webp",
-   "hidden": false
+   "desc": "Deal more than 50% of the damage to an enemy killed by another player.",
+   "hidden": false,
+   "icon": "img/achievements/428059cc5add2d69a35170fc72caec94cc3a3a2b.jpg",
+   "icon_gray": "img/achievements/b508cadfcb07c8d545cd6ad36c41eae72a16cfeb.jpg",
+   "names": {
+    "english": "Assist",
+    "german": "Vorlage",
+    "french": "Passe décisive",
+    "spanish": "Asistencia",
+    "schinese": "协助",
+    "russian": "Подмога",
+    "japanese": "アシスト",
+    "polish": "Asysta"
+   },
+   "descs": {
+    "english": "Deal more than 50% of the damage to an enemy killed by another player.",
+    "german": "Füge einem Gegner, den ein anderer Spieler erledigt, mehr als 50 % des Schadens zu.",
+    "french": "Infligez plus de 50 % des dégâts à un ennemi tué par un autre joueur.",
+    "spanish": "Causa más de un 50 % de daño a un enemigo destruido por otro jugador.",
+    "schinese": "让一个敌人受到超过50%的伤害，且最终敌人被其他玩家干掉。",
+    "russian": "Нанести более 50 % урона врагу, впоследствии уничтоженному другим игроком.",
+    "japanese": "敵にダメージの50％以上を与えて他のプレイヤーに倒させる。",
+    "polish": "Zadaj ponad 50% obrażeń przeciwnikowi zabitemu przez innego gracza."
+   }
   },
   {
+   "api": "ach_100",
    "name": "Other Survivors",
-   "desc": "Complete the mission \"Not Alone\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete the mission \"Not Alone\".",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Other Survivors",
+    "german": "Andere Überlebende",
+    "japanese": "他の生存者",
+    "french": "Autres survivants",
+    "spanish": "Otros supervivientes",
+    "russian": "Другие выжившие",
+    "polish": "Inni ocalali",
+    "schinese": "其他幸存者"
+   },
+   "descs": {
+    "english": "Complete the mission \"Not Alone\".",
+    "german": "Schließe die Mission „Nicht allein“ ab.",
+    "japanese": "ミッション「1人じゃない」を完了する。",
+    "french": "Terminez la mission « Pas seul ».",
+    "spanish": "Completa la misión «Hay vida».",
+    "russian": "Завершить задание «Выжившие».",
+    "polish": "Ukończ misję „Towarzysze broni”.",
+    "schinese": "完成“并非一人”任务。"
+   }
   },
   {
+   "api": "ach_101",
    "name": "We're Fully Booked",
-   "desc": "Complete the mission \"For the Sick and the Injured\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete the mission \"For the Sick and the Injured\".",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "We're Fully Booked",
+    "german": "Wir sind ausgebucht",
+    "french": "Nous sommes complets",
+    "spanish": "Hasta arriba",
+    "schinese": "我们没有空房了",
+    "russian": "Мест нет",
+    "japanese": "満室",
+    "polish": "Brak wolnych pokojów"
+   },
+   "descs": {
+    "english": "Complete the mission \"For the Sick and the Injured\".",
+    "german": "Schließe die Mission „Für die Kranken und Verletzten“ ab.",
+    "french": "Terminez la mission « Pour les malades et les blessés ».",
+    "spanish": "Completa la misión «Por los heridos y enfermos».",
+    "schinese": "完成“救死扶伤”任务。",
+    "russian": "Завершить задание «Спасение больных и раненых».",
+    "japanese": "ミッション「傷病者のために」を完了する。",
+    "polish": "Ukończ misję „Dla chorych i rannych”."
+   }
   },
   {
+   "api": "ach_102",
    "name": "Outside in the Distance",
-   "desc": "Complete the mission \"Nothing but the Snow\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete the mission \"Nothing but the Snow\".",
+   "hidden": false,
+   "icon": "img/achievements/f8caf4c38ea1569174dd3ee9e48fdc9f99646d98.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Outside in the Distance",
+    "german": "Draußen in der Ferne",
+    "french": "Loin à l’horizon",
+    "spanish": "En la distancia",
+    "schinese": "远远在外",
+    "russian": "В промозглой дали",
+    "japanese": "どこか遠くで",
+    "polish": "Gdzieś w oddali"
+   },
+   "descs": {
+    "english": "Complete the mission \"Nothing but the Snow\".",
+    "german": "Schließe die Mission „Nichts bis auf den Schnee“ ab.",
+    "french": "Terminez la mission « Rien que la neige ».",
+    "spanish": "Completa la misión «Nada salvo la nieve».",
+    "schinese": "完成“白雪茫茫”任务。",
+    "russian": "Завершить задание «Только снег на крыше».",
+    "japanese": "ミッション「雪ばかり」を完了する。",
+    "polish": "Ukończ misję „Śnieg, śnieg, tylko śnieg”."
+   }
   },
   {
+   "api": "ach_103",
    "name": "Secrets Locked Away",
-   "desc": "Complete the mission \"The Hellmouth\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": false
+   "desc": "Complete the mission \"The Hellmouth\".",
+   "hidden": false,
+   "icon": "img/achievements/1287f03686b047aacdc9805513e3dcd00513495e.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Secrets Locked Away",
+    "german": "Verborgene Geheimnisse",
+    "french": "Secrets bien gardés",
+    "spanish": "Secretos ocultos",
+    "schinese": "不为人知的秘密",
+    "russian": "Потаенные секреты",
+    "japanese": "隠された秘密",
+    "polish": "Tajemnice skrywane przed światem"
+   },
+   "descs": {
+    "english": "Complete the mission \"The Hellmouth\".",
+    "german": "Schließe die Mission „Der Höllenschlund“ ab.",
+    "french": "Terminez la mission « La bouche de l’enfer ».",
+    "spanish": "Completa la misión «En la boca del lobo».",
+    "schinese": "完成“地狱之口”任务。",
+    "russian": "Завершить задание «Врата ада».",
+    "japanese": "ミッション「地獄の入り口」を完了する。",
+    "polish": "Ukończ misję „Przedsionek piekieł”."
+   }
   },
   {
+   "api": "ach_104",
    "name": "Protector of the Resistance",
-   "desc": "Complete the mission \"The Resistance\"",
-   "icon": "img/achievements/map_silver.webp",
-   "hidden": false
+   "desc": "Complete the mission \"The Resistance\".",
+   "hidden": false,
+   "icon": "img/achievements/cc8c7678f0726cf7715cfaffeaefe7229b219c71.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Protector of the Resistance",
+    "german": "Der Beschützer des Widerstandes",
+    "french": "Protecteur de la Résistance",
+    "spanish": "Custodio de la resistencia",
+    "schinese": "抵抗军的保卫者",
+    "russian": "Защитник Сопротивления",
+    "japanese": "レジスタンスの保護者",
+    "polish": "Obrońca Ruchu Oporu"
+   },
+   "descs": {
+    "english": "Complete the mission \"The Resistance\".",
+    "german": "Schließe die Mission „Der Widerstand“ ab.",
+    "french": "Terminez la mission « La Résistance ».",
+    "spanish": "Completa la misión «La resistencia».",
+    "schinese": "完成“抵抗”任务。",
+    "russian": "Завершить задание «Сопротивление».",
+    "japanese": "ミッション「レジスタンス」を完了する。",
+    "polish": "Ukończ misję „Ruch Oporu”."
+   }
   },
   {
-   "name": "Vestiges",
-   "desc": "Find all the audio logs on Himfjäll",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
-  },
-  {
-   "name": "Here's Pauli!",
-   "desc": "Find out what happened to the missing guest of Björntunet Hotel",
-   "icon": "img/achievements/characters_bronze.webp",
-   "hidden": true
-  },
-  {
-   "name": "Room 237",
-   "desc": "Gain access to the mysteriously locked room of Björntunet Hotel",
-   "icon": "img/achievements/characters_bronze.webp",
-   "hidden": true
-  },
-  {
-   "name": "Unorthodox Skiing",
-   "desc": "Get from start to finish on the ski slope in under 40 seconds",
-   "icon": "img/achievements/compass_gray.webp",
-   "hidden": false
-  },
-  {
+   "api": "ach_105",
    "name": "Adapt and Evolve",
-   "desc": "Destroy one of each Apocalypse Class machine: Tick, Runner, Hunter and Tank",
-   "icon": "img/achievements/tank_gray.webp",
-   "hidden": false
+   "desc": "Destroy one of each Apocalypse Class machine: Tick, Runner, Hunter and Tank.",
+   "hidden": false,
+   "icon": "img/achievements/1642dbc9468b25f34b6ca58dc9f056e3f7a86ff7.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Adapt and Evolve",
+    "german": "Evolution",
+    "japanese": "適応と進化",
+    "french": "S’adapter et évoluer",
+    "spanish": "Adáptate y evoluciona",
+    "russian": "Адаптация и эволюция",
+    "polish": "Przystosowanie i ewolucja",
+    "schinese": "适应并进化"
+   },
+   "descs": {
+    "english": "Destroy one of each Apocalypse Class machine: Tick, Runner, Hunter and Tank.",
+    "german": "Erledige je eine der folgenden Maschinen der Apokalypse-Klasse: Tick, Runner, Hunter und Tank.",
+    "japanese": "アポカリプスクラスの機械獣(ティック、ランナー、ハンター、タンク)を1体ずつ破壊する。",
+    "french": "Détruisez une machine de chaque de classe Apocalypse : Tique, Coureur, Chasseur et Tank.",
+    "spanish": "Destruye una máquina de cada tipo de clase apocalípsis: garrapata, corredor, cazador y tanque.",
+    "russian": "Уничтожить по машине каждого типа класса Апокалипсис: Клещ, Патрульный, Охотник и Колосс.",
+    "polish": "Zniszcz jedną maszynę klasy „Zagłada” z każdego rodzaju: Kleszcz, Goniec, Łowca, Tank.",
+    "schinese": "每种末日级的机器兽分别击毁一台：蜱虫、奔跑者、猎犬和坦克。"
+   }
   },
   {
+   "api": "ach_106",
+   "name": "Vestiges",
+   "desc": "Find all the audio logs on Himfjäll.",
+   "hidden": false,
+   "icon": "img/achievements/1f92aa443b3205dda9f9efac51ae0113367fb3b8.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "Vestiges",
+    "german": "Tonspuren",
+    "french": "Vestiges",
+    "spanish": "Vestigios",
+    "schinese": "痕迹",
+    "russian": "По крупицам",
+    "japanese": "形跡",
+    "polish": "Ślady"
+   },
+   "descs": {
+    "english": "Find all the audio logs on Himfjäll.",
+    "german": "Finde alle Audio-Aufzeichnungen auf Himfjäll.",
+    "french": "Trouvez tous les enregistrements audio sur Himfjäll.",
+    "spanish": "Encuentra todos los archivos de audio de Himfjäll.",
+    "schinese": "找到Himfjäll的音频日志。",
+    "russian": "Найти все аудиозаписи на острове Химфьелль.",
+    "japanese": "Himfjällの音声ログをすべて見つける。",
+    "polish": "Znajdź wszystkie nagrania w Himfjäll."
+   }
+  },
+  {
+   "api": "ach_107",
+   "name": "Here's Pauli!",
+   "desc": "Find out what happened to the missing guest of Björntunet Hotel.",
+   "hidden": true,
+   "icon": "img/achievements/00e51b174ff3f2d8a368019e35203c5c2a8b66a1.jpg",
+   "icon_gray": "img/achievements/abdb1609b60f690ea4ca4eba9475a1c763911f31.jpg",
+   "names": {
+    "english": "Here's Pauli!",
+    "german": "Hier ist Pauli!",
+    "french": "Voilà Pauli !",
+    "spanish": "¡Aquí está Pauli!",
+    "schinese": "我是Pauli！",
+    "russian": "А вот и Паули!",
+    "japanese": "お客様だよ！",
+    "polish": "Jest twój Pauli!"
+   },
+   "descs": {
+    "english": "Find out what happened to the missing guest of Björntunet Hotel.",
+    "german": "Finde heraus, was mit dem verschwundenen Gast im Hotel Björntunet geschehen ist.",
+    "french": "Découvrez ce qui est arrivé au client disparu de l’hôtel Björntunet.",
+    "spanish": "Averigua qué pasó con los huéspedes desaparecidos del hotel Björntunet.",
+    "schinese": "弄清Björntunet酒店失踪的客人去哪了。",
+    "russian": "Разобраться, что случилось с пропавшим постояльцем отеля «Бьёрнтунет».",
+    "japanese": "Björntunetホテルの行方不明の客に何があったか調べる。",
+    "polish": "Dowiedz się, co się stało z zaginionym gościem hotelu Björntunet."
+   }
+  },
+  {
+   "api": "ach_108",
+   "name": "Room 237",
+   "desc": "Gain access to the mysteriously locked room of Björntunet Hotel.",
+   "hidden": true,
+   "icon": "img/achievements/00e51b174ff3f2d8a368019e35203c5c2a8b66a1.jpg",
+   "icon_gray": "img/achievements/abdb1609b60f690ea4ca4eba9475a1c763911f31.jpg",
+   "names": {
+    "english": "Room 237",
+    "german": "Zimmer 237",
+    "french": "Chambre 237",
+    "spanish": "Habitación 237",
+    "schinese": "房间237",
+    "russian": "Комната 237",
+    "japanese": "237号室",
+    "polish": "Pokój 237"
+   },
+   "descs": {
+    "english": "Gain access to the mysteriously locked room of Björntunet Hotel.",
+    "german": "Verschaffe dir Zugang zu dem geheimnisvollen verschlossenen Zimmer im Hotel Björntunet.",
+    "french": "Accédez à la chambre mystérieusement fermée à clé de l’hôtel Björntunet.",
+    "spanish": "Consigue acceder a la misteriosa habitación cerrada del hotel Björntunet.",
+    "schinese": "进入Björntunet酒店里上了锁的神秘房间。",
+    "russian": "Открыть таинственную запертую комнату отеля «Бьёрнтунет».",
+    "japanese": "Björntunetホテルの鍵がかかった謎の部屋にアクセスする。",
+    "polish": "Zdobądź dostęp do zamkniętego z niewiadomych przyczyn pokoju w hotelu Björntunet."
+   }
+  },
+  {
+   "api": "ach_109",
+   "name": "Unorthodox Skiing",
+   "desc": "Get from start to finish on the ski slope in under 40 seconds.",
+   "hidden": false,
+   "icon": "img/achievements/3ee7d7aa34dbc5a88a814cdc0278e1faf1d6f646.jpg",
+   "icon_gray": "img/achievements/2bdec35b7b24e7c0b684131d3cb78d9522ea4d0c.jpg",
+   "names": {
+    "english": "Unorthodox Skiing",
+    "german": "Tempo auf der Piste",
+    "french": "Ski peu orthodoxe",
+    "spanish": "Esquí atípico",
+    "schinese": "非正规滑雪",
+    "russian": "Гонка в свободном стиле",
+    "japanese": "型破りのスキー",
+    "polish": "Zmyślne narciarstwo"
+   },
+   "descs": {
+    "english": "Get from start to finish on the ski slope in under 40 seconds.",
+    "german": "Fahre in unter 40 Sekunden die Skipiste hinunter.",
+    "french": "Descendez la piste de ski du début à la fin en moins de 40 secondes.",
+    "spanish": "Haz el recorrido completo de la pista de esquí en menos de 40 segundos.",
+    "schinese": "在40秒内从滑雪道的起点到达终点。",
+    "russian": "Добраться по лыжному склону от старта до финиша, уложившись в 40 секунд.",
+    "japanese": "スキー斜面を40秒以内にスタートからフィニッシュまで滑り降りる。",
+    "polish": "Zjedź ze stoku w mniej niż 40 sekund."
+   }
+  },
+  {
+   "api": "ach_110",
    "name": "He's Out There",
-   "desc": "Free the survivor in the destroyed villa during the mission \"The Ringfort\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Free the survivor in the destroyed villa during the mission \"The Ringfort\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "He's Out There",
+    "german": "Er ist irgendwo da draußen",
+    "french": "Il est quelque part là-bas",
+    "spanish": "Está ahí fuera",
+    "schinese": "真相就在那里",
+    "russian": "Он где-то рядом",
+    "japanese": "ヤツはそこにいる",
+    "polish": "On gdzieś tam jest"
+   },
+   "descs": {
+    "english": "Free the survivor in the destroyed villa during the mission \"The Ringfort\".",
+    "german": "Befreie den Überlebenden in der zerstörten Villa in der Mission „Die Fluchtburg“.",
+    "french": "Libérez le survivant dans la villa détruite lors de la mission « Le fort circulaire ».",
+    "spanish": "Libera al superviviente en la residencia destruida durante la misión «El fuerte circular».",
+    "schinese": "在进行任务“环形堡垒”时解救别墅废墟中的幸存者。",
+    "russian": "Освободить выжившего в разрушенной вилле при выполнении задания «Форт».",
+    "japanese": "ミッション「リングフォート」の進行中に破壊された別荘から生存者を解放する。",
+    "polish": "Uwolnij ocalałego ze zniszczonej willi podczas misji „Grodzisko”."
+   }
   },
   {
+   "api": "ach_111",
    "name": "Private Property",
-   "desc": "Complete the mission \"Tidal Wave\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Complete the mission \"Tidal Wave\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Private Property",
+    "german": "Privatgrundstück",
+    "french": "Propriété privée",
+    "spanish": "Propiedad privada",
+    "schinese": "私人财产",
+    "russian": "Частная собственность",
+    "japanese": "私有地",
+    "polish": "Teren prywatny"
+   },
+   "descs": {
+    "english": "Complete the mission \"Tidal Wave\".",
+    "german": "Schließe die Mission „Flutwelle“ ab.",
+    "french": "Terminez la mission « Raz-de-marée ».",
+    "spanish": "Completa la misión «Tsunami».",
+    "schinese": "完成“浪潮”任务。",
+    "russian": "Завершить задание «Прилив сил».",
+    "japanese": "ミッション「津波」を完了する。",
+    "polish": "Ukończ misję „Fala pływowa”."
+   }
   },
   {
+   "api": "ach_112",
    "name": "The Sum of its Parts",
-   "desc": "Complete the mission \"Test Run\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Complete the mission \"Test Run\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "The Sum of its Parts",
+    "german": "Die Summe seiner Teile",
+    "french": "La somme de ses parties",
+    "spanish": "La suma de las partes",
+    "schinese": "部分之和",
+    "russian": "Слагаемые успеха",
+    "japanese": "部品集め",
+    "polish": "Suma składników"
+   },
+   "descs": {
+    "english": "Complete the mission \"Test Run\".",
+    "german": "Schließe die Mission „Praxistest“ ab.",
+    "french": "Terminez la mission « Essai ».",
+    "spanish": "Completa la misión «Prueba».",
+    "schinese": "完成“测试运行”任务。",
+    "russian": "Завершить задание «Испытательный заезд».",
+    "japanese": "ミッション「試運転」を完了する。",
+    "polish": "Ukończ misję „Jazda próbna”."
+   }
   },
   {
+   "api": "ach_113",
    "name": "It's Been Fun",
-   "desc": "Complete the mission \"New Cycles\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Complete the mission \"New Cycles\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "It's Been Fun",
+    "german": "Hat Spaß gemacht",
+    "french": "Ce fut un plaisir",
+    "spanish": "Ha sido divertido",
+    "schinese": "其乐无穷",
+    "russian": "Мы живем в интересное время",
+    "japanese": "今まで楽しかった",
+    "polish": "Ale to było dobre"
+   },
+   "descs": {
+    "english": "Complete the mission \"New Cycles\".",
+    "german": "Schließe die Mission „Neue Zyklen“ ab.",
+    "french": "Terminez la mission « Nouveaux cycles ».",
+    "spanish": "Completa la misión «Un nuevo ciclo».",
+    "schinese": "完成“新循环”任务。",
+    "russian": "Завершить задание «История повторяется».",
+    "japanese": "ミッション「新たなサイクル」を完了する。",
+    "polish": "Ukończ misję „Nowe cykle”."
+   }
   },
   {
+   "api": "ach_114",
    "name": "End of the Road",
-   "desc": "Complete the mission \"Good Night\"",
-   "icon": "img/achievements/map_silver.webp",
-   "hidden": true
+   "desc": "Complete the mission \"Good Night\".",
+   "hidden": true,
+   "icon": "img/achievements/68509741da0e18ab0c461a9f5a101a62ea7e7a08.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "End of the Road",
+    "german": "Bis hierher und nicht weiter",
+    "french": "Fin du voyage",
+    "spanish": "Fin del camino",
+    "schinese": "穷途末路",
+    "russian": "Конец пути",
+    "japanese": "ここまでだ",
+    "polish": "Koniec drogi"
+   },
+   "descs": {
+    "english": "Complete the mission \"Good Night\".",
+    "german": "Schließe die Mission „Gute Nacht“ ab.",
+    "french": "Terminez la mission « Bonne nuit ».",
+    "spanish": "Completa la misión «Buenas noches».",
+    "schinese": "完成“晚安”任务。",
+    "russian": "Завершить задание «Спокойной ночи».",
+    "japanese": "ミッション「おやすみ」を完了する。",
+    "polish": "Ukończ misję „Dobranoc”."
+   }
   },
   {
+   "api": "ach_115",
    "name": "Wheels of Fortune",
-   "desc": "Complete the side mission \"In the Face of Adversity\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Complete the side mission \"In the Face of Adversity\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Wheels of Fortune",
+    "german": "Räder aus Feuer",
+    "french": "Les roues de la fortune",
+    "spanish": "Ruedas de la fortuna",
+    "schinese": "命运之轮",
+    "russian": "Колесо фортуны",
+    "japanese": "運命の輪",
+    "polish": "Koła fortuny"
+   },
+   "descs": {
+    "english": "Complete the side mission \"In the Face of Adversity\".",
+    "german": "Schließe die Nebenmission „Wider alle Widrigkeiten“ ab.",
+    "french": "Terminez la mission secondaire « Face à l’adversité ».",
+    "spanish": "Completa la misión secundaria «Frente a la adversidad».",
+    "schinese": "完成支线任务“面临灾祸”。",
+    "russian": "Завершить побочное задание «Вопреки всем невзгодам».",
+    "japanese": "サイドミッション「逆境でも」を完了する。",
+    "polish": "Ukończ misję poboczną „W obliczu przeciwności losu”."
+   }
   },
   {
+   "api": "ach_116",
    "name": "We are the Resistance",
-   "desc": "Complete the side mission \"We are the Resistance\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Complete the side mission \"We are the Resistance\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "We are the Resistance",
+    "german": "Wir sind der Widerstand",
+    "french": "Nous sommes la Résistance",
+    "spanish": "Somos la Resistencia",
+    "schinese": "拼死抵抗",
+    "russian": "Мы — Сопротивление",
+    "japanese": "レジスタンスここにあり",
+    "polish": "Jesteśmy Ruchem Oporu"
+   },
+   "descs": {
+    "english": "Complete the side mission \"We are the Resistance\".",
+    "german": "Schließe die Nebenmission „Wir sind der Widerstand“ ab.",
+    "french": "Terminez la mission secondaire « Nous sommes la Résistance ».",
+    "spanish": "Completa la misión secundaria «Somos la Resistencia».",
+    "schinese": "完成支线任务“拼死抵抗”。",
+    "russian": "Завершить побочное задание «Мы — Сопротивление».",
+    "japanese": "サイドミッション「レジスタンスここにあり」を完了する。",
+    "polish": "Ukończ misję poboczną „My jesteśmy Ruchem Oporu”."
+   }
   },
   {
+   "api": "ach_117",
    "name": "Trial and Error",
-   "desc": "Complete the side mission \"The Virus\"",
-   "icon": "img/achievements/map_bronze.webp",
-   "hidden": true
+   "desc": "Complete the side mission \"The Virus\".",
+   "hidden": true,
+   "icon": "img/achievements/6f72b728ccfcb478c6c3be096714c13b17339970.jpg",
+   "icon_gray": "img/achievements/52679beb668cc2b8ce2f3537db1c3b5aa510ccae.jpg",
+   "names": {
+    "english": "Trial and Error",
+    "german": "Versuch und Irrtum",
+    "french": "Tâtonnements",
+    "spanish": "Ensayo y error",
+    "schinese": "屡错屡试",
+    "russian": "Пробы и ошибки",
+    "japanese": "試行錯誤",
+    "polish": "Metoda prób i błędów"
+   },
+   "descs": {
+    "english": "Complete the side mission \"The Virus\".",
+    "german": "Schließe die Nebenmission „Das Virus“ ab.",
+    "french": "Terminer la mission « Le virus ».",
+    "spanish": "Completa la misión «El virus».",
+    "schinese": "完成支线任务“病毒”。",
+    "russian": "Завершить побочное задание «Вирус».",
+    "japanese": "サイドミッション「ウイルス」を完了する。",
+    "polish": "Ukończ misję poboczną „Wirus”."
+   }
   },
   {
+   "api": "ach_118",
    "name": "The Ones That Came Before Us",
-   "desc": "Find all 20 \"Survivor's Notes\" and \"Love Letters\" Collectibles",
-   "icon": "img/achievements/loot_bronze.webp",
-   "hidden": false
+   "desc": "Find all 20 \"Survivor's Notes\" and \"Love Letters\" Collectibles.",
+   "hidden": false,
+   "icon": "img/achievements/4ae882e8e9e746b31601c6965591fb7de605f746.jpg",
+   "icon_gray": "img/achievements/747c36b9032164bbd99a537f2c9e8c647581ca5e.jpg",
+   "names": {
+    "english": "The Ones That Came Before Us",
+    "german": "Die uns vorausgegangen sind",
+    "french": "Ceux qui nous ont précédés",
+    "spanish": "Los que nos precedieron",
+    "schinese": "先行者",
+    "russian": "Люди, что были до нас",
+    "japanese": "先人たち",
+    "polish": "Ci, którzy byli tu przed nami"
+   },
+   "descs": {
+    "english": "Find all 20 \"Survivor's Notes\" and \"Love Letters\" Collectibles.",
+    "german": "Finde alle 10 Überlebenden-Notizen und alle 10 Liebesbriefe.",
+    "french": "Retrouvez les 20 « notes de survivant » et « lettres d’amour » à collectionner.",
+    "spanish": "Encuentra las 20 «notas de superviviente» y las «cartas de amor».",
+    "schinese": "找到全部20个可收集的“幸存者笔记”和“情书”。",
+    "russian": "Найти все 20 предметов: записки выжившего и любовные письма.",
+    "japanese": "収集品の「生存者のメモ」と「ラブレター」を20個すべて発見する。",
+    "polish": "Odszukaj wszystkie 20 „Zapisków ocalałego” i „Listów miłosnych”."
+   }
   },
   {
+   "api": "ach_119",
    "name": "Not Today, FNIX!",
-   "desc": "Defeat a Rival",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Defeat a Rival.",
+   "hidden": false,
+   "icon": "img/achievements/915d584a515bd6300e242a11c0494bb0e2e924b9.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "Not Today, FNIX!",
+    "german": "Nicht heute, FNIX!",
+    "french": "Pas aujourd’hui, FNIX !",
+    "spanish": "¡Hoy no, FNIX!",
+    "schinese": "今天不行，FNIX！",
+    "russian": "Не сегодня, FNIX!",
+    "japanese": "やられるものか！",
+    "polish": "Nie dziś, FNIX!"
+   },
+   "descs": {
+    "english": "Defeat a Rival.",
+    "german": "Besiege einen Rivalen.",
+    "french": "Éliminez un rival.",
+    "spanish": "Derrota a un Rival.",
+    "schinese": "击败一个对手。",
+    "russian": "Победить неприятеля.",
+    "japanese": "ライバルを1体倒す。",
+    "polish": "Pokonaj przeciwnika."
+   }
   },
   {
+   "api": "ach_120",
    "name": "Running Wild",
-   "desc": "Use a melee weapon to blow up 20 cars",
-   "icon": "img/achievements/guns_bronze.webp",
-   "hidden": false
+   "desc": "Use a melee weapon to blow up 20 cars.",
+   "hidden": false,
+   "icon": "img/achievements/6b0fbf8e73f529c20f7e2063d39b054d217c3b1d.jpg",
+   "icon_gray": "img/achievements/3040f90a8f006707d30536731789b1af48c1b7d4.jpg",
+   "names": {
+    "english": "Running Wild",
+    "german": "Außer Rand und Band",
+    "french": "En roue libre",
+    "spanish": "Descontrol",
+    "schinese": "几近疯狂",
+    "russian": "Выпустить пар",
+    "japanese": "暴れ放題",
+    "polish": "Dziki szał"
+   },
+   "descs": {
+    "english": "Use a melee weapon to blow up 20 cars.",
+    "german": "Bringe 20 Autos mit einer Nahkampfwaffe zur Explosion.",
+    "french": "Utilisez une arme de mêlée pour faire exploser 20 voitures.",
+    "spanish": "Usa un arma cuerpo a cuerpo para destrozar 20 coches.",
+    "schinese": "使用近战武器炸毁20辆车。",
+    "russian": "Использовать оружие ближнего боя, чтобы взорвать 20 автомобилей.",
+    "japanese": "近接武器を使って車を20台爆発させる。",
+    "polish": "Używając broni do walki wręcz, wysadź w powietrze 20 samochodów."
+   }
   },
   {
+   "api": "ach_121",
    "name": "From a Distance",
-   "desc": "Use a hunting or sniper rifle to destroy 15 Seekers",
-   "icon": "img/achievements/tank_bronze.webp",
-   "hidden": false
+   "desc": "Use a hunting or sniper rifle to destroy 15 Seekers.",
+   "hidden": false,
+   "icon": "img/achievements/915d584a515bd6300e242a11c0494bb0e2e924b9.jpg",
+   "icon_gray": "img/achievements/da491472d5130f0ebda1d41c537105d22926b8ad.jpg",
+   "names": {
+    "english": "From a Distance",
+    "german": "Aus der Ferne",
+    "french": "De loin",
+    "spanish": "A distancia",
+    "schinese": "来自远处",
+    "russian": "Вне досягаемости",
+    "japanese": "遠くから",
+    "polish": "Z odległości"
+   },
+   "descs": {
+    "english": "Use a hunting or sniper rifle to destroy 15 Seekers.",
+    "german": "Zerstöre 15 Seeker mit einem Jagd- oder Scharfschützengewehr.",
+    "french": "Utilisez un fusil de chasse ou de précision pour détruire 15 Traqueurs.",
+    "spanish": "Usa un rifle de caza o un fusil de francotirador para destruir 15 buscadores.",
+    "schinese": "使用猎枪或狙击步枪击毁15个搜索者。",
+    "russian": "Уничтожить 15 «Ищеек» с помощью снайперской или охотничьей винтовки.",
+    "japanese": "狩猟用またはスナイパーライフルでシーカーを15体破壊する。",
+    "polish": "Zniszcz 15 szperaczy za pomocą sztucera lub karabinu snajperskiego."
+   }
   }
  ]
 }

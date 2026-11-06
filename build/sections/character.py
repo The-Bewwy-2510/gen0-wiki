@@ -5,7 +5,8 @@ Pages
                              Tech) drawn like the game's skill menu (icons, connector lines, rank pips, a details pane
                              and a small point planner in character.js), specializations, skill points and tips
     character/apparel.html   vanity.json group 'apparel': a card grid (one card per piece of clothing, its colours as
-                             swatches) filtered by slot and pack, and a table split into one collapsed fold per slot
+                             swatches; base game, then packs, then DLCs; two rows per slot until opened) filtered
+                             by slot and pack, and a table split into one collapsed fold per slot
     character/emotes.html    vanity.json emotes (gestures, dances, companion tricks) and face paint; the dances that
                              come from videotape collectibles
     character/vehicles.html  vanity.json vehicles: every bike model with its paint jobs, Steam store text per model
@@ -561,6 +562,7 @@ def build_apparel(site):
     side = [panel("How you get it", avail_legend(site))]
     b = [bar("Browse apparel", f"{len(cards)} pieces · {fmt(len(items))} items", id="browse"),
          "<p><b>Grid</b>: one card per piece of clothing, with its colours as little swatches. "
+         "Each slot lists the base game first, then the outfit packs, then the DLCs. "
          "Pick a slot, a pack, or type a name or a colour. <b>Table</b>: every single item, one "
          "fold per slot.</p>",
          '<div class="tabset aptabs"><div class="tsbtns"><button class="on">Grid</button><button>Table</button></div>',
@@ -628,15 +630,33 @@ def apparel_card(site, c):
             f'<div class="aptags">{"".join(tags)}</div>{sw}</div></div>')
 
 
+MAIN_DLC = ("alpine", "fnix")      # pack classes of the two story DLCs, in release order
+
+
+def source_order(site, c):
+    """Sort key of a card by where it comes from: the base game, then the outfit packs (alphabetically by pack
+    name), then the main DLCs (Alpine Unrest, then FNIX Rising); by name inside each group."""
+    cls = (packs(site).get(c["pack"]) or {}).get("cls", "")
+    if cls == "base":
+        group = (0, 0, "")
+    elif cls in MAIN_DLC:
+        group = (2, MAIN_DLC.index(cls), "")
+    else:
+        group = (1, 0, pack_label(site, c["pack"]).lower())
+    return group + (c["base"].lower(),)
+
+
 def apparel_grid(site, cards, subs):
+    """One section per slot. character.js shows the first two rows of each and a 'Show all' button."""
     out = ['<div id="apgrid" class="apslots">']
     for key, name in subs:
-        cs = [c for c in cards if c["slot"] == key]
+        cs = sorted((c for c in cards if c["slot"] == key), key=lambda c: source_order(site, c))
         if not cs:
             continue
         out.append(f'<section class="apslot"><h3 class="aph">{vimg(site, slot_icon(key), "", "chi")}{esc(name)}'
                    f' <small>{len(cs)} pieces</small></h3><div class="apgrid">'
-                   + "".join(apparel_card(site, c) for c in cs) + "</div></section>")
+                   + "".join(apparel_card(site, c) for c in cs) + '</div><button type="button" class="apmore" '
+                   f'aria-expanded="false" hidden>Show all {len(cs)}</button></section>')
     out.append("</div>")
     return "".join(out)
 
@@ -713,10 +733,10 @@ def emotes_section(site, its, esubs, base):
            f"{site.link('machine', 'Runner', 'machine companion')}.</p>"]
     for key, name in esubs:
         sub = sorted((i for i in its if i["s"] == key), key=lambda i: i["n"].lower())
-        out.append(f'<h3 class="vh" id="emotes-{esc(key)}">{esc(name)} <small>{len(sub)}</small></h3>')
-        out.append('<div class="vgrid">' + "".join(
+        grid = '<div class="vgrid">' + "".join(
             vtile(site, i, "em", '<span class="dim small">from a videotape</span>'
-                  if norm(i["n"]) in tapes and i["p"] == base and i["l"] == "L" else "") for i in sub) + "</div>")
+                  if norm(i["n"]) in tapes and i["p"] == base and i["l"] == "L" else "") for i in sub) + "</div>"
+        out.append(fold(name, grid, open=True, level=3, id=f"emotes-{key}", right=f"{len(sub)}", cls="vfold"))
     locked = [i for i in its if i["s"] == "dance" and i["p"] == base and i["l"] == "L"]
     if locked:
         out += videotape_section(site, locked)
@@ -769,10 +789,11 @@ def face_paint(site, its, base):
     nb = sum(1 for i in its if i["p"] == base)
     rows = [[f'<span id="fp-{slug(i["n"])}">{esc(i["n"])}</span>', pack_tag(site, i["p"]), avail_tag(i["l"])]
             for i in its]
-    return [bar("Face paint", f"{len(its)}"),
-            f"<p>{nb} of the {len(its)} face paints are base game items; the rest come with packs. They all share "
-            "one icon in the game files, so they are listed by name.</p>",
-            table(["Face paint", "Pack", "How you get it"], rows, cls="compact")]
+    return [fold("Face paint",
+                 f"<p>{nb} of the {len(its)} face paints are base game items; the rest come with packs. They all "
+                 "share one icon in the game files, so they are listed by name.</p>"
+                 + table(["Face paint", "Pack", "How you get it"], rows, cls="compact"),
+                 open=False, right=f"{len(its)}")]
 
 
 def videotape_map(site):

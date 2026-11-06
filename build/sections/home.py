@@ -823,7 +823,7 @@ def fold_panel(title, body):
 
 # ---------------------------------------------------------------------------------------------------------------
 def build_about(site, c):
-    lead = ("<p>The Gen0 Wiki is a fan-made guide to Generation Zero. Everything on it comes straight from the "
+    lead = ("<p>The Generation Zero Wiki is a fan-made guide to Generation Zero. Everything on it comes straight from the "
             "game's own files.</p>")
     b = []
     b.append(bar("Where the information comes from"))
@@ -852,7 +852,13 @@ def build_about(site, c):
                 "used under the <a href=\"https://creativecommons.org/licenses/by-sa/3.0/\" rel=\"noopener\">CC BY-SA</a> "
                 "licence, until their renders are done.</p>" if srcs else "") +
              "<p>The DLC pictures and descriptions on the <a href=\"~/dlc.html\">DLC page</a> are from the "
-             "<a href=\"https://store.steampowered.com/app/704270/\" rel=\"noopener\">Steam store</a>.</p>")
+             "<a href=\"https://store.steampowered.com/app/704270/\" rel=\"noopener\">Steam store</a>. The "
+             "<a href=\"~/missions/achievements.html\">achievement</a> names, descriptions and icons are read from "
+             "Steam's own achievement list for the game.</p>"
+             "<p>The \"Mission start\" box on the mission pages (where a mission starts, with its coordinates) is from "
+             "the mission pages of the <a href=\"https://generation-zero.fandom.com/\" rel=\"noopener\">Generation "
+             "Zero Wiki on Fandom</a> (<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\" "
+             "rel=\"noopener\">CC BY-SA</a>); each box links to its source page.</p>")
     if srcs:
         b.append(fold("Machine picture sources", f'<ul class="hmsrc">{"".join(srcs)}</ul>', level=3,
                       id="picture-sources", right=f"{len(srcs)} pictures"))
@@ -864,4 +870,4 @@ def build_about(site, c):
              "<a href=\"https://github.com/The-Bewwy-2510/gen0-wiki\" rel=\"noopener\">GitHub</a>.</p>")
     b.append("<p class=\"small dim\">Font: Open Sans (SIL Open Font License).</p>")
     site.page("about.html", "About this wiki", "\n".join(b), "home", lead=lead, head_extra=CSS,
-              desc="Where the Gen0 Wiki's information comes from, picture credits and how to report a mistake.")
+              desc="Where this wiki's information comes from, picture credits and how to report a mistake.")

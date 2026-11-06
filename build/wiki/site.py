@@ -25,7 +25,7 @@ DATA = os.path.join(BUILD, "data")
 STATIC = os.path.join(BUILD, "static")
 DOCS = os.path.join(ROOT, "docs")
 
-SITE_NAME = "Gen0 Wiki"
+SITE_NAME = "Generation Zero Wiki"
 GAME = "Generation Zero"
 
 # ---------------------------------------------------------------------------------------------------------------
