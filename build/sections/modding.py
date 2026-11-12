@@ -307,9 +307,10 @@ def index_paths(site):
          "The Map Editor's changes, world cache, builds and backups"],
     ]
     return (bar("Where things are", id="paths") +
-            "<p>The game folder path is the Steam default; the tools have a Browse button (Gen0 VR and the Map "
-            "Editor can also find it in your Steam libraries / ask for the folder with "
-            "<code>archives_win64</code> in it).</p>" +
+            "<p>The game folder path is the Steam default; the tools have a Browse button, and Gen0 VR, the "
+            "Extractor, the Modder and the Map Editor also find the game in your other Steam libraries (another "
+            "drive, e.g. <code>D:\\Steam</code>). The Map Editor asks for the folder with "
+            "<code>archives_win64</code> in it when it can't find one.</p>" +
             table(["What", "Where", "Holds"], rows, sortable=False))
 
 
@@ -1058,7 +1059,8 @@ def console_build(site):
         pre('cmake -B build -G "Visual Studio 17 2022"\ncmake --build build --config Release'),
         ul(["The DLL ends up in <code>build/out/Release/Release/</code>.",
             "A post-build step copies it to <code>C:/Program Files (x86)/Steam/steamapps/common/GenerationZero/</code>; "
-            "change that path in <code>CMakeLists.txt</code> if your game is elsewhere, or turn the copy off with "
+            "if your game is elsewhere (another Steam library or drive), point it there with "
+            "<code>-DGZ_GAME_DIR=\"D:/Steam/steamapps/common/GenerationZero\"</code>, or turn the copy off with "
             "<code>-DGZ_COPY_TO_GAME=OFF</code>. The copy fails while the game is running.",
             "<code>-DGZ_VR=OFF</code> builds the console without VR: no OpenVR, no <code>GZVR.txt</code>, no VR "
             "hooks or DLSS, and the VR controls are hidden. Everything else is the same.",
